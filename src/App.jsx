@@ -4,9 +4,9 @@ function App() {
 
 
   return (
-    <>
-      <h1>E-COURSE!</h1>
-    </>
+    <div className="flex justify-center items-center min-h-screen">
+      <h1 className="font-bold text-5xl">BOICODE!</h1>
+    </div>
   );
 }
 
