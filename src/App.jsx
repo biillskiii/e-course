@@ -1,12 +1,13 @@
 import "./App.css";
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/Login";
 function App() {
-
-
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <h1 className="font-bold text-5xl">BOICODE!</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+      </Routes>
+    </Router>
   );
 }
 
