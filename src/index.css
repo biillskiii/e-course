@@ -6,3 +6,10 @@ body,
 html {
     font-family: 'Quicksand', sans-serif;
 }
+@font-face {
+    font-family: 'Mango';
+    src: url('../public/MangoGrotesque-Bold.ttf');
+}
+.mango{
+    font-family: 'Mango';
+}
