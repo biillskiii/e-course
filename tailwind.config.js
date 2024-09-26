@@ -33,10 +33,10 @@ export default {
           900: "#332700",
         },
         gray: {
-          50: "#F7F7F8",
-          100: "#EFEFEF",
-          200: "#DFDFDF",
-          300: "#CFCFCF",
+          50: "#F4F5F6",
+          100: "#E9EBED",
+          200: "#BFC3C4",
+          300: "#676C6F",
         },
         alert: {
           success: "#5BD9B5",

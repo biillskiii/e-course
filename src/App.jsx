@@ -4,6 +4,7 @@ import LoginPage from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import LandingPage from "./pages/LandingPage";
 import SignUp from "./pages/SignUp";
+import TestComponents from "./pages/TestComponents";
 function App() {
   return (
     <Router>
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/test" element={<TestComponents />} />
       </Routes>
     </Router>
   );
