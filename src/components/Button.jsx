@@ -43,7 +43,7 @@ export default function Button({
           variant === "danger",
 
         // Disabled button styles
-        "bg-gray-light rounded-lg cursor-not-allowed": variant === "disable",
+        "bg-gray-100 rounded-lg cursor-not-allowed": variant === "disable",
 
         // Button submenu styles
         "cursor-pointer border-b-[2px] border-b-transparent active:border-b-primary-500":
@@ -62,8 +62,7 @@ export default function Button({
         "text-primary-500 font-bold   ": variant === "secondary",
         "text-black active:text-brand-base": variant === "submenu",
         "text-primary-500": variant === "submenu-active",
-        "text-gray-medium-light":
-          variant === "disable" || variant === "submenu-disable",
+        "text-gray-200": variant === "disable" || variant === "submenu-disable",
       })}`}
     >
       {/* Icon before text */}
