@@ -46,15 +46,15 @@ export default function Button({
         "bg-gray-100 rounded-lg cursor-not-allowed": variant === "disable",
 
         // Button submenu styles
-        "cursor-pointer border-b-[2px] border-b-transparent active:border-b-primary-500":
+        "cursor-pointer border-b-[2px] border-b-transparent font-bold ":
           variant === "submenu",
-        "cursor-pointer border-b-[2px] border-b-primary-500":
+        "cursor-pointer border-b-[2px] border-b-primary-500 font-bold":
           variant === "submenu-active",
-        "cursor-not-allowed border-b-[2px] border-b-gray-medium-light":
+        "cursor-not-allowed border-b-[2px] border-b-gray-medium-light font-bold":
           variant === "submenu-disable",
 
         //Button Side
-        "hover:text-primary-500 rounded-3xl  active:bg-primary-500 active:font-bold active:text-white text-base":
+        "hover:text-primary-500 rounded-2xl  active:bg-primary-500 active:font-bold active:text-white text-base":
           variant === "side-primary",
 
         // Text colors
