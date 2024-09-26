@@ -15,7 +15,6 @@ export default function Button({
       "flex",
       "items-center",
       "gap-2",
-      leftIcon ? "justify-start pl-4" : "justify-center",
     ],
     baseText: ["text-body-bold"],
   };
@@ -53,8 +52,8 @@ export default function Button({
         "cursor-not-allowed border-b-[2px] border-b-gray-medium-light font-bold":
           variant === "submenu-disable",
 
-        //Button Side
-        "hover:text-primary-500 rounded-2xl  active:bg-primary-500 active:font-bold active:text-white text-base":
+        // Button Side
+        "hover:text-primary-500 rounded-2xl active:bg-primary-500 active:font-bold active:text-white text-base":
           variant === "side-primary",
 
         // Text colors
@@ -63,6 +62,10 @@ export default function Button({
         "text-black active:text-brand-base": variant === "submenu",
         "text-primary-500": variant === "submenu-active",
         "text-gray-200": variant === "disable" || variant === "submenu-disable",
+
+        // Icon alignment
+        "justify-start pl-4": (variant === "side-primary" && (leftIcon || rightIcon)),
+        "justify-center": !(variant === "side-primary" && (leftIcon || rightIcon)),
       })}`}
     >
       {/* Icon before text */}
