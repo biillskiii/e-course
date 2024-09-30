@@ -30,7 +30,7 @@ export default function Label({
 
         // Variants
         "text-alert-warning bg-alert-warningLight": variant === "pending",
-        "text-alert-success bg-alert-successLight": variant === "successful",
+        "text-alert-success bg-alert-successLight": variant === "success",
         "text-alert-danger bg-alert-dangerLight": variant === "failed",
 
         // Custom logic for type prop
