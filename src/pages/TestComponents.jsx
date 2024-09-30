@@ -2,7 +2,17 @@ import { Home } from "iconsax-react";
 import Button from "../components/Button";
 import Label from "../components/Label";
 import InputBase from "../components/InputForm";
+import Footer from "../components/Footer";
+import Pagination from "../components/Pagination";
+import { useState } from "react";
+
 function App() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 5; // Example total pages
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
   return (
     <div className="space-y-5 px-10">
       {/* Button */}
@@ -65,6 +75,8 @@ function App() {
       {/* Label */}
       <p>Label</p>
       <Label label="Label" variant={"failed"} size="very-big" />
+      <Label label={"Label"} variant={"success"} size="very-big" />
+      <Label label={"Label"} variant={"pending"} size="very-big" />
       <p>Checkbox</p>
       <InputBase type={"checkbox"} />
       <InputBase type={"checkbox"} disabled={true} />
@@ -118,6 +130,18 @@ function App() {
           />
         </div>
       </div>
+
+      <p>Pagination</p>
+      <div className="flex justify-start">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </div>
+      {/*Footer*/}
+      <p>Footer</p>
+      <Footer />
     </div>
   );
 }
