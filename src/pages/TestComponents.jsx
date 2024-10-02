@@ -5,6 +5,40 @@ import InputBase from "../components/InputForm";
 import Footer from "../components/Footer";
 import Pagination from "../components/Pagination";
 import { useState } from "react";
+import Card from "../components/Card";
+import Avatar from "../assets/avatar1.png";
+const cardData = [
+  {
+    img:  Avatar,
+    title: "Learn React",
+    name: "John Doe",
+    job: "Software Engineer",
+    level: "Beginner",
+    rating: 4,
+    price: "Rp.500.000,00",
+    ratingNum: "4.5",
+  },
+  {
+    img: Avatar,
+    title: "Master JavaScript",
+    name: "Jane Smith",
+    job: "Frontend Developer",
+    level: "Intermediate",
+    rating: 5,
+    price: "Rp.500.000,00",
+    ratingNum: "5.0",
+  },
+  {
+    img: Avatar,
+    title: "CSS for Beginners",
+    name: "Robert Johnson",
+    job: "UI/UX Designer",
+    level: "Beginner",
+    rating: 3,
+    price: "Rp.500.000,00",
+    ratingNum: "3.0",
+  },
+];
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -138,6 +172,22 @@ function App() {
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {cardData.map((card, index) => (
+          <Card
+            key={index}
+            img={card.img}
+            title={card.title}
+            avatar={card.avatar}
+            name={card.name}
+            job={card.job}
+            level={card.level}
+            rating={card.rating}
+            price={card.price}
+            ratingNum={card.ratingNum}
+          />
+        ))}
       </div>
       {/*Footer*/}
       <p>Footer</p>
