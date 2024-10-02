@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container mx-auto grid  md:grid-cols-3 gap-4 py-14 px-28">
         {/* Left Section */}
         <div className="space-y-4">
-          <h1 className="text-2xl font-bold pb-4">PIXELCODE.</h1>
+          <h1 className="text-5xl font-bold pb-4 mango">PIXELCODE.</h1>
           <p className="pb-20">
             Tingkatkan keterampilan dan bangun masa depan digitalmu dengan
             pembelajaran yang inspiratif bersama kami.
