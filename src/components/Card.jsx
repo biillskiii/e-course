@@ -29,7 +29,7 @@ const Card = ({
     return stars;
   };
   return (
-    <div className="flex flex-col rounded-3xl border border-gray-200/50 p-4">
+    <div className="w-[392px] flex flex-col rounded-3xl border border-gray-200/50 p-4">
       <div
         className="w-full flex justify-center h-[203px] mb-5 rounded-xl pl-4"
         style={{
