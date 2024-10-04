@@ -378,9 +378,9 @@ const Home = () => {
         </div>
         <section className="py-16">
           <div className="container mx-auto px-32 flex justify-between items-start">
-            <div className="text-left w-full max-w-lg mt-16">
-              <h2 className="text-primary-500 font-bold text-3xl">FAQs</h2>
-              <h3 className="text-5xl font-medium mb-4 mt-4">
+            <div className="text-left w-full max-w-lg mt-16 space-y-8">
+              <h2 className="text-primary-500 font-bold text-3xl mb-5">FAQs</h2>
+              <h3 className="text-5xl font-medium">
                 Yang sering mereka tanyakan.
               </h3>
               <Button label={"Hubungi Kami"} size="small" />
