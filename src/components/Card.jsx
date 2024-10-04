@@ -3,6 +3,7 @@ import { Level } from "iconsax-react";
 import { Icon } from "@iconify/react";
 import BgCard from "../assets/bg-class.png";
 import Button from "./Button";
+import { DiscountCircle } from "iconsax-react";
 const Card = ({
   img,
   title,
@@ -13,6 +14,8 @@ const Card = ({
   rating,
   ratingNum,
   price,
+  isFree,
+  hasDiscount,
 }) => {
   const renderStars = () => {
     const stars = [];
@@ -27,6 +30,41 @@ const Card = ({
       );
     }
     return stars;
+  };
+  const calculateDiscountPrice = (price, discountPercentage) => {
+    return price * (discountPercentage / 100);
+  };
+
+  const renderPrice = () => {
+    if (isFree) {
+      return (
+        <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
+          <p className=" text-primary-500 font-bold text-base">GRATIS</p>
+        </div>
+      );
+    } else if (hasDiscount) {
+      const discountPrice = calculateDiscountPrice(price, hasDiscount);
+      return (
+        <div className="flex items-center gap-x-2">
+          <span className="w-16 h-6 rounded-lg text-sm   bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
+            <DiscountCircle size="16" color="#00a589" />
+            {hasDiscount}%
+          </span>
+          <span className="line-through font-bold text-sm">
+            Rp. {price?.toLocaleString() || "Rp.0"}
+          </span>
+          <span className="text-primary-500 font-bold text-xl">
+            Rp. {discountPrice.toLocaleString()}
+          </span>
+        </div>
+      );
+    } else {
+      return (
+        <span className="text-primary-500 font-bold text-xl">
+          Rp. {price?.toLocaleString() || "Rp.0"}
+        </span>
+      );
+    }
   };
   return (
     <div className="w-[392px] flex flex-col rounded-3xl border border-gray-200/50 p-4">
@@ -72,7 +110,7 @@ const Card = ({
             {level}
           </p>
         </div>
-        <p className="text-xl font-bold text-primary-500">{price}</p>
+        <p className="text-xl font-bold text-primary-500"> {renderPrice()}</p>
         <Button label={"Daftar Kelas"} size="full" />
       </div>
     </div>

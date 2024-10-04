@@ -18,20 +18,6 @@ const Card = ({
   discountPrice,
   isFree,
 }) => {
-  const renderStars = () => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Icon
-          icon="material-symbols:star"
-          key={i}
-          width={24}
-          color={i <= rating ? "#F1C644" : "#e4e5e9"}
-        />
-      );
-    }
-    return stars;
-  };
   const calculateDiscountPrice = (price, discountPercentage) => {
     return price * (discountPercentage / 100);
   };
@@ -78,8 +64,8 @@ const Card = ({
           backgroundPosition: "center",
         }}
       >
-        <div className="flex flex-col justify-between h-full space-y-10 py-5">
-          <h1 className="text-primary-800 font-bold text-2xl flex w-[180px]">
+        <div className="flex flex-col justify-between h-full py-5">
+          <h1 className="text-primary-800 font-bold text-xl flex w-[180px]">
             {title}
           </h1>
           <div>

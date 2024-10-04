@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react";
 const Footer = () => {
   return (
     <footer className="bg-primary-600 text-white">
-      <div className="container mx-auto grid  md:grid-cols-3 gap-4 py-14 px-28">
+      <div className=" mx-auto grid  md:grid-cols-3 gap-4 py-14 px-60">
         {/* Left Section */}
         <div className="space-y-4">
           <h1 className="text-5xl font-bold pb-4 mango">PIXELCODE.</h1>
