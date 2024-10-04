@@ -1,14 +1,18 @@
 import React from "react";
 
-const Testi = ({ testimonial, img, name, job }) => {
+const Testi = ({ testimonial }) => {
   return (
-    <div>
-      <p className="h-[120px] w-full">{testimonial}</p>
+    <div className=" w-[476px]  bg-white p-6 rounded-2xl">
+      <p className="h-[120px]">{testimonial.testimonial}</p>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-x-5">
-          <img src={img} alt={name} className="rounded-full" />
-          <h1 className="font-bold text-base">{name}</h1>
-          <p className="text-sm text-[#676C6F]">{job}</p>
+          <img
+            src={testimonial.img}
+            alt={testimonial.name}
+            className="rounded-full w-12 h-12"
+          />
+          <h1 className="font-bold text-base">{testimonial.name}</h1>
+          <p className="text-sm text-[#676C6F]">{testimonial.job}</p>
         </div>
         <svg
           width="95"
