@@ -5,6 +5,8 @@ import CardCategory from "../components/CardCategory";
 import Card from "../components/Card";
 import Avatar from "../assets/avatar1.png";
 import CardWebinar from "../components/CardWebinar";
+import Footer from "../components/Footer";
+import Manfaat from "../assets/manfaat.png";
 const cardData = [
   {
     img: Avatar,
@@ -13,7 +15,7 @@ const cardData = [
     job: "Software Engineer",
     level: "Beginner",
     rating: 4,
-    price: "Rp.500.000,00",
+    price: 200000,
     ratingNum: "4.5",
   },
   {
@@ -23,7 +25,7 @@ const cardData = [
     job: "Frontend Developer",
     level: "Intermediate",
     rating: 5,
-    price: "Rp.500.000,00",
+    price: 200000,
     ratingNum: "5.0",
   },
   {
@@ -33,7 +35,8 @@ const cardData = [
     job: "UI/UX Designer",
     level: "Beginner",
     rating: 3,
-    price: "Rp.500.000,00",
+    price: 200000,
+    hasDiscount: 20,
     ratingNum: "3.0",
   },
 ];
@@ -41,29 +44,34 @@ const cardData = [
 const cardWebinar = [
   {
     img: Avatar,
-    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
-    date: "Senin, 13 Desember 2025",
-    hours: "13.00 - 15.00 WIB",
-    price: 500000,  
-    isFree: true,
-  },
-  {
-    img: Avatar,
+    name: "John Doe",
+    job: "Software Engineer",
     title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
     date: "Senin, 13 Desember 2025",
     hours: "13.00 - 15.00 WIB",
     price: 500000,
-    hasDiscount: 50 
+    isFree: true,
   },
   {
     img: Avatar,
+    name: "John Doe",
+    job: "Software Engineer",
     title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
     date: "Senin, 13 Desember 2025",
     hours: "13.00 - 15.00 WIB",
-    price: 500000,  
+    price: 500000,
+    hasDiscount: 50,
+  },
+  {
+    img: Avatar,
+    name: "John Doe",
+    job: "Software Engineer",
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    date: "Senin, 13 Desember 2025",
+    hours: "13.00 - 15.00 WIB",
+    price: 500000,
   },
 ];
-
 
 const categories = [
   {
@@ -153,6 +161,8 @@ const Home = () => {
               key={index}
               img={webinar.img}
               title={webinar.title}
+              name={webinar.name}
+              job={webinar.job}
               date={webinar.date}
               hours={webinar.hours}
               price={webinar.price}
@@ -162,6 +172,28 @@ const Home = () => {
             />
           ))}
         </div>
+      </section>
+      <section className="flex items-center justify-center gap-x-32 px-36 mt-[160px]">
+        <div className="">
+          <img src={Manfaat} alt="manfaat" width={560} />
+        </div>
+        <div className="w-[560px] space-y-5">
+          <h5 className="text-primary-500 font-bold text-3xl">
+            Manfaat dan Fasilitas
+          </h5>
+          <h3 className="text-5xl">Dapatkan berbagai manfaat dan fasilitas!</h3>
+          <ul className="text-base space-y-6">
+            <li>Video Materi</li>
+            <li>Materi Baca</li>
+            <li>Portofolio Proyek</li>
+            <li>Live Webinar</li>
+            <li>Akses Seumur Hidup</li>
+            <li>Sertifikat</li>
+          </ul>
+        </div>
+      </section>
+      <section className="flex flex-col items-start mt-[160px]">
+        <Footer />
       </section>
     </div>
   );
