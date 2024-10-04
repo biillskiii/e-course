@@ -199,7 +199,7 @@ const Home = () => {
   }, [isAutoPlay, current]);
   return (
     <div className="w-full min-h-screen">
-      <div className="px-60 mx-auto">
+      <div className="container px-10 mx-auto">
         <Navbar />
       </div>
       <div className="">
@@ -227,7 +227,7 @@ const Home = () => {
 
         {/* Kategori Section */}
         <section className="container mx-auto flex flex-col items-center mt-[160px]">
-          <h1 className="text-3xl font-bold">Kategori Kelas & Webinar</h1>
+          <h1 className="text-3xl font-bold mb-10">Kategori Kelas & Webinar</h1>
           <div className="flex flex-wrap justify-center gap-6">
             {categories.map((category) => (
               <CardCategory key={category.id} label={category.title} />
