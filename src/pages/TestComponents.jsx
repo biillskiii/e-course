@@ -9,7 +9,7 @@ import Card from "../components/Card";
 import CardWebinar from "../components/CardWebinar";
 import Avatar from "../assets/avatar1.png";
 import Testi from "../components/Testi";
-import FilterSidebar from "../components/FilterSidebar";
+import FilterSidebar from "../components/FilterSidebarKelas";
 import SearchBar from "../components/SearchBar";
 const cardData = [
   {
