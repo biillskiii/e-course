@@ -20,6 +20,11 @@ const classData = {
   level: "Pemula",
   module: "6 Modul",
   time: "3 Jam Belajar",
+  img: Avatar,
+  name: "John Doe",
+  job: "Software Engineer",
+  description:
+    "Kursus UI/UX Fundamental ini dirancang untuk memberikan pemahaman mendalam bagi siapa pun yang ingin memulai karier di bidang desain antarmuka pengguna (UI) dan pengalaman pengguna (UX). Kursus ini menawarkan materi komprehensif bagi pemula, termasuk pengenalan UI/UX, pengantar konsep Design Thinking, serta peran penting UI/UX dalam pengembangan produk digital. Peserta akan diajak memahami bagaimana desain yang baik mampu meningkatkan kepuasan pengguna dan keberhasilan produk. Peserta juga akan diperkenalkan pada tools populer seperti Figma dan Adobe XD untuk membuat desain antarmuka dan prototipe interaktif. Peserta juga akan belajar proses lengkap desain UI/UX, mulai dari riset pengguna, pembuatan wireframe, hingga pengujian prototipe untuk memastikan produk memenuhi kebutuhan pengguna. Kursus ini juga membahas tren terbaru dalam UI/UX, seperti desain responsif dan microinteractions, sehingga peserta dapat terus mengikuti perkembangan di dunia desain.",
 };
 
 const cardData = [
@@ -301,15 +306,11 @@ function App() {
           level={classData.level}
           module={classData.module}
           time={classData.time}
+          img={classData.img}
+          job={classData.job}
+          name={classData.name}
+          description={classData.description}
         />
-        <div className="w-[560px] h-[315px]">
-          <CardClass
-            name={cardData.name}
-            job={cardData.job}
-            img={cardData.img}
-            title={cardData.title}
-          />
-        </div>
       </div>
       <p>Search Bar</p>
       <SearchBar />
