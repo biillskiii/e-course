@@ -1,67 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "../components/Card";
-import FilterSidebar from "../components/FilterSidebarKelas";
+import FilterSidebarKelas from "../components/FilterSidebarKelas";
 import Navbar from "../components/Navbar";
 import SearchBar from "../components/SearchBar";
-import Avatar from "../assets/avatar1.png";
-
-const cardData = [
-  {
-    img: Avatar,
-    title: "UI/UX Fundamental",
-    category: "UI/UX Research & Design",
-    name: "John Doe",
-    job: "Software Engineer",
-    level: "Pemula",
-    rating: 4,
-    price: 200000,
-    ratingNum: "4.5",
-  },
-  {
-    img: Avatar,
-    title: "Basic Frontend Development",
-    category: "Frontend Development",
-    name: "Jane Smith",
-    job: "Frontend Developer",
-    level: "Menengah",
-    rating: 5,
-    price: 200000,
-    ratingNum: "5.0",
-  },
-  {
-    img: Avatar,
-    title: "Belajar Membuat Component",
-    category: "Frontend Development",
-    name: "Robert Johnson",
-    job: "UI/UX Designer",
-    level: "Ahli",
-    rating: 3,
-    price: 200000,
-    hasDiscount: 20,
-    ratingNum: "3.0",
-  },
-];
+import Pagination from "../components/Pagination";
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState(""); // For search functionality
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);
+  const [kelas, setKelas] = useState([]);
   const [filteredLevels, setFilteredLevels] = useState([]);
 
-  // Function to handle filtering based on search term, categories, and levels
-  const filterCards = () => {
-    return cardData.filter((card) => {
-      // Check if search term matches the card title (case-insensitive)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+
+  const fetchKelas = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/kelas");
+      const result = await response.json();
+      setKelas(result.data);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
+
+  // Fungsi untuk melakukan filtering dan pagination
+  const filterAndPaginateCards = () => {
+    // Filter berdasarkan search term, kategori, dan level
+    const filtered = kelas.filter((card) => {
       const matchesSearch = card.title
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
-
-      // Check if the card matches any of the selected categories
       const matchesCategory =
         filteredCategories.length === 0 ||
         filteredCategories.includes("Semua Kategori") ||
         filteredCategories.includes(card.category);
-
-      // Check if the card matches any of the selected levels
       const matchesLevel =
         filteredLevels.length === 0 ||
         filteredLevels.includes("Semua Level") ||
@@ -69,36 +42,73 @@ function App() {
 
       return matchesSearch && matchesCategory && matchesLevel;
     });
+
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    // Return paginated data
+    return filtered.slice(startIndex, endIndex);
   };
+
+  const getTotalPages = () => {
+    const filtered = kelas.filter((card) => {
+      const matchesSearch = card.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        filteredCategories.length === 0 ||
+        filteredCategories.includes("Semua Kategori") ||
+        filteredCategories.includes(card.category);
+      const matchesLevel =
+        filteredLevels.length === 0 ||
+        filteredLevels.includes("Semua Level") ||
+        filteredLevels.includes(card.level);
+
+      return matchesSearch && matchesCategory && matchesLevel;
+    });
+    return Math.ceil(filtered.length / itemsPerPage);
+  };
+
+  useEffect(() => {
+    fetchKelas();
+  }, []);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const paginatedCards = filterAndPaginateCards();
+  const totalPages = getTotalPages();
 
   return (
     <section className="w-full min-h-screen">
       <div className="container px-10 mx-auto">
         <Navbar />
         <div className="flex items-start px-[120px] gap-x-16 justify-center py-10">
-          <FilterSidebar
-            setFilteredCategories={setFilteredCategories} // Pass the setter function
-            setFilteredLevels={setFilteredLevels} // Pass the setter function
+          <FilterSidebarKelas
+            setFilteredCategories={setFilteredCategories}
+            setFilteredLevels={setFilteredLevels}
           />
           <div className="flex flex-col space-y-10">
-            <SearchBar setSearchTerm={setSearchTerm} /> {/* Pass the setter */}
-            {/* Kelas Populer Section */}
+            <SearchBar setSearchTerm={setSearchTerm} />
             <div className="mt-[160px]">
               <div className="flex flex-wrap gap-5">
-                {filterCards().map((card, index) => (
-                  <Card
-                    key={index}
-                    img={card.img}
-                    title={card.title}
-                    name={card.name}
-                    job={card.job}
-                    level={card.level}
-                    rating={card.rating}
-                    price={card.price}
-                    ratingNum={card.ratingNum}
-                  />
-                ))}
+                {paginatedCards.length > 0 ? (
+                  paginatedCards.map((item) => <Card key={item.id} {...item} />)
+                ) : (
+                  <div className="w-full text-center text-primary-500 font-bold">
+                    Tidak ada kelas yang tersedia
+                  </div>
+                )}
               </div>
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
             </div>
           </div>
         </div>

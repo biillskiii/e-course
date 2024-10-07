@@ -9,7 +9,10 @@ import Footer from "../components/Footer";
 import Manfaat from "../assets/manfaat.png";
 import Testi from "../components/Testi";
 import Button from "../components/Button";
-import { ArrowUp2, ArrowDown2 } from "iconsax-react";
+import { ArrowUp2, ArrowDown2, Next, Previous } from "iconsax-react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 const faqData = [
   {
     question: "Kelas apa saja yang tersedia di PIXELCODE?",
@@ -74,71 +77,6 @@ const testimonials = [
   },
   // Add more testimonials as needed
 ];
-const cardData = [
-  {
-    img: Avatar,
-    title: "UI/UX Fundamental",
-    name: "John Doe",
-    job: "Software Engineer",
-    level: "Beginner",
-    rating: 4,
-    price: 200000,
-    ratingNum: "4.5",
-  },
-  {
-    img: Avatar,
-    title: "Basic Frontend Development",
-    name: "Jane Smith",
-    job: "Frontend Developer",
-    level: "Intermediate",
-    rating: 5,
-    price: 200000,
-    ratingNum: "5.0",
-  },
-  {
-    img: Avatar,
-    title: "Belajar Membuat Component",
-    name: "Robert Johnson",
-    job: "UI/UX Designer",
-    level: "Beginner",
-    rating: 3,
-    price: 200000,
-    hasDiscount: 20,
-    ratingNum: "3.0",
-  },
-];
-
-const cardWebinar = [
-  {
-    img: Avatar,
-    name: "John Doe",
-    job: "Software Engineer",
-    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
-    date: "Senin, 13 Desember 2025",
-    hours: "13.00 - 15.00 WIB",
-    price: 500000,
-    isFree: true,
-  },
-  {
-    img: Avatar,
-    name: "John Doe",
-    job: "Software Engineer",
-    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
-    date: "Senin, 13 Desember 2025",
-    hours: "13.00 - 15.00 WIB",
-    price: 500000,
-    hasDiscount: 50,
-  },
-  {
-    img: Avatar,
-    name: "John Doe",
-    job: "Software Engineer",
-    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
-    date: "Senin, 13 Desember 2025",
-    hours: "13.00 - 15.00 WIB",
-    price: 500000,
-  },
-];
 
 const categories = [
   {
@@ -164,9 +102,37 @@ const categories = [
 ];
 const Home = () => {
   const [current, setCurrent] = useState(0);
+  const [classes, setClasses] = useState([]);
+  const [webinars, setWebinars] = useState([]);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const slidesPerView = 2; // Set how many slides to show at once
+  const slidesPerView = 2; 
   const [openIndex, setOpenIndex] = useState(null);
+  const settings = {
+    nextArrow: <Next />,
+    prevArrow: <Previous />,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+  };
+  const fetchClasses = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/kelas");
+      const result = await response.json();
+      setClasses(result.data);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
+  const fetchWebinar = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/webinars");
+      const result = await response.json();
+      setWebinars(result.data);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -174,7 +140,7 @@ const Home = () => {
   const nextSlide = () => {
     setCurrent((prevIndex) =>
       prevIndex + slidesPerView >= testimonials.length
-        ? 0 // Reset to the first slide if we've reached the end
+        ? 0 
         : prevIndex + slidesPerView
     );
   };
@@ -182,12 +148,11 @@ const Home = () => {
   const prevSlide = () => {
     setCurrent((prevIndex) =>
       prevIndex === 0
-        ? testimonials.length - slidesPerView // Go to the last possible set of slides
+        ? testimonials.length - slidesPerView 
         : prevIndex - slidesPerView
     );
   };
 
-  // Autoplay feature
   useEffect(() => {
     let interval;
     if (isAutoPlay) {
@@ -197,6 +162,11 @@ const Home = () => {
     }
     return () => clearInterval(interval);
   }, [isAutoPlay, current]);
+  useEffect(() => {
+    fetchClasses();
+    fetchWebinar();
+  }, []);
+
   return (
     <div className="w-full min-h-screen">
       <div className="container px-10 mx-auto">
@@ -238,43 +208,30 @@ const Home = () => {
         {/* Kelas Populer Section */}
         <section className="container mx-auto flex flex-col items-start px-36 mt-[160px]">
           <h1 className="text-3xl font-bold">Kelas Populer</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-            {cardData.map((card, index) => (
-              <Card
-                key={index}
-                img={card.img}
-                title={card.title}
-                name={card.name}
-                job={card.job}
-                level={card.level}
-                rating={card.rating}
-                price={card.price}
-                ratingNum={card.ratingNum}
-              />
-            ))}
-          </div>
+          <Slider {...settings} className="w-full mt-10 flex items-center">
+            {classes.length > 0 ? (
+              classes.map((item) => <Card key={item.id} {...item} />)
+            ) : (
+              <div className="w-full text-center text-primary-500 font-bold">
+                Tidak ada kelas yang tersedia
+              </div>
+            )}
+          </Slider>
         </section>
 
         {/* Webinar Section */}
         <section className="container mx-auto flex flex-col items-start px-36 mt-[160px]">
           <h1 className="text-3xl font-bold">Webinar Terbaru</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-            {cardWebinar.map((webinar, index) => (
-              <CardWebinar
-                key={index}
-                img={webinar.img}
-                title={webinar.title}
-                name={webinar.name}
-                job={webinar.job}
-                date={webinar.date}
-                hours={webinar.hours}
-                price={webinar.price}
-                isFree={webinar.isFree}
-                hasDiscount={webinar.hasDiscount}
-                discountPrice={webinar.discountPrice}
-              />
-            ))}
-          </div>
+
+          <Slider {...settings} className="w-full mt-10 flex items-center">
+            {webinars.length > 0 ? (
+              webinars.map((item) => <CardWebinar key={item.id} {...item} />)
+            ) : (
+              <div className="w-full text-center text-primary-500 font-bold">
+                Tidak ada webinar yang tersedia
+              </div>
+            )}
+          </Slider>
         </section>
         <section className="container mx-auto flex items-center justify-center gap-x-32 px-36 mt-[160px]">
           <div className="">
@@ -366,7 +323,7 @@ const Home = () => {
                   {testimonials.map((testimonial, index) => (
                     <div
                       key={index}
-                      className={`w-8/12 px-4 py-2 min-w-8/12`} // Ensure two testimonials show at once
+                      className={`w-8/12 px-4 py-2 min-w-8/12`} 
                     >
                       <Testi testimonial={testimonial} />
                     </div>
