@@ -9,6 +9,8 @@ import Card from "../components/Card";
 import CardWebinar from "../components/CardWebinar";
 import Avatar from "../assets/avatar1.png";
 import Testi from "../components/Testi";
+import FilterSidebar from "../components/FilterSidebar";
+import SearchBar from "../components/SearchBar";
 const cardData = [
   {
     img: Avatar,
@@ -281,9 +283,13 @@ function App() {
           ))}
         </div>
       </div>
+      <p>Search Bar</p>
+      <SearchBar />
       {/*Footer*/}
       <p>Footer</p>
       <Footer />
+      <p>Filter Sidebar</p>
+      <FilterSidebar />
     </div>
   );
 }

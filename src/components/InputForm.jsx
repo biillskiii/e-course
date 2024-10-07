@@ -35,7 +35,7 @@ const InputBase = ({
 
   return (
     <div>
-      <div className="mb-4 w-full">
+      <div className="">
         <label
           htmlFor={id}
           className={clsx("block text-sm font-semibold mb-1", {
