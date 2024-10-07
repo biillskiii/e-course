@@ -2,13 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* In your CSS file */
+
+
 body,
 html {
     font-family: 'Quicksand', sans-serif;
 }
 @font-face {
     font-family: 'Mango';
-    src: url('../public/MangoGrotesque-Bold.ttf');
+    src: url('MangoGrotesque-Bold.ttf');
 }
 .mango{
     font-family: 'Mango';
