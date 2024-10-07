@@ -6,6 +6,7 @@ import LandingPage from "./pages/LandingPage";
 import SignUp from "./pages/SignUp";
 import TestComponents from "./pages/TestComponents";
 import Class from "./pages/Class";
+import Webinar from "./pages/Webinar";
 function App() {
   return (
     <Router>
@@ -15,7 +16,8 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/test" element={<TestComponents />} />
-        <Route path="/class" element={<Class />} />
+        <Route path="/kelas" element={<Class />} />
+        <Route path="/webinar" element={<Webinar />} />
       </Routes>
     </Router>
   );
