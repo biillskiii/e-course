@@ -11,6 +11,17 @@ import Avatar from "../assets/avatar1.png";
 import Testi from "../components/Testi";
 import FilterSidebar from "../components/FilterSidebarKelas";
 import SearchBar from "../components/SearchBar";
+import ClassHeader from "../components/ClassHeader";
+import CardClass from "../components/CardClass";
+
+const classData = {
+  category: "UI/UX Research & Design",
+  title: "UI/UX Fundamental",
+  level: "Pemula",
+  module: "6 Modul",
+  time: "3 Jam Belajar",
+};
+
 const cardData = [
   {
     img: Avatar,
@@ -281,6 +292,23 @@ function App() {
               job={testi.job}
             />
           ))}
+        </div>
+      </div>
+      <div className="">
+        <ClassHeader
+          category={classData.category}
+          title={classData.title}
+          level={classData.level}
+          module={classData.module}
+          time={classData.time}
+        />
+        <div className="w-[560px] h-[315px]">
+          <CardClass
+            name={cardData.name}
+            job={cardData.job}
+            img={cardData.img}
+            title={cardData.title}
+          />
         </div>
       </div>
       <p>Search Bar</p>
