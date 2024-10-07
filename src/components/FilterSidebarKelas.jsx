@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import InputBase from "./InputForm";
+
 const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
-  const [selectedCategories, setSelectedCategoriesState] = useState([]);
-  const [selectedLevels, setSelectedLevelsState] = useState([]);
+  const [selectedCategories, setSelectedCategoriesState] = useState(["Semua Kategori"]);
+  const [selectedLevels, setSelectedLevelsState] = useState(["Semua Level"]);
 
   const categories = [
     "Semua Kategori",
@@ -19,7 +20,11 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
       ? selectedCategories.filter((item) => item !== category)
       : [...selectedCategories, category];
 
-    setSelectedCategoriesState(updatedCategories);
+    if (updatedCategories.includes("Semua Kategori") && updatedCategories.length > 1) {
+      setSelectedCategoriesState(updatedCategories.filter(item => item !== "Semua Kategori"));
+    } else {
+      setSelectedCategoriesState(updatedCategories);
+    }
     setFilteredCategories(updatedCategories);
   };
 
@@ -27,16 +32,20 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
     const updatedLevels = selectedLevels.includes(level)
       ? selectedLevels.filter((item) => item !== level)
       : [...selectedLevels, level];
-
-    setSelectedLevelsState(updatedLevels);
+    if (updatedLevels.includes("Semua Level") && updatedLevels.length > 1) {
+      setSelectedLevelsState(updatedLevels.filter(item => item !== "Semua Level"));
+    } else {
+      setSelectedLevelsState(updatedLevels);
+    }
     setFilteredLevels(updatedLevels);
   };
 
   const resetFilters = () => {
-    setSelectedCategoriesState([]);
-    setFilteredCategories([]); 
-    setSelectedLevelsState([]);
-    setFilteredLevels([]);
+    setSelectedCategoriesState(["Semua Kategori"]);
+    setFilteredCategories(["Semua Kategori"]); 
+
+    setSelectedLevelsState(["Semua Level"]);
+    setFilteredLevels(["Semua Level"]);
   };
 
   return (
@@ -74,7 +83,7 @@ const FilterSection = ({ title, options, selectedOptions, onOptionChange }) => {
           <li key={index} className="flex items-center mb-4">
             <InputBase
               type="checkbox"
-              checked={selectedOptions.includes(option)}
+              checked={selectedOptions.includes(option)}  
               onChange={() => onOptionChange(option)}
             />
             <label htmlFor={option} className="ml-2 text-gray-700">
