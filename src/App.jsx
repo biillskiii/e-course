@@ -7,6 +7,7 @@ import SignUp from "./pages/SignUp";
 import TestComponents from "./pages/TestComponents";
 import Class from "./pages/Class";
 import Webinar from "./pages/Webinar";
+import ClassDetail from "./pages/ClassDetail";
 function App() {
   return (
     <Router>
@@ -18,6 +19,7 @@ function App() {
         <Route path="/test" element={<TestComponents />} />
         <Route path="/kelas" element={<Class />} />
         <Route path="/webinar" element={<Webinar />} />
+        <Route path="/detail-kelas" element={<ClassDetail />} />
       </Routes>
     </Router>
   );

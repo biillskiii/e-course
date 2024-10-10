@@ -12,7 +12,70 @@ import Testi from "../components/Testi";
 import FilterSidebar from "../components/FilterSidebarKelas";
 import SearchBar from "../components/SearchBar";
 import ClassHeader from "../components/ClassHeader";
-import CardClass from "../components/CardClass";
+import Accordion from "../components/Accordion";
+import { VideoSquare } from "iconsax-react";
+import Rating from "../components/RatingReview";
+
+const accordionItems = [
+  {
+    title: "What is React?",
+    content: "React is a JavaScript library for building user interfaces.",
+    logo: <VideoSquare size={"16"} />,
+  },
+  {
+    title: "What is Tailwind CSS?",
+    content:
+      "Tailwind CSS is a utility-first CSS framework for rapid UI development.",
+  },
+  {
+    title: "What is JavaScript?",
+    content:
+      "JavaScript is a programming language commonly used in web development.",
+  },
+];
+
+const sampleData = {
+  price: 700000,
+  buttonText: "Beli Kelas",
+  modules: [
+    { title: "Pengenalan UI/UX", videoCount: 3 },
+    { title: "Pengantar Design Thinking" },
+    { title: "UI/UX Dalam Dunia Digital" },
+    { title: "Tools untuk Desain UI/UX" },
+    { title: "Proses Desain UI/UX" },
+    { title: "Tren Masa Kini terkait UI/UX" },
+  ],
+  features: [
+    "Akses kelas seumur hidup",
+    "Video Materi",
+    "Materi Baca",
+    "Sertifikat",
+  ],
+  rating: {
+    average: 4.9,
+    count: 100,
+  },
+  reviews: [
+    {
+      name: "Anna Wilson",
+      date: "24 Juni 2023",
+      rating: 5,
+      comment: "Kelas yang sangat membantu untuk pemula.",
+    },
+    {
+      name: "Mia Patel",
+      date: "5 Februari 2023",
+      rating: 4,
+      comment: "Materi simple dan cocok untuk pemula.",
+    },
+    {
+      name: "Ethan Brooks",
+      date: "9 Desember 2023",
+      rating: 5,
+      comment: "Materi disajikan sangat simpel dan mudah.",
+    },
+  ],
+};
 
 const classData = {
   category: "UI/UX Research & Design",
@@ -298,6 +361,23 @@ function App() {
             />
           ))}
         </div>
+      </div>
+      <div>
+        <p>Rating and Reviews</p>
+        <Rating />
+      </div>
+      <div className="container mx-auto">
+        <ClassBenefit
+          price={sampleData.price}
+          buttonText={sampleData.buttonText}
+          modules={sampleData.modules}
+          features={sampleData.features}
+          rating={sampleData.rating}
+          reviews={sampleData.reviews}
+        />
+      </div>
+      <div className="p-6">
+        <Accordion items={accordionItems} />
       </div>
       <div className="">
         <ClassHeader
