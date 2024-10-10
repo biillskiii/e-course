@@ -1,7 +1,5 @@
 import React from "react";
-import { Level } from "iconsax-react";
-import { Book } from "iconsax-react";
-import { Clock } from "iconsax-react";
+import { Level, Book, Clock } from "iconsax-react";
 import BgCard from "../assets/bg-class.png";
 
 const ClassHeader = ({
@@ -36,7 +34,7 @@ const ClassHeader = ({
 
       {/* Bagian card */}
       <div
-        className="w-[560px] flex justify-between h-[315px] mt-5 rounded-xl pl-4"
+        className="w-[560px] flex justify-between h-[315px] mt-10 rounded-xl pl-4"
         style={{
           backgroundImage: `url(${BgCard})`,
           backgroundSize: "cover",
@@ -52,13 +50,9 @@ const ClassHeader = ({
             <p className="text-[20px] font-bold text-primary-800">{job}</p>
           </div>
         </div>
-        <img
-          className="flex items-end"
-          src={img}
-          alt={title}
-        />
+        <img className="flex items-end" src={img} alt={title} />
       </div>
-      <h1 className="font-bold text-2xl mt-5">Pengajar</h1>
+      <h1 className="font-bold text-2xl mt-10">Pengajar</h1>
       <div className="flex gap-x-2 items-center mt-5">
         <div className="rounded-full w-12 h-12 bg-primary-500 overflow-hidden">
           <img src={img} alt={title} className="w-full h-full object-cover" />
@@ -69,7 +63,7 @@ const ClassHeader = ({
         </div>
       </div>
       <div className="w-full">
-        <h1 className="font-bold text-2xl mt-5">Deskripsi</h1>
+        <h1 className="font-bold text-2xl mt-10">Deskripsi</h1>
         <p className="text-justify">{description}</p>
       </div>
     </div>
