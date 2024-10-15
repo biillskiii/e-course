@@ -13,9 +13,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/masuk" element={<LoginPage />} />
+        <Route path="/daftar-akun" element={<SignUp />} />
+        <Route path="/lupa-katasandi" element={<ForgotPassword />} />
         <Route path="/test" element={<TestComponents />} />
         <Route path="/kelas" element={<Class />} />
         <Route path="/webinar" element={<Webinar />} />
