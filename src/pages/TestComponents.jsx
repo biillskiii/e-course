@@ -15,6 +15,7 @@ import ClassHeader from "../components/ClassHeader";
 import Accordion from "../components/Accordion";
 import { VideoSquare } from "iconsax-react";
 import Rating from "../components/RatingReview";
+import Popup from "../components/PopUp";
 
 const accordionItems = [
   {
@@ -183,6 +184,8 @@ const testimonials = [
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 5; // Example total pages
+  const [popupType, setPopupType] = useState(null);
+  const handleClose = () => setPopupType(null);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -366,16 +369,6 @@ function App() {
         <p>Rating and Reviews</p>
         <Rating />
       </div>
-      <div className="container mx-auto">
-        <ClassBenefit
-          price={sampleData.price}
-          buttonText={sampleData.buttonText}
-          modules={sampleData.modules}
-          features={sampleData.features}
-          rating={sampleData.rating}
-          reviews={sampleData.reviews}
-        />
-      </div>
       <div className="p-6">
         <Accordion items={accordionItems} />
       </div>
@@ -390,6 +383,50 @@ function App() {
           job={classData.job}
           name={classData.name}
           description={classData.description}
+        />
+      </div>
+      <p>Pop Up Button</p>
+      <div className="App">
+        <div className="flex gap-2">
+          <button
+            className="bg-teal-500 text-white px-6 py-3 rounded-md hover:bg-teal-600"
+            onClick={() => setPopupType("success")}
+          >
+            Show Success Popup
+          </button>
+
+          <button
+            className="bg-teal-500 text-white px-6 py-3 rounded-md hover:bg-teal-600"
+            onClick={() => setPopupType("error")}
+          >
+            Show Error Popup
+          </button>
+
+          <button
+            className="bg-teal-500 text-white px-6 py-3 rounded-md hover:bg-teal-600"
+            onClick={() => setPopupType("paymentSuccess")}
+          >
+            Show Payment Success Popup
+          </button>
+        </div>
+
+        <Popup
+          show={popupType === "success"}
+          variant="success"
+          onPrimaryClick={handleClose}
+        />
+
+        <Popup
+          show={popupType === "error"}
+          variant="error"
+          onPrimaryClick={handleClose}
+        />
+
+        <Popup
+          show={popupType === "paymentSuccess"}
+          variant="paymentSuccess"
+          onPrimaryClick={handleClose}
+          onSecondaryClick={handleClose}
         />
       </div>
       <p>Search Bar</p>
