@@ -3,7 +3,7 @@ import Wave from "../assets/login.png";
 import TextInput from "../components/InputForm";
 import Button from "../components/Button";
 import { Google } from "iconsax-react";
-
+import ReCAPTCHA from 'react-google-recaptcha'
 function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ function App() {
       </div>
       <div className="w-full flex flex-col justify-center items-center px-28">
         <h1 className="text-3xl font-bold mb-5">Daftar Akun</h1>
-        <form className="w-full">
+        <form className="w-full space-y-5">
           <TextInput
             type="text"
             label="Nama Lengkap"
@@ -39,7 +39,7 @@ function App() {
           />
           <TextInput
             type="password"
-            label="Kata sandi"
+            label="Kata Sandi"
             id="password"
             placeholder="Masukkan kata sandi kamu"
             value={password}
@@ -47,13 +47,14 @@ function App() {
           />
           <TextInput
             type="password"
-            label="Kata sandi"
+            label="Konfirmasi Kata Sandi"
             id="password"
-            placeholder="Masukkan kata sandi kamu"
+            placeholder="Konfirmasi kata sandi kamu"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <Button type="submit" label="Daftar Akun" className="w-full mt-5" />
+          <ReCAPTCHA sitekey={import.meta.env.VITE_SITE_KEY} />
           <div className="flex justify-center items-center gap-x-5 my-5">
             <hr className="w-full" />
             <p>Atau</p>
