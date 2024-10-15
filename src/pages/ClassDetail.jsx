@@ -60,10 +60,10 @@ const classData = {
 function App() {
   return (
     <div className="w-full min-h-screen">
-      <div className="container px-10 mx-auto">
+      <div className="container mx-auto px-7">
         <Navbar />
       </div>
-      <div className="flex items-start gap-x-16 justify-center py-10 px-[120px]">
+      <div className="flex items-start  gap-x-16 justify-center py-10 px-[120px]">
         <ClassHeader
           category={classData.category}
           title={classData.title}
@@ -76,7 +76,7 @@ function App() {
           description={classData.description}
         />
         <div className="flex flex-col gap-10">
-          <div className="flex gap-x-64">
+          <div className="flex justify-between gap-x-64">
             <h1 className="font-bold text-4xl">Rp.700.000</h1>
             <Button
               type="button"
