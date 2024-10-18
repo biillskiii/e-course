@@ -86,9 +86,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-end mb-10">
-        <p className="font-bold">Syarat & Ketentuan Layanan Kami</p>
-      </div>
+      <p className="font-bold flex justify-end pb-8">Syarat & Ketentuan Layanan Kami</p>
     </footer>
   );
 };
