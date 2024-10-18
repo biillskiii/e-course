@@ -13,6 +13,8 @@ const InputBase = ({
   className,
   error,
   disabled = false,
+  rows = 4, // Default rows for textarea
+  variant = "primary", // New prop for color variant
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -33,20 +35,44 @@ const InputBase = ({
   const inputType =
     type === "password" ? (showPassword ? "text" : "password") : type;
 
+  const inputClasses = clsx(
+    "w-full px-3 py-2 border rounded-3xl shadow-sm focus:outline-none",
+    {
+      "border-gray-300 focus:ring-gray-500 focus:border-gray-500":
+        variant === "primary" && !error && !disabled,
+      "border-primary-500 focus:ring-primary-500 focus:border-primary-500 text-primary-500":
+        variant === "secondary" && !error && !disabled,
+      "border-alert-error focus:ring-alert-error focus:border-alert-error":
+        error && !disabled,
+      "border-gray-500 bg-gray-100 text-gray-400 cursor-not-allowed": disabled,
+    },
+    className
+  );
+
+  const labelClasses = clsx("block text-sm font-semibold mb-1", {
+    "text-gray-700": variant === "primary" && !disabled,
+    "text-primary-500": variant === "secondary" && !disabled,
+    "text-gray-400": disabled,
+  });
+
   return (
     <div>
       <div className="">
-        <label
-          htmlFor={id}
-          className={clsx("block text-sm font-semibold mb-1", {
-            "text-gray-700": !disabled,
-            "text-gray-400": disabled,
-          })}
-        >
+        <label htmlFor={id} className={labelClasses}>
           {label}
         </label>
         <div className="relative">
-          {type !== "checkbox" ? (
+          {type === "textarea" ? (
+            <textarea
+              id={id}
+              placeholder={placeholder}
+              value={value}
+              onChange={onChange}
+              disabled={disabled}
+              rows={rows}
+              className={inputClasses}
+            />
+          ) : type !== "checkbox" ? (
             <input
               type={inputType}
               id={id}
@@ -54,25 +80,14 @@ const InputBase = ({
               value={value}
               onChange={onChange}
               disabled={disabled}
-              className={clsx(
-                "w-full px-3 py-2 border rounded-3xl shadow-sm focus:outline-none",
-                {
-                  "border-primary-500 focus:ring-primary-500 focus:border-primary-500":
-                    !error && !disabled,
-                  "border-alert-error focus:ring-alert-error focus:border-alert-error":
-                    error && !disabled,
-                  "border-gray-500 bg-gray-100 text-gray-400 cursor-not-allowed":
-                    disabled,
-                },
-                className
-              )}
+              className={inputClasses}
               required={type === "email"}
               pattern={type === "email" ? ".+@.+" : undefined}
             />
           ) : (
             <div
               className={clsx(
-                "w-6 h-6 rounded-lg border-2 flex items-center  justify-center transition-colors duration-200 ease-in-out",
+                "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors duration-200 ease-in-out",
                 {
                   "cursor-pointer": !disabled,
                   "cursor-not-allowed opacity-50": disabled,
@@ -81,16 +96,23 @@ const InputBase = ({
               onClick={handleCheckboxChange}
               style={{
                 borderColor: isChecked
-                  ? "#38B2AC"
-                  : "#38B2AC" && disabled
+                  ? variant === "secondary"
+                    ? "#38B2AC"
+                    : "#000000"
+                  : (variant === "secondary" ? "#38B2AC" : "#000000") &&
+                    disabled
                   ? "#676C6F"
-                  : "#38B2AC",
+                  : variant === "secondary"
+                  ? "#38B2AC"
+                  : "#000000",
                 backgroundColor: isChecked ? "transparent" : "transparent",
               }}
             >
               {isChecked && (
                 <Icon
-                  className={clsx("text-primary-500", {
+                  className={clsx({
+                    "text-gray-700": variant === "primary",
+                    "text-primary-500": variant === "secondary",
                     "opacity-50": disabled,
                   })}
                   icon="mingcute:check-fill"
@@ -102,7 +124,13 @@ const InputBase = ({
             <button
               type="button"
               onClick={handleTogglePassword}
-              className="absolute inset-y-0 right-0 flex items-center px-4 text-sm font-medium text-gray-500 focus:outline-none"
+              className={clsx(
+                "absolute inset-y-0 right-0 flex items-center px-4 text-sm font-medium focus:outline-none",
+                {
+                  "text-gray-500": variant === "primary",
+                  "text-primary-500": variant === "secondary",
+                }
+              )}
             >
               {showPassword ? <EyeSlash /> : <Eye />}
             </button>
