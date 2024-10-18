@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ArrowUp2, ArrowDown2 } from "iconsax-react";
+import { ArrowUp2, ArrowDown2, VideoSquare, Book } from "iconsax-react";
 import clsx from "clsx";
 
 const Accordion = ({ items }) => {
@@ -11,7 +11,6 @@ const Accordion = ({ items }) => {
   };
 
   useEffect(() => {
-    // Set initial height of the content to be 0 for all items
     contentRefs.current.forEach((ref, index) => {
       if (ref) {
         ref.style.height =
@@ -27,8 +26,8 @@ const Accordion = ({ items }) => {
           {/* Accordion Header */}
           <button
             className={clsx(
-              "w-full flex justify-between items-center pt-2 bg-white",
-              activeIndex === index ? "mb-2" : "mb-6" // Only add margin when not active
+              "w-full flex justify-between items-center py-4 bg-white",
+              activeIndex === index ? "mb-2" : ""
             )}
             onClick={() => toggleAccordion(index)}
             aria-expanded={activeIndex === index}
@@ -37,7 +36,6 @@ const Accordion = ({ items }) => {
             <div className="flex items-center">
               <div className="text-left">
                 <p className="text-xl font-medium">{item.title}</p>
-                <p className="text-sm text-black">{item.meta}</p>
               </div>
             </div>
             <span>
@@ -57,12 +55,20 @@ const Accordion = ({ items }) => {
               "transition-all duration-300 ease-in-out overflow-hidden",
               activeIndex === index ? "max-h-screen" : "max-h-0"
             )}
-            style={{ transitionProperty: "height" }} // Smooth transition of height
+            style={{ transitionProperty: "height" }}
             aria-hidden={activeIndex !== index}
           >
-            <div className="flex items-center gap-2 text-sm mb-6">
-              {item.logo} {item.content}
-            </div>
+            {item.subItems.map((subItem, subIndex) => (
+              <div key={subIndex} className="flex justify-between text-sm py-2">
+                <div className="flex items-center gap-x-2">
+                  {subItem.logo}
+                  <span>{subItem.content}</span>
+                </div>
+                <div className="text-primary-500 text-sm font-medium">
+                  {subItem.duration}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ))}
