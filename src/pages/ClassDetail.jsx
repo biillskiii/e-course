@@ -18,29 +18,84 @@ const benefitsList = [
 const accordionItems = [
   {
     title: "Pengenalan UI/UX",
-    content: "3 Video",
-    logo: <VideoSquare size={"16"} />,
+    subItems: [
+      {
+        content: "3 Video",
+        logo: <VideoSquare size={16} />,
+        duration: "7:21 mnt",
+      },
+      {
+        content: "2 Modul",
+        logo: <Book size={16} />,
+        duration: "5:15 mnt",
+      },
+      {
+        content: "1 Quiz",
+        logo: <Book size={16} />,
+        duration: "10:00 mnt",
+      },
+      // Add more sub-items as needed, up to 5
+    ],
   },
   {
     title: "Pengantar Design Thinking",
-    content: "2 Modul",
-    logo: <Book size={"16"} />,
+    subItems: [
+      {
+        content: "4 Video",
+        logo: <VideoSquare size={16} />,
+        duration: "15:30 mnt",
+      },
+      {
+        content: "3 Modul",
+        logo: <Book size={16} />,
+        duration: "20:00 mnt",
+      },
+      // Add more sub-items as needed, up to 5
+    ],
   },
   {
     title: "UI/UX Dalam Dunia Digital",
-    content: "",
+    subItems: [
+      {
+        content: "2 Video",
+        logo: <VideoSquare size={16} />,
+        duration: "10:45 mnt",
+      },
+      // Add more sub-items as needed, up to 5
+    ],
   },
   {
     title: "Tools untuk Desain UI/UX",
-    content: "",
+    subItems: [
+      {
+        content: "5 Video",
+        logo: <VideoSquare size={16} />,
+        duration: "25:00 mnt",
+      },
+      // Add more sub-items as needed, up to 5
+    ],
   },
   {
     title: "Proses Desain UI/UX",
-    content: "",
+    subItems: [
+      {
+        content: "3 Modul",
+        logo: <Book size={16} />,
+        duration: "30:00 mnt",
+      },
+      // Add more sub-items as needed, up to 5
+    ],
   },
   {
     title: "Tren Masa Kini Terkait UI/UX",
-    content: "",
+    subItems: [
+      {
+        content: "2 Video",
+        logo: <VideoSquare size={16} />,
+        duration: "12:30 mnt",
+      },
+      // Add more sub-items as needed, up to 5
+    ],
   },
 ];
 
