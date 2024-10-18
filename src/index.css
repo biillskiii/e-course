@@ -9,10 +9,13 @@ body,
 html {
     font-family: 'Quicksand', sans-serif;
 }
+
 @font-face {
     font-family: 'Mango';
-    src: url('MangoGrotesque-Bold.ttf');
+    src: url('MangoGrotesque-Bold.ttf') format('truetype');
+    ;
 }
-.mango{
+
+.mango {
     font-family: 'Mango';
 }
