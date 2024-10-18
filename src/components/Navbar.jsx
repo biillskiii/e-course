@@ -1,20 +1,24 @@
 import React, { useState } from "react";
-import { useLocation, useRoutes } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Button from "./Button";
 
-const Navbar = () => {
+const Navbar = ({ variant = "default" }) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const router = useRoutes
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  return (
+  const Logo = () => (
+    <h1 className="mango uppercase text-primary-500 text-5xl">
+      pixel<span className="text-secondary-500">code.</span>
+    </h1>
+  );
+
+  const DefaultNavbar = () => (
     <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
-      <h1 className="mango uppercase text-primary-500 text-3xl">
-        pixel<span className="text-secondary-500">code.</span>
-      </h1>
+      <Logo />
       <button className="md:hidden p-2" onClick={toggleMenu}>
         {/* Hamburger icon */}
         <svg
@@ -80,6 +84,38 @@ const Navbar = () => {
       <Button label={"Masuk"} variant="primary" size="small" />
     </div>
   );
+
+  const LogoOnlyNavbar = () => (
+    <div className="flex justify-start items-center w-full h-[92px] my-auto px-[120px] shadow-sm">
+      <Logo />
+    </div>
+  );
+
+  const WelcomeNavbar = () => (
+    <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
+      <Logo />
+      <div className="flex items-center space-x-4">
+        <p className="text-sm">Halo, Nathan Noel!</p>
+        <p className="text-sm text-gray-500">
+          Selamat datang di dashboard Pixel
+        </p>
+        <img
+          src="/path-to-user-avatar.jpg"
+          alt="User Avatar"
+          className="w-10 h-10 rounded-full"
+        />
+      </div>
+    </div>
+  );
+
+  switch (variant) {
+    case "logo-only":
+      return <LogoOnlyNavbar />;
+    case "welcome":
+      return <WelcomeNavbar />;
+    default:
+      return <DefaultNavbar />;
+  }
 };
 
 export default Navbar;
