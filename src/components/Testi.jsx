@@ -11,8 +11,10 @@ const Testi = ({ testimonial }) => {
             alt={testimonial.name}
             className="rounded-full w-12 h-12"
           />
-          <h1 className="font-bold text-base">{testimonial.name}</h1>
-          <p className="text-sm text-[#676C6F]">{testimonial.job}</p>
+          <div className="flex flex-col">
+            <h1 className="font-bold text-base">{testimonial.name}</h1>
+            <p className="text-sm text-[#676C6F]">{testimonial.job}</p>
+          </div>
         </div>
         <svg
           width="95"

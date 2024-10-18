@@ -39,7 +39,7 @@ export default {
           300: "#676C6F",
         },
         alert: {
-          success: "#5BD9B5",
+          success: "#3BCE89",
           warning: "#FFB74D",
           error: "#FF5050",
           danger: "#E90C1B",

@@ -15,9 +15,9 @@ function App() {
           className="w-[660px] py-10 pl-20 min-h-screen"
         />
       </div>
-      <div className="w-full flex flex-col justify-center items-center px-28">
-        <h1 className="text-3xl font-bold mb-5">Masuk Akun</h1>
-        <form className="w-full">
+      <div className="w-full flex flex-col  justify-center items-center px-28">
+        <h1 className="text-3xl font-bold mb-14">Masuk Akun</h1>
+        <form className="w-full space-y-5">
           <TextInput
             type="email"
             label="Email"
@@ -29,7 +29,7 @@ function App() {
 
           <TextInput
             type="password"
-            label="Kata sandi"
+            label="Kata Sandi"
             id="password"
             placeholder="Masukkan kata sandi kamu"
             value={password}

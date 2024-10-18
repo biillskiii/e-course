@@ -4,17 +4,21 @@ import { Icon } from "@iconify/react";
 
 const Footer = () => {
   return (
-    <footer className="bg-primary-600 text-white">
-      <div className=" mx-auto grid  md:grid-cols-3 gap-4 py-14 px-60">
+    <footer className="bg-primary-600 text-white px-60">
+      <div className=" mx-auto grid  md:grid-cols-3 gap-4 py-14 ">
         {/* Left Section */}
         <div className="space-y-4">
           <h1 className="text-5xl font-bold pb-4 mango">PIXELCODE.</h1>
-          <p className="pb-20">
+          <p className="pb-10">
             Tingkatkan keterampilan dan bangun masa depan digitalmu dengan
             pembelajaran yang inspiratif bersama kami.
           </p>
+          <h1 className=" font-bold text-sm">Alamat Kantor</h1>
           <p className="text-sm">
-            copyright Serpihan Tech @ 2024 - All Right Reserved
+            AD Premier Lantai 17 Suite 04 B, Jl. TB. SImatupang No. 5 Desa/Kel.
+            Ragunan, Kec. Pasar Minggu, Kota ADM. Jakarta Selatan. <br /> <br />
+            Perum D Livia Gading No. 3, Kel. Kalisegoro, Kec. Gunungpati, Kota
+            Semarang
           </p>
         </div>
 
@@ -23,7 +27,7 @@ const Footer = () => {
           {/* Menu Section */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Menu</h2>
-            <ul className="space-y-4 py-4">
+            <ul className="space-y-10 py-4">
               <li>
                 <a href="#" className="hover:underline">
                   Beranda
@@ -39,13 +43,18 @@ const Footer = () => {
                   Webinar
                 </a>
               </li>
+              <li>
+                <a href="#" className="hover:underline">
+                  Hubungi Kami
+                </a>
+              </li>
             </ul>
           </div>
 
           {/* Media Sosial Section */}
-          <div className="space-y-4">
+          <div className="space-y-4 flex flex-col ">
             <h2 className="text-xl font-semibold">Media Sosial</h2>
-            <ul className="space-y-4 py-4">
+            <ul className="space-y-10 py-4">
               <li>
                 <a
                   href="https://www.instagram.com/serphiantech"
@@ -77,6 +86,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      <p className="font-bold flex justify-end pb-8">Syarat & Ketentuan Layanan Kami</p>
     </footer>
   );
 };

@@ -9,6 +9,88 @@ import Card from "../components/Card";
 import CardWebinar from "../components/CardWebinar";
 import Avatar from "../assets/avatar1.png";
 import Testi from "../components/Testi";
+import FilterSidebar from "../components/FilterSidebarKelas";
+import SearchBar from "../components/SearchBar";
+import ClassHeader from "../components/ClassHeader";
+import Accordion from "../components/Accordion";
+import { VideoSquare } from "iconsax-react";
+import Rating from "../components/RatingReview";
+import Popup from "../components/PopUp";
+
+const accordionItems = [
+  {
+    title: "What is React?",
+    content: "React is a JavaScript library for building user interfaces.",
+    logo: <VideoSquare size={"16"} />,
+  },
+  {
+    title: "What is Tailwind CSS?",
+    content:
+      "Tailwind CSS is a utility-first CSS framework for rapid UI development.",
+  },
+  {
+    title: "What is JavaScript?",
+    content:
+      "JavaScript is a programming language commonly used in web development.",
+  },
+];
+
+const sampleData = {
+  price: 700000,
+  buttonText: "Beli Kelas",
+  modules: [
+    { title: "Pengenalan UI/UX", videoCount: 3 },
+    { title: "Pengantar Design Thinking" },
+    { title: "UI/UX Dalam Dunia Digital" },
+    { title: "Tools untuk Desain UI/UX" },
+    { title: "Proses Desain UI/UX" },
+    { title: "Tren Masa Kini terkait UI/UX" },
+  ],
+  features: [
+    "Akses kelas seumur hidup",
+    "Video Materi",
+    "Materi Baca",
+    "Sertifikat",
+  ],
+  rating: {
+    average: 4.9,
+    count: 100,
+  },
+  reviews: [
+    {
+      name: "Anna Wilson",
+      date: "24 Juni 2023",
+      rating: 5,
+      comment: "Kelas yang sangat membantu untuk pemula.",
+    },
+    {
+      name: "Mia Patel",
+      date: "5 Februari 2023",
+      rating: 4,
+      comment: "Materi simple dan cocok untuk pemula.",
+    },
+    {
+      name: "Ethan Brooks",
+      date: "9 Desember 2023",
+      rating: 5,
+      comment: "Materi disajikan sangat simpel dan mudah.",
+    },
+  ],
+};
+
+const classData = {
+  category: "UI/UX Research & Design",
+  title: "UI/UX Fundamental",
+  level: "Pemula",
+  module: "6 Modul",
+  time: "3 Jam Belajar",
+  img: Avatar,
+  name: "John Doe",
+  job: "Software Engineer",
+  description:
+    "Kursus UI/UX Fundamental ini dirancang untuk memberikan pemahaman mendalam bagi siapa pun yang ingin memulai karier di bidang desain antarmuka pengguna (UI) dan pengalaman pengguna (UX). Kursus ini menawarkan materi komprehensif bagi pemula, termasuk pengenalan UI/UX, pengantar konsep Design Thinking, serta peran penting UI/UX dalam pengembangan produk digital. Peserta akan diajak memahami bagaimana desain yang baik mampu meningkatkan kepuasan pengguna dan keberhasilan produk. Peserta juga akan diperkenalkan pada tools populer seperti Figma dan Adobe XD untuk membuat desain antarmuka dan prototipe interaktif. Peserta juga akan belajar proses lengkap desain UI/UX, mulai dari riset pengguna, pembuatan wireframe, hingga pengujian prototipe untuk memastikan produk memenuhi kebutuhan pengguna. Kursus ini juga membahas tren terbaru dalam UI/UX, seperti desain responsif dan microinteractions, sehingga peserta dapat terus mengikuti perkembangan di dunia desain.",
+};
+
 const cardData = [
   {
     img: Avatar,
@@ -102,6 +184,8 @@ const testimonials = [
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 5; // Example total pages
+  const [popupType, setPopupType] = useState(null);
+  const handleClose = () => setPopupType(null);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -281,9 +365,77 @@ function App() {
           ))}
         </div>
       </div>
+      <div>
+        <p>Rating and Reviews</p>
+        <Rating />
+      </div>
+      <div className="p-6">
+        <Accordion items={accordionItems} />
+      </div>
+      <div className="">
+        <ClassHeader
+          category={classData.category}
+          title={classData.title}
+          level={classData.level}
+          module={classData.module}
+          time={classData.time}
+          img={classData.img}
+          job={classData.job}
+          name={classData.name}
+          description={classData.description}
+        />
+      </div>
+      <p>Pop Up Button</p>
+      <div className="App">
+        <div className="flex gap-2">
+          <button
+            className="bg-teal-500 text-white px-6 py-3 rounded-md hover:bg-teal-600"
+            onClick={() => setPopupType("success")}
+          >
+            Show Success Popup
+          </button>
+
+          <button
+            className="bg-teal-500 text-white px-6 py-3 rounded-md hover:bg-teal-600"
+            onClick={() => setPopupType("error")}
+          >
+            Show Error Popup
+          </button>
+
+          <button
+            className="bg-teal-500 text-white px-6 py-3 rounded-md hover:bg-teal-600"
+            onClick={() => setPopupType("paymentSuccess")}
+          >
+            Show Payment Success Popup
+          </button>
+        </div>
+
+        <Popup
+          show={popupType === "success"}
+          variant="success"
+          onPrimaryClick={handleClose}
+        />
+
+        <Popup
+          show={popupType === "error"}
+          variant="error"
+          onPrimaryClick={handleClose}
+        />
+
+        <Popup
+          show={popupType === "paymentSuccess"}
+          variant="paymentSuccess"
+          onPrimaryClick={handleClose}
+          onSecondaryClick={handleClose}
+        />
+      </div>
+      <p>Search Bar</p>
+      <SearchBar />
       {/*Footer*/}
       <p>Footer</p>
       <Footer />
+      <p>Filter Sidebar</p>
+      <FilterSidebar />
     </div>
   );
 }

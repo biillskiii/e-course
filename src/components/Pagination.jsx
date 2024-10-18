@@ -1,12 +1,11 @@
 import React from "react";
 import clsx from "clsx";
+import { ArrowLeft2, ArrowRight2 } from "iconsax-react";
 
-// Pagination component
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage === totalPages;
 
-  // Helper function to render page numbers
   const renderPageNumbers = () => {
     let pages = [];
 
@@ -17,10 +16,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           onClick={() => onPageChange(i)}
           className={clsx(
             "w-10 h-10 flex items-center justify-center rounded-xl",
-            // Kondisi tombol saat diklik
             i === currentPage
-              ? "bg-primary-500 text-white" // Kondisi tombol klik (active)
-              : "bg-white text-black hover:bg-primary-400 hover:text-white" // Kondisi standby
+              ? "bg-primary-500 text-white"
+              : "bg-white text-black hover:bg-primary-400 hover:text-white"
           )}
         >
           {i}
@@ -32,37 +30,32 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Numbered pagination */}
-      <div className="flex items-center gap-2">{renderPageNumbers()}</div>
-
-      {/* Navigation arrows */}
+    <div className="w-full mx-auto flex justify-center mt-5 gap-6">
       <div className="flex items-center gap-2">
         <button
           onClick={() => !isFirstPage && onPageChange(currentPage - 1)}
           className={clsx(
             "w-10 h-10 flex items-center justify-center rounded-xl",
-            // Disabled state
             isFirstPage
-              ? "bg-gray-200 text-white" // Disabled condition
-              : "bg-primary-500 text-white hover:bg-white hover:text-black" // Standby
+              ? "bg-gray-200 text-white" 
+              : "bg-primary-500 text-white hover:bg-primary-600 " 
           )}
           disabled={isFirstPage}
         >
-          {"<"}
+          <ArrowLeft2 size={16}/>
         </button>
+        {/* <div className="flex items-center gap-2">{renderPageNumbers()}</div> */}
         <button
           onClick={() => !isLastPage && onPageChange(currentPage + 1)}
           className={clsx(
             "w-10 h-10 flex items-center justify-center rounded-xl",
-            // Disabled state
             isLastPage
-              ? "bg-gray-200 text-white" // Disabled condition
-              : "bg-primary-500 text-white hover:bg-white hover:text-black" // Standby
+              ? "bg-gray-200 text-white" 
+              : "bg-primary-500 text-white hover:bg-primary-600 "
           )}
           disabled={isLastPage}
         >
-          {">"}
+            <ArrowRight2 size={16}/>
         </button>
       </div>
     </div>
