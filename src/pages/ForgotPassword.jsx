@@ -16,6 +16,10 @@ function App() {
       </div>
       <div className="w-full flex flex-col justify-center items-center px-28">
         <h1 className="text-3xl font-bold mb-5">Lupa Kata Sandi</h1>
+        <p className="text-center w-[500px] mb-8">
+          Masukkan alamat Email Kamu supaya kami bisa mengirimmu Email dan Kamu
+          bisa mengatur ulang kata sandimu.
+        </p>
         <form className="w-full space-y-5">
           <TextInput
             type="email"
