@@ -105,7 +105,7 @@ const Home = () => {
   const [classes, setClasses] = useState([]);
   const [webinars, setWebinars] = useState([]);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const slidesPerView = 2; 
+  const slidesPerView = 2;
   const [openIndex, setOpenIndex] = useState(null);
   const settings = {
     nextArrow: <Next />,
@@ -140,7 +140,7 @@ const Home = () => {
   const nextSlide = () => {
     setCurrent((prevIndex) =>
       prevIndex + slidesPerView >= testimonials.length
-        ? 0 
+        ? 0
         : prevIndex + slidesPerView
     );
   };
@@ -148,7 +148,7 @@ const Home = () => {
   const prevSlide = () => {
     setCurrent((prevIndex) =>
       prevIndex === 0
-        ? testimonials.length - slidesPerView 
+        ? testimonials.length - slidesPerView
         : prevIndex - slidesPerView
     );
   };
@@ -220,7 +220,7 @@ const Home = () => {
         </section>
 
         {/* Webinar Section */}
-        <section className="container mx-auto flex flex-col items-start px-36 mt-[160px]">
+        {/* <section className="container mx-auto flex flex-col items-start px-36 mt-[160px]">
           <h1 className="text-3xl font-bold">Webinar Terbaru</h1>
 
           <Slider {...settings} className="w-full mt-10 flex items-center">
@@ -232,7 +232,9 @@ const Home = () => {
               </div>
             )}
           </Slider>
-        </section>
+        </section> */}
+
+        {/* Manfaat Section */}
         <section className="container mx-auto flex items-center justify-center gap-x-32 px-36 mt-[160px]">
           <div className="">
             <img src={Manfaat} alt="manfaat" width={560} />
@@ -321,10 +323,7 @@ const Home = () => {
                   }}
                 >
                   {testimonials.map((testimonial, index) => (
-                    <div
-                      key={index}
-                      className={`w-8/12 px-4 py-2 min-w-8/12`} 
-                    >
+                    <div key={index} className={`w-8/12 px-4 py-2 min-w-8/12`}>
                       <Testi testimonial={testimonial} />
                     </div>
                   ))}
