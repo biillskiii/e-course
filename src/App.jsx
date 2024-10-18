@@ -8,6 +8,8 @@ import TestComponents from "./pages/TestComponents";
 import Class from "./pages/Class";
 import Webinar from "./pages/Webinar";
 import ClassDetail from "./pages/ClassDetail";
+import Checkout from "./pages/Checkout";
+import ContactUs from "./pages/ContactUs";
 function App() {
   return (
     <Router>
@@ -20,6 +22,8 @@ function App() {
         <Route path="/kelas" element={<Class />} />
         <Route path="/webinar" element={<Webinar />} />
         <Route path="/detail-kelas" element={<ClassDetail />} />
+        <Route path="/pembayaran" element={<Checkout />} />
+        <Route path="/hubungi-kami" element={<ContactUs />} />
       </Routes>
     </Router>
   );
