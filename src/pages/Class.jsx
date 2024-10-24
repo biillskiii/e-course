@@ -10,13 +10,28 @@ function App() {
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [kelas, setKelas] = useState([]);
   const [filteredLevels, setFilteredLevels] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        "https://be-course.serpihantech.com/api/categories"
+      );
+      const result = await response.json();
+      setCategories(result.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   const fetchKelas = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/kelas");
+      const response = await fetch(
+        "https://be-course.serpihantech.com/api/kelas"
+      );
       const result = await response.json();
       setKelas(result.data);
     } catch (error) {
@@ -72,6 +87,7 @@ function App() {
 
   useEffect(() => {
     fetchKelas();
+    fetchCategories();
   }, []);
 
   const handlePageChange = (page) => {
@@ -89,6 +105,7 @@ function App() {
           <FilterSidebarKelas
             setFilteredCategories={setFilteredCategories}
             setFilteredLevels={setFilteredLevels}
+            categories={categories}
           />
           <div className="flex flex-col space-y-10">
             <SearchBar setSearchTerm={setSearchTerm} />
