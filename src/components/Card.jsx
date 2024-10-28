@@ -7,7 +7,7 @@ import { DiscountCircle } from "iconsax-react";
 
 const Card = ({
   img,
-  title,
+  class_name,
   avatar,
   name,
   job,
@@ -15,7 +15,7 @@ const Card = ({
   rating,
   ratingNum,
   price,
-  isFree,
+  premium,
   hasDiscount,
 }) => {
   const renderStars = () => {
@@ -38,7 +38,7 @@ const Card = ({
   };
 
   const renderPrice = () => {
-    if (isFree) {
+    if (premium === 0) {
       return (
         <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
           <p className=" text-primary-500 font-bold text-base">GRATIS</p>
@@ -69,10 +69,10 @@ const Card = ({
     }
   };
 
-  const calculateFontSize = (title) => {
-    if (title.length <= 30) return "24px";
-    else if (title.length <= 50) return "20px"; 
-    else return "16px"; 
+  const calculateFontSize = (class_name) => {
+    if (class_name.length <= 30) return "24px";
+    else if (class_name.length <= 50) return "20px";
+    else return "16px";
   };
 
   return (
@@ -88,28 +88,37 @@ const Card = ({
         <div className="flex flex-col justify-between h-full py-5">
           <h1
             className="text-primary-800 font-bold h-full"
-            style={{ fontSize: calculateFontSize(title), lineHeight: "1.2em" }}
+            style={{
+              fontSize: calculateFontSize(class_name),
+              lineHeight: "1.2em",
+            }}
           >
-            {title.length > 50 ? `${title.substring(0, 50)}...` : title}
+            {class_name.length > 50
+              ? `${class_name.substring(0, 50)}...`
+              : class_name}
           </h1>
           <div>
             <p className="text-sm font-bold text-primary-800">{name}</p>
             <p className="text-[10px] font-bold text-primary-800">{job}</p>
           </div>
         </div>
-        <img className="w-[153px] h-full" src={img} alt={title} />
+        <img className="w-[153px] h-full" src={img} alt={class_name} />
       </div>
 
       <div className="flex flex-col gap-y-4 flex-grow">
         <h1
-          style={{ fontSize: calculateFontSize(title) }}
-          className="font-bold text-xl line-clamp-2 h-[60px]" 
+          style={{ fontSize: calculateFontSize(class_name) }}
+          className="font-bold text-xl line-clamp-2 h-[60px]"
         >
-          {title}
+          {class_name}
         </h1>
         <div className="flex gap-x-2 items-center">
           <div className="rounded-full w-12 h-12 bg-primary-500 overflow-hidden">
-            <img src={img} alt={title} className="w-full h-full object-cover" />
+            <img
+              src={img}
+              alt={class_name}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex flex-col justify-between">
             <p className="font-bold text-base">{name}</p>
