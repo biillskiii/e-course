@@ -10,6 +10,7 @@ import Webinar from "./pages/Webinar";
 import ClassDetail from "./pages/ClassDetail";
 import Checkout from "./pages/Checkout";
 import ContactUs from "./pages/ContactUs";
+import Dashboard from "./pages/admin/Dashboard";
 function App() {
   return (
     <Router>
@@ -24,6 +25,7 @@ function App() {
         <Route path="/detail-kelas" element={<ClassDetail />} />
         <Route path="/pembayaran" element={<Checkout />} />
         <Route path="/hubungi-kami" element={<ContactUs />} />
+        <Route path="/admin/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
