@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Notification } from "iconsax-react";
+import { userData } from "../data";
 import Button from "./Button";
 
 const Navbar = ({ variant = "default" }) => {
@@ -11,16 +13,15 @@ const Navbar = ({ variant = "default" }) => {
   };
 
   const Logo = () => (
-    <h1 className="mango uppercase text-primary-500 text-5xl">
+    <h1 className="uppercase mango text-primary-500 text-5xl">
       pixel<span className="text-secondary-500">code.</span>
     </h1>
   );
 
   const DefaultNavbar = () => (
-    <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
+    <div className="flex justify-between items-center w-full h-24 px-8 md:px-32 shadow-sm">
       <Logo />
       <button className="md:hidden p-2" onClick={toggleMenu}>
-        {/* Hamburger icon */}
         <svg
           className="w-6 h-6"
           fill="none"
@@ -36,9 +37,11 @@ const Navbar = ({ variant = "default" }) => {
         </svg>
       </button>
       <ul
-        className={`flex-col md:flex md:flex-row ${
-          isMenuOpen ? "flex" : "hidden"
-        } md:space-x-[48px]`}
+        className={`absolute md:relative top-24 md:top-0 left-0 right-0 bg-white md:bg-transparent
+          ${isMenuOpen ? "flex" : "hidden"} 
+          flex-col md:flex md:flex-row md:space-x-12 
+          p-4 md:p-0 space-y-4 md:space-y-0 shadow-md md:shadow-none
+          ${!isMenuOpen && "md:flex"}`}
       >
         <li>
           <a
@@ -81,29 +84,39 @@ const Navbar = ({ variant = "default" }) => {
           </a>
         </li>
       </ul>
-      <Button label={"Masuk"} variant="primary" size="small" />
+      {!userData.isLoggedIn && (
+        <Button label="Masuk" variant="primary" size="small" />
+      )}
     </div>
   );
 
   const LogoOnlyNavbar = () => (
-    <div className="flex justify-start items-center w-full h-[92px] my-auto px-[120px] shadow-sm">
+    <div className="flex justify-start items-center w-full h-24 px-8 md:px-32 shadow-sm">
       <Logo />
     </div>
   );
 
   const WelcomeNavbar = () => (
-    <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
-      <Logo />
-      <div className="flex items-center space-x-4">
-        <p className="text-sm">Halo, Nathan Noel!</p>
-        <p className="text-sm text-gray-500">
-          Selamat datang di dashboard Pixel
-        </p>
-        <img
-          src="/path-to-user-avatar.jpg"
-          alt="User Avatar"
-          className="w-10 h-10 rounded-full"
-        />
+    <div className="flex justify-between items-center w-full h-24 px-8 md:px-32 shadow-sm">
+      <div className="flex justify-between items-center gap-x-5">
+        <div className="flex flex-col  items-start">
+          <p className="text-sm">Halo, {userData.username}!</p>
+          <p className="text-sm text-gray-500">Selamat datang di dashboard</p>
+        </div>
+        <div className="flex items-center gap-x-3">
+          <div className="bg-gray-100 flex justify-center items-center rounded-full w-10 h-10">
+            <Notification size={24} />
+          </div>
+          <img
+            src={userData.avatar}
+            alt="profile"
+            className="w-14 h-14 rounded-full"
+            onError={(e) => {
+              e.target.src = "/api/placeholder/40/40";
+            }}
+          />
+          <p className="hidden md:block -ml-3 font-bold">{userData.username}</p>
+        </div>
       </div>
     </div>
   );
