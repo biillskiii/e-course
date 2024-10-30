@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Notification } from "iconsax-react";
-import { userData } from "../data";
+
 import Button from "./Button";
 
 const Navbar = ({ variant = "default" }) => {
@@ -96,30 +96,7 @@ const Navbar = ({ variant = "default" }) => {
     </div>
   );
 
-  const WelcomeNavbar = () => (
-    <div className="flex justify-between items-center w-full h-24 px-8 md:px-32 shadow-sm">
-      <div className="flex justify-between items-center gap-x-5">
-        <div className="flex flex-col  items-start">
-          <p className="text-sm">Halo, {userData.username}!</p>
-          <p className="text-sm text-gray-500">Selamat datang di dashboard</p>
-        </div>
-        <div className="flex items-center gap-x-3">
-          <div className="bg-gray-100 flex justify-center items-center rounded-full w-10 h-10">
-            <Notification size={24} />
-          </div>
-          <img
-            src={userData.avatar}
-            alt="profile"
-            className="w-14 h-14 rounded-full"
-            onError={(e) => {
-              e.target.src = "/api/placeholder/40/40";
-            }}
-          />
-          <p className="hidden md:block -ml-3 font-bold">{userData.username}</p>
-        </div>
-      </div>
-    </div>
-  );
+
 
   switch (variant) {
     case "logo-only":
