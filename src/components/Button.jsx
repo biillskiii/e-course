@@ -10,12 +10,7 @@ export default function Button({
   rightIcon,
 }) {
   const baseStyle = {
-    baseButton: [
-      "h-11",
-      "flex",
-      "items-center",
-      "gap-2",
-    ],
+    baseButton: ["h-11", "flex", "items-center", "gap-2"],
     baseText: ["text-body-bold"],
   };
 
@@ -55,6 +50,10 @@ export default function Button({
         // Button Side
         "hover:text-primary-500 rounded-2xl active:bg-primary-500 active:font-bold active:text-white text-base":
           variant === "side-primary",
+        "bg-primary-500 rounded-2xl font-bold text-white text-base":
+          variant === "side-primary-active",
+        "hover:text-alert-danger rounded-2xl active:bg-alert-danger active:font-bold active:text-white text-base":
+          variant === "side-danger",
 
         // Text colors
         "text-white font-bold": variant === "primary",
@@ -64,8 +63,17 @@ export default function Button({
         "text-gray-200": variant === "disable" || variant === "submenu-disable",
 
         // Icon alignment
-        "justify-start pl-4": (variant === "side-primary" && (leftIcon || rightIcon)),
-        "justify-center": !(variant === "side-primary" && (leftIcon || rightIcon)),
+        "justify-start pl-4":
+          (variant === "side-primary" ||
+            variant === "side-danger" ||
+            variant === "side-primary-active") &&
+          (leftIcon || rightIcon),
+        "justify-center": !(
+          (variant === "side-primary" ||
+            variant === "side-danger" ||
+            variant === "side-primary-active") &&
+          (leftIcon || rightIcon)
+        ),
       })}`}
     >
       {/* Icon before text */}
