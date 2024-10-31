@@ -4,6 +4,72 @@ import { Icon } from "@iconify/react";
 import BgCard from "../assets/bg-class.png";
 import Button from "./Button";
 import { DiscountCircle } from "iconsax-react";
+import ProgressBar from "./ProgressBar";
+
+const BaseCard = ({ img, title, name, job, variant, children }) => {
+  
+  const calculateFontSize = (title) => {
+    if (title.length <= 30) return "24px";
+    else if (title.length <= 50) return "20px";
+    else return "16px";
+  };
+
+  const renderHeader = () => (
+    <div
+      className="w-full flex justify-between h-[180px] rounded-xl pl-4"
+      style={{
+        backgroundImage: `url(${BgCard})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="flex flex-col justify-between h-full py-5">
+        <h1
+          className="text-primary-800 font-bold h-full"
+          style={{ fontSize: calculateFontSize(title), lineHeight: "1.2em" }}
+        >
+          {title.length > 50 ? `${title.substring(0, 50)}...` : title}
+        </h1>
+        <div>
+          <p className="text-sm font-bold text-primary-800">{name}</p>
+          <p className="text-[10px] font-bold text-primary-800">{job}</p>
+        </div>
+      </div>
+      <img className="w-[153px] h-full" src={img} alt={title} />
+    </div>
+  );
+
+  // If it's header-only variant, we only need the top container
+  if (variant === "header-only") {
+    return <div className="w-[320px] rounded-xl">{renderHeader()}</div>;
+  }
+
+  // Original full card rendering
+  return (
+    <div className="w-[382px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
+      {renderHeader()}
+
+      <div className="flex flex-col flex-grow mt-5">
+        <h1
+          style={{ fontSize: calculateFontSize(title) }}
+          className="font-bold text-xl line-clamp-2 h-[60px]"
+        >
+          {title}
+        </h1>
+        <div className="flex gap-x-2 items-center">
+          <div className="rounded-full w-12 h-12 bg-primary-500 overflow-hidden">
+            <img src={img} alt={title} className="w-full h-full object-cover" />
+          </div>
+          <div className="flex flex-col justify-between">
+            <p className="font-bold text-base">{name}</p>
+            <p>{job}</p>
+          </div>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+};
 
 const Card = ({
   img,
@@ -17,6 +83,7 @@ const Card = ({
   price,
   isFree,
   hasDiscount,
+  variant = "default",
 }) => {
   const renderStars = () => {
     const stars = [];
@@ -34,21 +101,21 @@ const Card = ({
   };
 
   const calculateDiscountPrice = (price, discountPercentage) => {
-    return price * (discountPercentage / 100);
+    return price * (1 - discountPercentage / 100);
   };
 
   const renderPrice = () => {
     if (isFree) {
       return (
         <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
-          <p className=" text-primary-500 font-bold text-base">GRATIS</p>
+          <p className="text-primary-500 font-bold text-base">GRATIS</p>
         </div>
       );
     } else if (hasDiscount) {
       const discountPrice = calculateDiscountPrice(price, hasDiscount);
       return (
         <div className="flex items-center gap-x-2">
-          <span className="w-16 h-6 rounded-lg text-sm   bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
+          <span className="w-16 h-6 rounded-lg text-sm bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
             <DiscountCircle size="16" color="#00a589" />
             {hasDiscount}%
           </span>
@@ -69,71 +136,72 @@ const Card = ({
     }
   };
 
-  const calculateFontSize = (title) => {
-    if (title.length <= 30) return "24px";
-    else if (title.length <= 50) return "20px"; 
-    else return "16px"; 
+  const renderContent = () => {
+    switch (variant) {
+      case "progress":
+        return (
+          <div className="flex flex-col mt-4">
+            <div className="flex flex-col gap-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-primary-400 text-sm">Progress Kamu</span>
+              </div>
+              <ProgressBar progress={80} />
+              <span className="text-sm font-bold text-primary-400">80%</span>
+            </div>
+          </div>
+        );
+
+      case "certificate":
+        return (
+          <div className="flex-grow flex items-end mt-4">
+            <Button
+              label="Unduh Sertifikat"
+              size="full"
+              variant="primary"
+              className="gap-x-2"
+            />
+          </div>
+        );
+
+      case "header-only":
+        return null;
+
+      default:
+        return (
+          <>
+            <div className="flex items-center gap-x-5 mt-4">
+              <div className="flex items-center">
+                {renderStars()}
+                <p className="ml-2">{ratingNum}</p>
+              </div>
+              <p className="flex font-bold items-center gap-x-2">
+                <Level size={24} color="#0A181F" />
+                {level}
+              </p>
+            </div>
+
+            <div className="flex-grow flex items-end mt-4">
+              <div className="w-full">
+                <p className="text-xl font-bold text-primary-500 mb-4">
+                  {renderPrice()}
+                </p>
+                <Button
+                  label="Daftar Kelas"
+                  size="full"
+                  variant="primary"
+                  className="mt-4"
+                />
+              </div>
+            </div>
+          </>
+        );
+    }
   };
 
   return (
-    <div className="w-[392px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
-      <div
-        className="w-full flex justify-center h-[203px] mb-5 rounded-xl pl-4"
-        style={{
-          backgroundImage: `url(${BgCard})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="flex flex-col justify-between h-full py-5">
-          <h1
-            className="text-primary-800 font-bold h-full"
-            style={{ fontSize: calculateFontSize(title), lineHeight: "1.2em" }}
-          >
-            {title.length > 50 ? `${title.substring(0, 50)}...` : title}
-          </h1>
-          <div>
-            <p className="text-sm font-bold text-primary-800">{name}</p>
-            <p className="text-[10px] font-bold text-primary-800">{job}</p>
-          </div>
-        </div>
-        <img className="w-[153px] h-full" src={img} alt={title} />
-      </div>
-
-      <div className="flex flex-col gap-y-4 flex-grow">
-        <h1
-          style={{ fontSize: calculateFontSize(title) }}
-          className="font-bold text-xl line-clamp-2 h-[60px]" 
-        >
-          {title}
-        </h1>
-        <div className="flex gap-x-2 items-center">
-          <div className="rounded-full w-12 h-12 bg-primary-500 overflow-hidden">
-            <img src={img} alt={title} className="w-full h-full object-cover" />
-          </div>
-          <div className="flex flex-col justify-between">
-            <p className="font-bold text-base">{name}</p>
-            <p>{job}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-x-5">
-          <div className="flex items-center">
-            {renderStars()}
-            <p className="ml-2">{ratingNum}</p>
-          </div>
-          <p className="flex font-bold  items-center gap-x-2">
-            <Level size={24} color="#0A181F" />
-            {level}
-          </p>
-        </div>
-
-        <div className="flex-grow flex items-end">
-          <p className="text-xl font-bold text-primary-500">{renderPrice()}</p>
-        </div>
-        <Button label={"Daftar Kelas"} size="full" />
-      </div>
-    </div>
+    <BaseCard img={img} title={title} name={name} job={job} variant={variant}>
+      {renderContent()}
+    </BaseCard>
   );
 };
 
