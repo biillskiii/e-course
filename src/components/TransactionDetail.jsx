@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Label from "./Label";
 import Card from "./Card";
 import Avatar from "../assets/avatar1.png";
+import { Copy } from "iconsax-react";
+
 const transactionData = {
   date: "17 Agustus 2024 · 13.59 WIB",
   invoiceNumber: "AB20240701",
@@ -12,6 +14,12 @@ const transactionData = {
   name: "Instructor Name",
   job: "Instructor Position",
   amount: "Rp560.000",
+  codePayment: "01826767629",
+};
+
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text);
+  // Optionally add a toast/notification here
 };
 
 const TransactionDetail = () => {
@@ -26,46 +34,49 @@ const TransactionDetail = () => {
           name={transactionData.name}
           job={transactionData.job}
         />
+        <div className="h-[180px] justify-evenly flex flex-col">
+          <div>
+            <p className="text-sm">
+              No Tagihan{" "}
+              <span className="font-bold">{transactionData.invoiceNumber}</span>
+            </p>
+            <p className="text-gray-500 text-sm font-bold">
+              {transactionData.date}
+            </p>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">{transactionData.title}</h1>
+            <p className="text-[28px] font-bold">{transactionData.amount}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-2 flex p-6 rounded-3xl border-primary-500 border-opacity-20 gap-20">
+        <div className="flex flex-col gap-2">
+          <p>Status Pembayaran</p>
+          <Label
+            label={transactionData.status}
+            variant={"pending"}
+            size="w-[233px] h-[44px]"
+          />
+        </div>
         <div>
-          <h3 className="text-lg font-semibold">UI/UX Fundamental</h3>
-          <p className="text-gray-600 text-sm">No. Tagihan AB20240701</p>
-          <p className="text-gray-600 text-sm">17 Agustus 2024 - 13:59 WIB</p>
+          <p>Metode Pembayarn</p>
+          <img src="src/assets/mandiri.png" className="w-[90px]"></img>
         </div>
-      </div>
-
-      {/* Amount Info */}
-      <div className="mb-4">
-        <p className="text-lg font-semibold">Rp560.000</p>
-      </div>
-
-      {/* Status and Payment Info */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="flex flex-col items-start">
-          <span className="text-sm font-semibold">Status Pembayaran</span>
-          <span className="text-yellow-500 font-semibold">
-            Menunggu Pembayaran
-          </span>
+        <div>
+          <p>Total Tagihan</p>
+          <p className="text-2xl font-bold text-primary-500">
+            {transactionData.amount}
+          </p>
         </div>
-        <div className="flex flex-col items-start">
-          <span className="text-sm font-semibold">Metode Pembayaran</span>
-          <span className="flex items-center">
-            <img
-              src="/path/to/mandiri-logo.png"
-              alt="Mandiri"
-              className="w-6 h-6 mr-2"
-            />
-            Mandiri
-          </span>
-        </div>
-        <div className="flex flex-col items-start">
-          <span className="text-sm font-semibold">Total Tagihan</span>
-          <span className="text-teal-500 font-semibold">Rp616.000</span>
-        </div>
-        <div className="flex flex-col items-start">
-          <span className="text-sm font-semibold">Kode Pembayaran</span>
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold">01826767629</span>
-            <button className="text-blue-500 text-sm">Copy</button>
+        <div className="flex flex-col">
+          <p>Kode Pembayaran</p>
+          <div className="flex gap-4">
+            <p className="text-2xl font-bold">{transactionData.codePayment}</p>
+            <button onClick={() => copyToClipboard(codePayment)}>
+              <Copy size={24} />
+            </button>
           </div>
         </div>
       </div>

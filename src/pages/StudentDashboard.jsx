@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
 import {
   Category,
   Home,
@@ -13,11 +12,11 @@ import Card from "../components/Card";
 import Avatar from "../assets/avatar1.png";
 import Label from "../components/Label";
 import TransactionDetail from "../components/TransactionDetail";
+import NavbarDashboard from "../components/NavbarDashboard";
 
 function App() {
   const [activePage, setActivePage] = useState("Daftar Transaksi");
   const [kelasStatus, setKelasStatus] = useState("Dalam Progress");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCardVisible, setIsCardVisible] = useState(true);
 
   const transactionData = {
@@ -303,7 +302,8 @@ function App() {
 
       {/* Main Content */}
       <div className="container">
-        <Navbar variant="welcome" />
+        <NavbarDashboard />
+
         <div className="w-full p-10 flex flex-col">{renderContent()}</div>
       </div>
     </section>

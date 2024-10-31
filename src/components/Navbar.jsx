@@ -1,10 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Notification } from "iconsax-react";
-
 import Button from "./Button";
-import { Notification } from "iconsax-react";
-import DefaultAvatar from "../assets/avatar.png";
 
 const Navbar = ({ variant = "default" }) => {
   const location = useLocation();

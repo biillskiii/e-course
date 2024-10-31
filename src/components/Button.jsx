@@ -51,17 +51,19 @@ export default function Button({
       "cursor-pointer border-b-2 border-primary-500 text-primary-500",
     "submenu-disable":
       "cursor-not-allowed border-b-2 border-gray-medium-light text-gray-200",
-    "side-primary": `hover:text-primary-500 rounded-2xl text-base ${
+    "side-primary": `hover:text-primary-500 rounded-2xl active:bg-primary-500 active:font-bold active:text-white text-base ${
       active ? "bg-primary-500 rounded-2xl font-bold text-white text-base" : ""
     }`,
-    "side-danger": "text-alert-danger rounded-2xl active:bg-alert-danger active:font-bold active:text-white text-base",
-    }
+    "side-primary-active":
+      "bg-primary-500 rounded-2xl font-bold text-white text-base",
+    "side-danger":
+      "text-alert-danger rounded-2xl active:bg-alert-danger active:font-bold active:text-white text-base",
   };
 
   const alignmentStyles = {
     side:
       (variant === "side-primary" ||
-        variant === "side-error" ||
+        variant === "side-primary-active" ||
         variant === "side-danger") &&
       (leftIcon || rightIcon)
         ? "justify-start pl-4"
@@ -86,3 +88,4 @@ export default function Button({
       {rightIcon && <span className="icon-right">{rightIcon}</span>}
     </button>
   );
+}
