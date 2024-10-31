@@ -9,7 +9,8 @@ import Class from "./pages/Class";
 import Webinar from "./pages/Webinar";
 import ClassDetail from "./pages/ClassDetail";
 import Checkout from "./pages/Checkout";
-import ContactUs from "./pages/ContactUs";
+import ContactUs from "./pages/ContactUs"; 
+import StudentDashboard from "./pages/StudentDashboard"; 
 function App() {
   return (
     <Router>
@@ -24,6 +25,7 @@ function App() {
         <Route path="/detail-kelas" element={<ClassDetail />} />
         <Route path="/pembayaran" element={<Checkout />} />
         <Route path="/hubungi-kami" element={<ContactUs />} />
+        <Route path="/dashboard-siswa" element={<StudentDashboard />} />
       </Routes>
     </Router>
   );
