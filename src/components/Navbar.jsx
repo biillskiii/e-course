@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Button from "./Button";
+import { Notification } from "iconsax-react";
+import DefaultAvatar from "../assets/avatar.png";
 
 const Navbar = ({ variant = "default" }) => {
   const location = useLocation();
@@ -91,19 +93,29 @@ const Navbar = ({ variant = "default" }) => {
     </div>
   );
 
-  const WelcomeNavbar = () => (
-    <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
+  const WelcomeNavbar = ({ userData }) => (
+    <div className="flex items-center px-10">
       <Logo />
-      <div className="flex items-center space-x-4">
-        <p className="text-sm">Halo, Nathan Noel!</p>
-        <p className="text-sm text-gray-500">
-          Selamat datang di dashboard Pixel
-        </p>
-        <img
-          src="/path-to-user-avatar.jpg"
-          alt="User Avatar"
-          className="w-10 h-10 rounded-full"
-        />
+      <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
+        <div className="flex flex-col items-start">
+          <p className="text-sm">Halo, {userData.username}!</p>
+          <p className="text-sm text-gray-500">Selamat datang di dashboard</p>
+        </div>
+        <div className="flex items-center gap-x-5">
+          <div className="bg-[#E9EBED] flex justify-center items-center rounded-full w-10 h-10">
+            <Notification size="24" />
+          </div>
+          <img
+            src={userData.img}
+            alt="profile"
+            width={40}
+            height={40}
+            onError={(e) => {
+              e.target.src = DefaultAvatar;
+            }}
+          />
+          <p className="">{userData.username}</p>
+        </div>
       </div>
     </div>
   );
