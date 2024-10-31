@@ -7,7 +7,6 @@ import { DiscountCircle } from "iconsax-react";
 import ProgressBar from "./ProgressBar";
 
 const BaseCard = ({ img, title, name, job, variant, children }) => {
-  
   const calculateFontSize = (title) => {
     if (title.length <= 30) return "24px";
     else if (title.length <= 50) return "20px";
@@ -39,16 +38,13 @@ const BaseCard = ({ img, title, name, job, variant, children }) => {
     </div>
   );
 
-  // If it's header-only variant, we only need the top container
   if (variant === "header-only") {
     return <div className="w-[320px] rounded-xl">{renderHeader()}</div>;
   }
 
-  // Original full card rendering
   return (
     <div className="w-[382px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
       {renderHeader()}
-
       <div className="flex flex-col flex-grow mt-5">
         <h1
           style={{ fontSize: calculateFontSize(title) }}
@@ -74,14 +70,13 @@ const BaseCard = ({ img, title, name, job, variant, children }) => {
 const Card = ({
   img,
   title,
-  avatar,
   name,
   job,
   level,
   rating,
   ratingNum,
   price,
-  isFree,
+  premium,
   hasDiscount,
   variant = "default",
 }) => {
@@ -105,7 +100,7 @@ const Card = ({
   };
 
   const renderPrice = () => {
-    if (isFree) {
+    if (premium === 0) {
       return (
         <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
           <p className="text-primary-500 font-bold text-base">GRATIS</p>
@@ -179,7 +174,6 @@ const Card = ({
                 {level}
               </p>
             </div>
-
             <div className="flex-grow flex items-end mt-4">
               <div className="w-full">
                 <p className="text-xl font-bold text-primary-500 mb-4">

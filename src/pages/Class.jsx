@@ -10,31 +10,45 @@ function App() {
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [kelas, setKelas] = useState([]);
   const [filteredLevels, setFilteredLevels] = useState([]);
-
+  const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 4;
 
   const fetchKelas = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/kelas");
+      const response = await fetch(
+        "https://be-course.serpihantech.com/api/courses"
+      );
       const result = await response.json();
-      setKelas(result.data);
+      if (result.status === "success") {
+        setKelas(result.data);
+      }
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
   };
 
-  // Fungsi untuk melakukan filtering dan pagination
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      await fetchKelas();
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const filterAndPaginateCards = () => {
-    // Filter berdasarkan search term, kategori, dan level
     const filtered = kelas.filter((card) => {
-      const matchesSearch = card.title
+      const matchesSearch = card.class_name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesCategory =
         filteredCategories.length === 0 ||
         filteredCategories.includes("Semua Kategori") ||
-        filteredCategories.includes(card.category);
+        filteredCategories.includes(card.category?.category_name);
       const matchesLevel =
         filteredLevels.length === 0 ||
         filteredLevels.includes("Semua Level") ||
@@ -43,23 +57,19 @@ function App() {
       return matchesSearch && matchesCategory && matchesLevel;
     });
 
-    // Calculate pagination
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-
-    // Return paginated data
-    return filtered.slice(startIndex, endIndex);
+    return filtered.slice(startIndex, startIndex + itemsPerPage);
   };
 
   const getTotalPages = () => {
     const filtered = kelas.filter((card) => {
-      const matchesSearch = card.title
+      const matchesSearch = card.class_name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesCategory =
         filteredCategories.length === 0 ||
         filteredCategories.includes("Semua Kategori") ||
-        filteredCategories.includes(card.category);
+        filteredCategories.includes(card.category?.category_name);
       const matchesLevel =
         filteredLevels.length === 0 ||
         filteredLevels.includes("Semua Level") ||
@@ -71,7 +81,7 @@ function App() {
   };
 
   useEffect(() => {
-    fetchKelas();
+    fetchData();
   }, []);
 
   const handlePageChange = (page) => {
@@ -81,21 +91,35 @@ function App() {
   const paginatedCards = filterAndPaginateCards();
   const totalPages = getTotalPages();
 
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
+
   return (
-    <section className="w-full min-h-screen">
+    <section className="w-full min-h-screen bg-gray-50">
       <div className="container px-10 mx-auto">
         <Navbar />
         <div className="flex items-start px-[120px] gap-x-16 justify-center py-10">
-          <FilterSidebarKelas
-            setFilteredCategories={setFilteredCategories}
-            setFilteredLevels={setFilteredLevels}
-          />
+          <FilterSidebarKelas />
           <div className="flex flex-col space-y-10">
             <SearchBar setSearchTerm={setSearchTerm} />
             <div className="mt-[160px]">
               <div className="flex flex-wrap gap-5">
                 {paginatedCards.length > 0 ? (
-                  paginatedCards.map((item) => <Card key={item.id} {...item} />)
+                  paginatedCards.map((item) => (
+                    <Card
+                      key={item.id}
+                      class_name={item.class_name}
+                      level={item.level}
+                      description={item.description}
+                      rating={item.rating}
+                      price={item.price}
+                    />
+                  ))
                 ) : (
                   <div className="w-full text-center text-primary-500 font-bold">
                     Tidak ada kelas yang tersedia
