@@ -32,10 +32,10 @@ export default function Button({
 
   const variantStyles = {
     primary: `bg-primary-500 hover:bg-primary-400 text-white rounded-3xl ${
-      active ? "bg-primary-400" : ""
+      active ? "bg-primary-400 hover:text-white" : ""
     }`,
     secondary: `border-2 border-primary-500 hover:border-primary-400 text-primary-500 rounded-3xl bg-transparent ${
-      active ? "border-primary-400" : ""
+      active ? "border-primary-400 hover:text-white" : ""
     }`,
     tertiary: `bg-transparent rounded-lg hover:text-brand-base ${
       active ? "bg-brand-base text-basic-white" : ""
@@ -51,17 +51,20 @@ export default function Button({
       "cursor-pointer border-b-2 border-primary-500 text-primary-500",
     "submenu-disable":
       "cursor-not-allowed border-b-2 border-gray-medium-light text-gray-200",
-    "side-primary": `hover:text-primary-500 rounded-2xl text-base ${
-      active ? "bg-primary-500 text-white hover:text-white" : ""
+    "side-primary": `hover:text-primary-500 rounded-2xl active:bg-primary-500 active:font-bold active:text-white text-base ${
+      active ? "bg-primary-500 rounded-2xl font-bold text-white hover:text-white text-base" : ""
     }`,
-    "side-error": `hover:text-red-500 rounded-2xl text-base ${
-      active ? "bg-red-500 text-white" : ""
-    }`,
+    "side-primary-active":
+      "bg-primary-500 rounded-2xl font-bold text-white text-base",
+    "side-danger":
+      "text-alert-danger rounded-2xl active:bg-alert-danger active:font-bold active:text-white text-base",
   };
 
   const alignmentStyles = {
     side:
-      (variant === "side-primary" || variant === "side-error") &&
+      (variant === "side-primary" ||
+        variant === "side-primary-active" ||
+        variant === "side-danger") &&
       (leftIcon || rightIcon)
         ? "justify-start pl-4"
         : "justify-center",
