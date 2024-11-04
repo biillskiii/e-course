@@ -52,18 +52,12 @@ const NavbarDashboard = ({ username, avatar }) => {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg py-2 z-50">
               <nav className="mt-2">
-                <a
-                  href="/dashboard"
-                  className="block px-4 py-2 text-sm hover:bg-gray-50"
-                >
-                  Dashboard Saya
-                </a>
-                <a
+                {/* <a
                   href="/settings"
                   className="block px-4 py-2 text-sm hover:bg-gray-50"
                 >
                   Pengaturan
-                </a>
+                </a> */}
                 <a
                   href="/logout"
                   className="block px-4 py-2 text-sm text-red-500 hover:bg-gray-50"
