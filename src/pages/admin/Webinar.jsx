@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
-import { userData, kelasData } from "../../data";
+import { userData, webinarData } from "../../data";
 import { useNavigate } from "react-router-dom";
 import {
   Home,
@@ -12,14 +12,14 @@ import {
   Setting3,
   LogoutCurve,
   Teacher,
-  SearchNormal1,
   Filter,
+  SearchNormal1,
   Edit2,
   Trash,
 } from "iconsax-react";
 const Kelas = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(kelasData);
+  const [filteredData, setFilteredData] = useState(webinarData);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const itemsPerPage = 5;
@@ -53,10 +53,11 @@ const Kelas = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
   return (
     <div className="flex">
       {/* Sidebar */}
-      <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
+      <div className="w-60 fixed  min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
         <div className="space-y-6">
           <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
             PIXEL<span className="text-primary-500">CODE.</span>
@@ -70,7 +71,6 @@ const Kelas = () => {
           />
           <Button
             label="Kelas"
-            active={true}
             variant="side-primary"
             leftIcon={<Monitor />}
             size="very-big"
@@ -79,6 +79,7 @@ const Kelas = () => {
           <Button
             label="Webinar"
             variant="side-primary"
+            active={true}
             leftIcon={<MonitorRecorder />}
             size="very-big"
             onClick={() => handleNavigation("/admin/webinar")}
@@ -126,7 +127,7 @@ const Kelas = () => {
 
         {/* Header Section */}
         <div className="flex justify-between items-center p-6">
-          <h1 className="text-2xl font-semibold">Daftar Kelas</h1>
+          <h1 className="text-2xl font-semibold">Daftar Webinar</h1>
           <div className="flex gap-4 items-center">
             {/* Animated Search Bar */}
             <div
@@ -163,12 +164,7 @@ const Kelas = () => {
             </div>
 
             {/* Add Class Button */}
-            <Button
-              label="Tambah Kelas"
-              size="small"
-              variant="primary"
-              onClick={() => handleNavigation("/admin/kelas/tambah-kelas")}
-            />
+            <Button label="Tambah Kelas" size="small" variant="primary" />
           </div>
         </div>
 
@@ -190,7 +186,7 @@ const Kelas = () => {
                   <td className="px-6 py-4">{kelas.kode}</td>
                   <td className="px-6 py-4">{kelas.kategori}</td>
                   <td className="px-6 py-4">{kelas.nama}</td>
-                  <td className="px-6 py-4 text-[#20B1A8]">{kelas.mentee}</td>
+                  <td className="px-6 py-4 capitalize">{kelas.status}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
                       <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">

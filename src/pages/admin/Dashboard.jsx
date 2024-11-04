@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 import CardDashboard from "../../components/CardDashboard";
 import {
   Home,
+  People,
   Monitor,
-  Ticket,
+  MonitorRecorder,
   Wallet,
   Setting3,
   LogoutCurve,
+  Teacher,
 } from "iconsax-react";
 
 const Dashboard = () => {
@@ -24,7 +26,7 @@ const Dashboard = () => {
     <div>
       <div className="flex justify-start">
         {/* Sidebar */}
-        <div className="w-60 min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
+        <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
           <div className="space-y-6">
             <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
               PIXEL<span className="text-primary-500">CODE.</span>
@@ -45,9 +47,22 @@ const Dashboard = () => {
               onClick={() => handleNavigation("/admin/kelas")}
             />
             <Button
-              label="Tiket Webinar"
+              label="Webinar"
               variant="side-primary"
-              leftIcon={<Ticket />}
+              leftIcon={<MonitorRecorder />}
+              size="very-big"
+              onClick={() => handleNavigation("/admin/webinar")}
+            />
+            <Button
+              label="Mentee"
+              variant="side-primary"
+              leftIcon={<People />}
+              size="very-big"
+            />
+            <Button
+              label="Mentor"
+              variant="side-primary"
+              leftIcon={<Teacher />}
               size="very-big"
             />
             <Button
@@ -65,14 +80,14 @@ const Dashboard = () => {
           </div>
           <Button
             label="Keluar"
-            variant="side-error"
+            variant="side-danger"
             leftIcon={<LogoutCurve />}
             size="very-big"
           />
         </div>
 
         {/* Main Content */}
-        <div className="w-full">
+        <div className="w-full pl-60">
           <NavbarDashboard
             avatar={userData.avatar}
             username={userData.username}
