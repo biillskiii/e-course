@@ -58,10 +58,17 @@ export default function Button({
       "bg-primary-500 rounded-2xl font-bold text-white text-base",
     "side-danger":
       "text-alert-danger rounded-2xl active:bg-alert-danger active:font-bold active:text-white text-base",
+    "side-primary-active":
+      "bg-primary-500 rounded-2xl font-bold text-white text-base",
+    "side-danger":
+      "text-alert-danger rounded-2xl active:bg-alert-danger active:font-bold active:text-white text-base",
   };
 
   const alignmentStyles = {
     side:
+      (variant === "side-primary" ||
+        variant === "side-primary-active" ||
+        variant === "side-danger") &&
       (variant === "side-primary" ||
         variant === "side-primary-active" ||
         variant === "side-danger") &&
@@ -89,3 +96,4 @@ export default function Button({
     </button>
   );
 }
+

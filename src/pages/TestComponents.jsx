@@ -12,28 +12,9 @@ import Testi from "../components/Testi";
 import FilterSidebar from "../components/FilterSidebarKelas";
 import SearchBar from "../components/SearchBar";
 import ClassHeader from "../components/ClassHeader";
-import Accordion from "../components/Accordion";
 import { VideoSquare } from "iconsax-react";
 import Rating from "../components/RatingReview";
 import Popup from "../components/PopUp";
-
-const accordionItems = [
-  {
-    title: "What is React?",
-    content: "React is a JavaScript library for building user interfaces.",
-    logo: <VideoSquare size={"16"} />,
-  },
-  {
-    title: "What is Tailwind CSS?",
-    content:
-      "Tailwind CSS is a utility-first CSS framework for rapid UI development.",
-  },
-  {
-    title: "What is JavaScript?",
-    content:
-      "JavaScript is a programming language commonly used in web development.",
-  },
-];
 
 const sampleData = {
   price: 700000,
@@ -369,9 +350,7 @@ function App() {
         <p>Rating and Reviews</p>
         <Rating />
       </div>
-      <div className="p-6">
-        {/* <Accordion items={accordionItems} /> */}
-      </div>
+      <div className="p-6">{/* <Accordion items={accordionItems} /> */}</div>
       <div className="">
         {/* <ClassHeader
           category={classData.category}

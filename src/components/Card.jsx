@@ -81,6 +81,7 @@ const Card = ({
   premium,
   hasDiscount,
   variant = "default",
+  variant = "default",
 }) => {
   const renderStars = () => {
     const stars = [];
@@ -99,6 +100,7 @@ const Card = ({
 
   const calculateDiscountPrice = (price, discountPercentage) => {
     return price * (1 - discountPercentage / 100);
+    return price * (1 - discountPercentage / 100);
   };
 
   const renderPrice = () => {
@@ -106,12 +108,14 @@ const Card = ({
       return (
         <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
           <p className="text-primary-500 font-bold text-base">GRATIS</p>
+          <p className="text-primary-500 font-bold text-base">GRATIS</p>
         </div>
       );
     } else if (hasDiscount) {
       const discountPrice = calculateDiscountPrice(price, hasDiscount);
       return (
         <div className="flex items-center gap-x-2">
+          <span className="w-16 h-6 rounded-lg text-sm bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
           <span className="w-16 h-6 rounded-lg text-sm bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
             <DiscountCircle size="16" color="#00a589" />
             {hasDiscount}%
@@ -145,7 +149,29 @@ const Card = ({
               <ProgressBar progress={80} />
               <span className="text-sm font-bold text-primary-400">80%</span>
             </div>
+  const renderContent = () => {
+    switch (variant) {
+      case "progress":
+        return (
+          <div className="flex flex-col mt-4">
+            <div className="flex flex-col gap-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-primary-400 text-sm">Progress Kamu</span>
+              </div>
+              <ProgressBar progress={80} />
+              <span className="text-sm font-bold text-primary-400">80%</span>
+            </div>
           </div>
+        );
+
+      case "certificate":
+        return (
+          <div className="flex-grow flex items-end mt-4">
+            <Button
+              label="Unduh Sertifikat"
+              size="full"
+              variant="primary"
+              className="gap-x-2"
         );
 
       case "certificate":
