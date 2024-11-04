@@ -105,3 +105,35 @@ export const kelasData = [
   },
   // ... tambahkan data lainnya sesuai kebutuhan
 ];
+export const webinarData = [
+  {
+    kode: "1276",
+    kategori: "UI/UX Research & Design",
+    nama: "UI/UX Fundamental",
+    status: "akan datang",
+  },
+  {
+    kode: "1276",
+    kategori: "Frontend Development",
+    nama: "Basic Frontend Development",
+    status: "selesai",
+  },
+  {
+    kode: "1276",
+    kategori: "Frontend Development",
+    nama: "Dasar Pemrograman Javascript",
+    status: "akan datang",
+  },
+  // ... tambahkan data lainnya sesuai kebutuhan
+];
+export const transactionData = {
+  date: "17 Agustus 2024 · 13.59 WIB",
+  invoiceNumber: "AB20240701",
+  title: "UI/UX Fundamental",
+  price: "Rp560.000",
+  status: "Menunggu Pembayaran",
+  img: "src\assets\avatar1.png",
+  name: "Instructor Name",
+  job: "Instructor Position",
+  amount: "Rp560.000",
+};
