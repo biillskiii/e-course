@@ -316,7 +316,7 @@ function App() {
           onPageChange={handlePageChange}
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {cardData.map((card, index) => (
           <Card
             key={index}
@@ -334,7 +334,7 @@ function App() {
             ratingNum={card.ratingNum}
           />
         ))}
-      </div>
+      </div> */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
         {cardWebinar.map((webinar, index) => (
           <CardWebinar
@@ -370,10 +370,10 @@ function App() {
         <Rating />
       </div>
       <div className="p-6">
-        <Accordion items={accordionItems} />
+        {/* <Accordion items={accordionItems} /> */}
       </div>
       <div className="">
-        <ClassHeader
+        {/* <ClassHeader
           category={classData.category}
           title={classData.title}
           level={classData.level}
@@ -383,7 +383,7 @@ function App() {
           job={classData.job}
           name={classData.name}
           description={classData.description}
-        />
+        /> */}
       </div>
       <p>Pop Up Button</p>
       <div className="App">
