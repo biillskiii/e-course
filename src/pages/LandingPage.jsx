@@ -124,15 +124,15 @@ const Home = () => {
       console.error("Error fetching classes:", error);
     }
   };
-  const fetchWebinar = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/api/webinars");
-      const result = await response.json();
-      setWebinars(result.data);
-    } catch (error) {
-      console.error("Error fetching classes:", error);
-    }
-  };
+  // const fetchWebinar = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/webinars");
+  //     const result = await response.json();
+  //     setWebinars(result.data);
+  //   } catch (error) {
+  //     console.error("Error fetching classes:", error);
+  //   }
+  // };
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -164,7 +164,7 @@ const Home = () => {
   }, [isAutoPlay, current]);
   useEffect(() => {
     fetchClasses();
-    fetchWebinar();
+    // fetchWebinar();
   }, []);
 
   return (
