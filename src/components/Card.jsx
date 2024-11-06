@@ -1,19 +1,14 @@
 import React from "react";
-import { Level, DiscountCircle } from "iconsax-react";
+import {
+  Level,
+  DiscountCircle,
+  Calendar,
+  CloseCircle,
+  Clock,
+} from "iconsax-react";
 import { Icon } from "@iconify/react";
-import BgCard from "../assets/bg-class.png";
 import Button from "./Button";
 import ProgressBar from "./ProgressBar";
-
-const calculateFontSize = (text) => {
-  if (text.length <= 30) return "24px";
-  else if (text.length <= 50) return "20px";
-  return "16px";
-};
-
-const truncateText = (text, limit) => {
-  return text.length > limit ? `${text.substring(0, limit)}...` : text;
-};
 
 const PriceDisplay = ({ price, premium, hasDiscount }) => {
   if (premium === 0) {
@@ -78,36 +73,27 @@ const ProfileSection = ({ img, name, job, size = "large" }) => {
   );
 };
 
-const BaseCard = ({
-  img,
-  className,
-  name,
-  job,
-  variant = "default",
-  children,
-}) => {
+const BaseCard = ({ img, title, name, job, variant = "default", children }) => {
   const Header = () => (
     <div
-      className="w-full flex justify-between h-[180px] rounded-xl pl-4"
+      className="w-full h-[180px] rounded-xl flex justify-center items-center"
       style={{
-        backgroundImage: `url(${BgCard})`,
+        backgroundImage: `url(${img})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col justify-between h-full py-5">
-        <h1
-          className="text-primary-800 font-bold h-full"
-          style={{
-            fontSize: calculateFontSize(className),
-            lineHeight: "1.2em",
-          }}
-        >
-          {truncateText(className, 50)}
-        </h1>
-        <ProfileSection img={img} name={name} job={job} size="small" />
-      </div>
-      <img className="w-[153px] h-full" src={img} alt={className} />
+      <h1
+        className="text-primary-800 font-bold text-2xl text-center"
+        style={{
+          lineHeight: "1.2em",
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          padding: "0.5rem 1rem",
+          borderRadius: "8px",
+        }}
+      >
+        {title}
+      </h1>
     </div>
   );
 
@@ -120,16 +106,18 @@ const BaseCard = ({
   }
 
   return (
-    <div className="w-[382px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
+    <div className="w-[340px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
       <Header />
       <div className="flex flex-col flex-grow mt-5">
-        <h1
-          style={{ fontSize: calculateFontSize(className) }}
-          className="font-bold text-xl line-clamp-2 h-[60px]"
-        >
-          {className}
-        </h1>
-        <ProfileSection img={img} name={name} job={job} />
+        {/* Conditionally render the title and ProfileSection if the variant is not "webinar" */}
+        {variant !== "webinar" && (
+          <>
+            <h1 className="font-bold text-xl line-clamp-2 h-[30px]">{title}</h1>
+            <div className="mt-4">
+              <ProfileSection img={img} name={name} job={job} size="small" />
+            </div>
+          </>
+        )}
         {children}
       </div>
     </div>
@@ -139,7 +127,7 @@ const BaseCard = ({
 const Card = ({
   img,
   courseCode,
-  className,
+  title,
   description,
   name,
   job,
@@ -150,6 +138,8 @@ const Card = ({
   premium,
   hasDiscount,
   variant = "default",
+  schedule,
+  time,
 }) => {
   const variantContent = {
     progress: (
@@ -171,6 +161,21 @@ const Card = ({
           variant="primary"
           className="gap-x-2"
         />
+      </div>
+    ),
+    webinar: (
+      <div className="flex flex-col">
+        <h2 className="font-bold text-xl mb-4">{title}</h2>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center">
+            <Calendar className="text-primary-500" size={24} />
+            <p className="text-primary-500 font-bold ml-2 text-center">{schedule}</p>
+          </div>
+          <div className="flex">
+            <Clock className="text-primary-500" size={24} />
+            <p className="text-primary-500 font-bold ml-2 text-center">{time}</p>
+          </div>
+        </div>
       </div>
     ),
     default: (
@@ -207,13 +212,7 @@ const Card = ({
   };
 
   return (
-    <BaseCard
-      img={img}
-      className={className}
-      name={name}
-      job={job}
-      variant={variant}
-    >
+    <BaseCard img={img} title={title} name={name} job={job} variant={variant}>
       {variant === "header-only"
         ? null
         : variantContent[variant] || variantContent.default}
