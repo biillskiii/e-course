@@ -44,20 +44,18 @@ export default function Button({
       active ? "bg-alert-danger text-basic-white" : ""
     }`,
     disable: "bg-gray-100 rounded-lg cursor-not-allowed text-gray-200",
-    submenu: `cursor-pointer border-b-2 border-transparent hover:text-black ${
-      active ? "text-brand-base" : ""
+    submenu: `cursor-pointer border-b-2 border-transparent hover:text-primary-500 ${
+      active ? "text-primary-500" : ""
     }`,
     "submenu-active":
       "cursor-pointer border-b-2 border-primary-500 text-primary-500",
     "submenu-disable":
       "cursor-not-allowed border-b-2 border-gray-medium-light text-gray-200",
     "side-primary": `hover:text-primary-500 rounded-2xl active:bg-primary-500 active:font-bold active:text-white text-base ${
-      active ? "bg-primary-500 rounded-2xl font-bold text-white hover:text-white text-base" : ""
+      active
+        ? "bg-primary-500 rounded-2xl font-bold text-white hover:text-white text-base"
+        : ""
     }`,
-    "side-primary-active":
-      "bg-primary-500 rounded-2xl font-bold text-white text-base",
-    "side-danger":
-      "text-alert-danger rounded-2xl active:bg-alert-danger active:font-bold active:text-white text-base",
     "side-primary-active":
       "bg-primary-500 rounded-2xl font-bold text-white text-base",
     "side-danger":
@@ -96,4 +94,3 @@ export default function Button({
     </button>
   );
 }
-
