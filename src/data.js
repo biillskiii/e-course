@@ -1,3 +1,5 @@
+import Avatar from "./assets/avatar1.png";
+
 export const userData = {
   username: "John Doe",
   avatar:
@@ -132,8 +134,92 @@ export const transactionData = {
   title: "UI/UX Fundamental",
   price: "Rp560.000",
   status: "Menunggu Pembayaran",
-  img: "src\assets\avatar1.png",
+  img: "srcassetsavatar1.png",
   name: "Instructor Name",
   job: "Instructor Position",
   amount: "Rp560.000",
+};
+
+export const userKelas = [
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
+  },
+];
+export const sertifKelas = [
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+];
+
+export const userWebinar = [
+  {
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
+  },
+  {
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
+  },
+  {
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
+  },
+];
+
+export const courseData = {
+  img: "path_to_image",
+  title: "UI/UX Fundamental",
+  billNumber: "AB20240701",
+  price: "Rp560.000",
+  status: "Menunggu Pembayaran",
+  detailLink: "#",
 };
