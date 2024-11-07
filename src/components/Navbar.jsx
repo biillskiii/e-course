@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Notification } from "iconsax-react";
 import Button from "./Button";
-import DefaultAvatar from "../assets/avatar.png";
 
 const NAV_ITEMS = [
   { path: "/", label: "Beranda" },
