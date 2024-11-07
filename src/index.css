@@ -12,7 +12,8 @@ html {
 
 @font-face {
     font-family: 'Mango';
-    src: url('./font/MangoGrotesque-Bold.ttf') format('truetype');
+    src: url('/public/MangoGrotesque-Bold.ttf') format('truetype');
+
     ;
 }
 

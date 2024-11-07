@@ -12,28 +12,9 @@ import Testi from "../components/Testi";
 import FilterSidebar from "../components/FilterSidebarKelas";
 import SearchBar from "../components/SearchBar";
 import ClassHeader from "../components/ClassHeader";
-import Accordion from "../components/Accordion";
 import { VideoSquare } from "iconsax-react";
 import Rating from "../components/RatingReview";
 import Popup from "../components/PopUp";
-
-const accordionItems = [
-  {
-    title: "What is React?",
-    content: "React is a JavaScript library for building user interfaces.",
-    logo: <VideoSquare size={"16"} />,
-  },
-  {
-    title: "What is Tailwind CSS?",
-    content:
-      "Tailwind CSS is a utility-first CSS framework for rapid UI development.",
-  },
-  {
-    title: "What is JavaScript?",
-    content:
-      "JavaScript is a programming language commonly used in web development.",
-  },
-];
 
 const sampleData = {
   price: 700000,
@@ -316,7 +297,7 @@ function App() {
           onPageChange={handlePageChange}
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {cardData.map((card, index) => (
           <Card
             key={index}
@@ -334,7 +315,7 @@ function App() {
             ratingNum={card.ratingNum}
           />
         ))}
-      </div>
+      </div> */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
         {cardWebinar.map((webinar, index) => (
           <CardWebinar
@@ -369,11 +350,9 @@ function App() {
         <p>Rating and Reviews</p>
         <Rating />
       </div>
-      <div className="p-6">
-        <Accordion items={accordionItems} />
-      </div>
+      <div className="p-6">{/* <Accordion items={accordionItems} /> */}</div>
       <div className="">
-        <ClassHeader
+        {/* <ClassHeader
           category={classData.category}
           title={classData.title}
           level={classData.level}
@@ -383,7 +362,7 @@ function App() {
           job={classData.job}
           name={classData.name}
           description={classData.description}
-        />
+        /> */}
       </div>
       <p>Pop Up Button</p>
       <div className="App">

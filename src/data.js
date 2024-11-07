@@ -1,0 +1,225 @@
+import Avatar from "./assets/avatar1.png";
+
+export const userData = {
+  username: "John Doe",
+  avatar:
+    "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png", // Using placeholder image as per requirements
+  notifications: 3,
+  isLoggedIn: true,
+};
+export const statsCards = [
+  {
+    id: 1,
+    title: "Kelas",
+    value: "125",
+  },
+  {
+    id: 2,
+    title: "Webinar Aktif",
+    value: "28",
+  },
+  {
+    id: 3,
+    title: "Total Mentor",
+    value: "17823",
+  },
+  {
+    id: 4,
+    title: "Total Mentee",
+    value: "372",
+  },
+];
+
+// Data for popular classes
+export const popularClasses = [
+  {
+    id: 1,
+    title: "UI/UX Fundamental",
+    members: "11211",
+  },
+  {
+    id: 2,
+    title: "Basic Frontend Development",
+    members: "10211",
+  },
+  {
+    id: 3,
+    title: "Belajar Membuat Component",
+    members: "9985",
+  },
+];
+// Data for transactions
+export const transactions = [
+  {
+    id: "1276",
+    kodeProgram: "K3678",
+    namaProgram: "UI/UX Fundamental",
+    status: "Menunggu Pembayaran",
+    metode: "QRIS",
+  },
+  {
+    id: "1276",
+    kodeProgram: "W3678",
+    namaProgram: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    status: "Menunggu Pembayaran",
+    metode: "VA",
+  },
+  {
+    id: "1276",
+    kodeProgram: "K3678",
+    namaProgram: "UI/UX Fundamental",
+    status: "Pembayaran Berhasil",
+    metode: "VA",
+  },
+  {
+    id: "1276",
+    kodeProgram: "K3678",
+    namaProgram: "UI/UX Fundamental",
+    status: "Pembayaran Berhasil",
+    metode: "e-Wallet",
+  },
+  {
+    id: "1276",
+    kodeProgram: "W3678",
+    namaProgram: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    status: "Pembayaran Gagal",
+    metode: "VA",
+  },
+];
+export const kelasData = [
+  {
+    kode: "1276",
+    kategori: "UI/UX Research & Design",
+    nama: "UI/UX Fundamental",
+    mentee: "125",
+  },
+  {
+    kode: "1276",
+    kategori: "Frontend Development",
+    nama: "Basic Frontend Development",
+    mentee: "125",
+  },
+  {
+    kode: "1276",
+    kategori: "Frontend Development",
+    nama: "Dasar Pemrograman Javascript",
+    mentee: "125",
+  },
+  // ... tambahkan data lainnya sesuai kebutuhan
+];
+export const webinarData = [
+  {
+    kode: "1276",
+    kategori: "UI/UX Research & Design",
+    nama: "UI/UX Fundamental",
+    status: "akan datang",
+  },
+  {
+    kode: "1276",
+    kategori: "Frontend Development",
+    nama: "Basic Frontend Development",
+    status: "selesai",
+  },
+  {
+    kode: "1276",
+    kategori: "Frontend Development",
+    nama: "Dasar Pemrograman Javascript",
+    status: "akan datang",
+  },
+  // ... tambahkan data lainnya sesuai kebutuhan
+];
+export const transactionData = {
+  date: "17 Agustus 2024 · 13.59 WIB",
+  invoiceNumber: "AB20240701",
+  title: "UI/UX Fundamental",
+  price: "Rp560.000",
+  status: "Menunggu Pembayaran",
+  img: "srcassetsavatar1.png",
+  name: "Instructor Name",
+  job: "Instructor Position",
+  amount: "Rp560.000",
+};
+
+export const userKelas = [
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
+  },
+];
+export const sertifKelas = [
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+];
+
+export const userWebinar = [
+  {
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
+  },
+  {
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
+  },
+  {
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
+  },
+];
+
+export const courseData = {
+  img: "path_to_image",
+  title: "UI/UX Fundamental",
+  billNumber: "AB20240701",
+  price: "Rp560.000",
+  status: "Menunggu Pembayaran",
+  detailLink: "#",
+};

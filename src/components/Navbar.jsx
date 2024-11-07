@@ -1,23 +1,64 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { Notification } from "iconsax-react";
 import Button from "./Button";
 import { Notification } from "iconsax-react";
 import DefaultAvatar from "../assets/avatar.png";
 
-const Navbar = ({ variant = "default" }) => {
-  const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const NAV_ITEMS = [
+  { path: "/", label: "Beranda" },
+  { path: "/kelas", label: "Kelas" },
+  { path: "/webinar", label: "Webinar" },
+  { path: "/hubungi-kami", label: "Hubungi Kami" },
+];
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+const Logo = () => (
+  <h1 className="mango uppercase text-5xl">
+    <span className="text-primary-500">pixel</span>
+    <span className="text-secondary-500">code.</span>
+  </h1>
+);
 
-  const Logo = () => (
-    <h1 className="mango uppercase text-primary-500 text-5xl">
-      pixel<span className="text-secondary-500">code.</span>
-    </h1>
-  );
+const MenuButton = ({ isOpen, onClick }) => (
+  <button
+    className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+    onClick={onClick}
+    aria-expanded={isOpen}
+    aria-label={isOpen ? "Close menu" : "Open menu"}
+  >
+    <svg
+      className="w-6 h-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
+      />
+    </svg>
+  </button>
+);
 
+
+const NavList = ({ isMenuOpen, currentPath }) => (
+  <nav>
+    <ul
+      className={`
+        absolute md:relative top-24 md:top-0 left-0 right-0
+        flex flex-col md:flex-row
+        md:space-x-12 p-4 md:p-0 space-y-4 md:space-y-0
+        bg-white md:bg-transparent
+        shadow-md md:shadow-none
+        transition-all duration-200 ease-in-out
+        ${isMenuOpen ? "flex" : "hidden md:flex"}
+      `}
+    >
+      {NAV_ITEMS.map(({ path, label }) => (
+        <li key={path}>
+        
   const DefaultNavbar = () => (
     <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
       <Logo />
@@ -73,60 +114,63 @@ const Navbar = ({ variant = "default" }) => {
           </a>
         </li>
         <li>
+
           <a
-            className={`font-bold ${
-              location.pathname === "/hubungi-kami" ? "text-primary-500" : ""
-            }`}
-            href="/hubungi-kami"
+            href={path}
+            className={`
+              font-bold transition-colors duration-200
+              hover:text-primary-600
+              ${currentPath === path ? "text-primary-500" : "text-gray-700"}
+            `}
           >
-            Hubungi Kami
+            {label}
           </a>
         </li>
-      </ul>
-      <Button label={"Masuk"} variant="primary" size="small" />
-    </div>
-  );
+      ))}
+    </ul>
+  </nav>
+);
 
-  const LogoOnlyNavbar = () => (
-    <div className="flex justify-start items-center w-full h-[92px] my-auto px-[120px] shadow-sm">
-      <Logo />
-    </div>
-  );
+const DefaultNavbar = ({ userData }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
-  const WelcomeNavbar = ({ userData }) => (
-    <div className="flex items-center px-10">
-      <Logo />
-      <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
-        <div className="flex flex-col items-start">
-          <p className="text-sm">Halo, {userData.username}!</p>
-          <p className="text-sm text-gray-500">Selamat datang di dashboard</p>
-        </div>
-        <div className="flex items-center gap-x-5">
-          <div className="bg-[#E9EBED] flex justify-center items-center rounded-full w-10 h-10">
-            <Notification size="24" />
+  return (
+    <header className="sticky top-0 z-50 bg-white">
+      <div className="flex justify-between items-center w-full h-24 px-8 md:px-32 shadow-sm">
+        <Logo />
+
+        <MenuButton
+          isOpen={isMenuOpen}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        />
+
+        <NavList isMenuOpen={isMenuOpen} currentPath={location.pathname} />
+
+        {!userData?.isLoggedIn && (
+          <div className="hidden md:block">
+            <Button label="Masuk" variant="primary" size="small" />
           </div>
-          <img
-            src={userData.img}
-            alt="profile"
-            width={40}
-            height={40}
-            onError={(e) => {
-              e.target.src = DefaultAvatar;
-            }}
-          />
-          <p className="">{userData.username}</p>
-        </div>
+        )}
       </div>
-    </div>
+    </header>
   );
+};
 
+const LogoOnlyNavbar = () => (
+  <header className="w-full h-24 px-8 md:px-32 shadow-sm">
+    <div className="flex items-center h-full">
+      <Logo />
+    </div>
+  </header>
+);
+
+const Navbar = ({ variant = "default", userData = {} }) => {
   switch (variant) {
     case "logo-only":
       return <LogoOnlyNavbar />;
-    case "welcome":
-      return <WelcomeNavbar />;
     default:
-      return <DefaultNavbar />;
+      return <DefaultNavbar userData={userData} />;
   }
 };
 

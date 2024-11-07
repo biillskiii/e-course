@@ -9,8 +9,8 @@ export default function Label({
   const baseStyle = {
     baseLabel: [
       "px-6",
-      "py-3",
-      "rounded-full",
+      "py-2",
+      "rounded-2xl",
       "flex",
       "justify-center",
       "items-center",

@@ -208,17 +208,15 @@ const Home = () => {
         {/* Kelas Populer Section */}
         <section className="container mx-auto flex flex-col items-start px-36 mt-[160px]">
           <h1 className="text-3xl font-bold">Kelas Populer</h1>
-          {classes.length > 0 ? (
-            <Slider {...settings} className="w-full mt-10 flex items-center">
-              {classes.map((item) => (
-                <Card key={item.id} {...item} />
-              ))}
-            </Slider>
-          ) : (
-            <div className="w-full mt-10 text-center text-primary-500 font-bold">
-              Tidak ada kelas yang tersedia
-            </div>
-          )}
+          <Slider {...settings} className="w-full mt-10 flex items-center">
+            {classes.length > 0 ? (
+              classes.map((item) => <Card  key={item.id} {...item} />)
+            ) : (
+              <div className="w-full text-center text-primary-500 font-bold">
+                Tidak ada kelas yang tersedia
+              </div>
+            )}
+          </Slider>
         </section>
 
         {/* Webinar Section */}
