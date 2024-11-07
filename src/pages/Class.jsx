@@ -11,15 +11,27 @@ function App() {
   const [kelas, setKelas] = useState([]);
   const [filteredLevels, setFilteredLevels] = useState([]);
   const [categories, setCategories] = useState([]);
+
+
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 4;
 
-  const fetchKelas = async () => {
+  const fetchCategories = async () => {
     try {
       const response = await fetch(
-        "https://be-course.serpihantech.com/api/courses"
+        "https://be-course.serpihantech.com/api/categories"
       );
+      const result = await response.json();
+      setCategories(result.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchKelas = async () => {
+    try {
+      const response = await fetch("https://be-course.serpihantech.com/api/courses");
       const result = await response.json();
       if (result.status === "success") {
         setKelas(result.data);

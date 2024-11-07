@@ -1,30 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InputBase from "./InputForm";
 
 const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
-  const [selectedCategories, setSelectedCategoriesState] = useState(["Semua Kategori"]);
-  const [selectedLevels, setSelectedLevelsState] = useState(["Semua Level"]);
-
-  const categories = [
-    "Semua Kategori",
-    "UI/UX Research & Design",
-    "Frontend Development",
-    "Backend Development",
-    "Data Science",
-  ];
+  const [selectedCategories, setSelectedCategoriesState] = useState([]);
+  const [selectedLevels, setSelectedLevelsState] = useState([]);
+  const [categories, setCategories] = useState(["Semua Kategori"]);
 
   const levels = ["Semua Level", "Pemula", "Menengah", "Ahli"];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          "https://be-course.serpihantech.com/api/categories"
+        );
+        const result = await response.json();
+
+        // Assuming the API returns an array of category names
+        if (result.data && Array.isArray(result.data)) {
+          setCategories(["Semua Kategori", ...result.data]);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleCategoryChange = (category) => {
     const updatedCategories = selectedCategories.includes(category)
       ? selectedCategories.filter((item) => item !== category)
       : [...selectedCategories, category];
 
-    if (updatedCategories.includes("Semua Kategori") && updatedCategories.length > 1) {
-      setSelectedCategoriesState(updatedCategories.filter(item => item !== "Semua Kategori"));
-    } else {
-      setSelectedCategoriesState(updatedCategories);
-    }
+    setSelectedCategoriesState(updatedCategories);
     setFilteredCategories(updatedCategories);
   };
 
@@ -32,20 +41,16 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
     const updatedLevels = selectedLevels.includes(level)
       ? selectedLevels.filter((item) => item !== level)
       : [...selectedLevels, level];
-    if (updatedLevels.includes("Semua Level") && updatedLevels.length > 1) {
-      setSelectedLevelsState(updatedLevels.filter(item => item !== "Semua Level"));
-    } else {
-      setSelectedLevelsState(updatedLevels);
-    }
+
+    setSelectedLevelsState(updatedLevels);
     setFilteredLevels(updatedLevels);
   };
 
   const resetFilters = () => {
-    setSelectedCategoriesState(["Semua Kategori"]);
-    setFilteredCategories(["Semua Kategori"]); 
-
-    setSelectedLevelsState(["Semua Level"]);
-    setFilteredLevels(["Semua Level"]);
+    setSelectedCategoriesState([]);
+    setFilteredCategories([]);
+    setSelectedLevelsState([]);
+    setFilteredLevels([]);
   };
 
   return (
@@ -57,13 +62,7 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
         selectedOptions={selectedCategories}
         onOptionChange={handleCategoryChange}
       />
-      {/* Level Filter */}
-      <FilterSection
-        title="Level"
-        options={levels}
-        selectedOptions={selectedLevels}
-        onOptionChange={handleLevelChange}
-      />
+
       <button
         onClick={resetFilters}
         className="text-alert-danger text-base font-bold"
@@ -83,7 +82,7 @@ const FilterSection = ({ title, options, selectedOptions, onOptionChange }) => {
           <li key={index} className="flex items-center mb-4">
             <InputBase
               type="checkbox"
-              checked={selectedOptions.includes(option)}  
+              checked={selectedOptions.includes(option)}
               onChange={() => onOptionChange(option)}
             />
             <label htmlFor={option} className="ml-2 text-gray-700">

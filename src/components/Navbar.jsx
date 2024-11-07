@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Notification } from "iconsax-react";
 import Button from "./Button";
+import { Notification } from "iconsax-react";
+import DefaultAvatar from "../assets/avatar.png";
 
 const NAV_ITEMS = [
   { path: "/", label: "Beranda" },
@@ -40,6 +42,7 @@ const MenuButton = ({ isOpen, onClick }) => (
   </button>
 );
 
+
 const NavList = ({ isMenuOpen, currentPath }) => (
   <nav>
     <ul
@@ -55,6 +58,63 @@ const NavList = ({ isMenuOpen, currentPath }) => (
     >
       {NAV_ITEMS.map(({ path, label }) => (
         <li key={path}>
+        
+  const DefaultNavbar = () => (
+    <div className="flex justify-between items-center w-full h-[92px] px-[120px] shadow-sm">
+      <Logo />
+      <button className="md:hidden p-2" onClick={toggleMenu}>
+        {/* Hamburger icon */}
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h16m-7 6h7"
+          />
+        </svg>
+      </button>
+      <ul
+        className={`flex-col md:flex md:flex-row ${
+          isMenuOpen ? "flex" : "hidden"
+        } md:space-x-[48px]`}
+      >
+        <li>
+          <a
+            className={`font-bold ${
+              location.pathname === "/" ? "text-primary-500" : ""
+            }`}
+            href="/"
+          >
+            Beranda
+          </a>
+        </li>
+        <li>
+          <a
+            className={`font-bold ${
+              location.pathname === "/kelas" ? "text-primary-500" : ""
+            }`}
+            href="/kelas"
+          >
+            Kelas
+          </a>
+        </li>
+        <li>
+          <a
+            className={`font-bold cursor-not-allowed text-gray-500 ${
+              location.pathname === "/webinar" ? "text-primary-500" : ""
+            }`}
+            href="/webinar"
+          >
+            Webinar
+          </a>
+        </li>
+        <li>
+
           <a
             href={path}
             className={`
