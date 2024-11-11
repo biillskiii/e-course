@@ -215,11 +215,37 @@ export const userWebinar = [
   },
 ];
 
-export const courseData = {
-  img: "path_to_image",
-  title: "UI/UX Fundamental",
-  billNumber: "AB20240701",
-  price: "Rp560.000",
-  status: "Menunggu Pembayaran",
-  detailLink: "#",
-};
+export const courseData = [
+  {
+    img: "path_to_image",
+    title: "UI/UX Fundamental",
+    billNumber: "AB20240701",
+    price: "Rp560.000",
+    date: "17 Agustus 2024",
+    time: "13.59 WIB",
+    status: "Menunggu Pembayaran",
+    codePayment: "123457827ABS",
+    paymentMethod: "bank",
+  },
+  {
+    img: "path_to_image2",
+    title: "Web React Js dengan Best Practice",
+    billNumber: "AB20240752",
+    price: "Rp750.000",
+    date: "20 Agustus 2024",
+    time: "10.00 WIB",
+    status: "Menunggu Pembayaran",
+    codePayment: "123457827ABS",
+    paymentMethod: "e-wallet",
+  },
+  {
+    img: "path_to_image2",
+    title: "Web React Js dengan Best Practice",
+    billNumber: "AB20240752",
+    price: "Rp750.000",
+    date: "20 Agustus 2024",
+    time: "10.00 WIB",
+    status: "Pembayaran Berhasil",
+    codePayment: "123457827ABS",
+  },
+];
