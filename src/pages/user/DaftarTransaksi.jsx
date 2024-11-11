@@ -90,9 +90,11 @@ const DaftarTransaksi = () => {
           />
 
           <div className="w-full flex flex-col p-10">
-            <div>
-              <h1>Daftar Transaksi</h1>
-              <TransactionCard course={courseData} />
+            <div className="flex flex-col gap-8">
+              <h1 className="font-bold text-3xl">Daftar Transaksi</h1>
+              {courseData.map((course, index) => (
+                <TransactionCard key={index} course={course} />
+              ))};
             </div>
           </div>
         </div>

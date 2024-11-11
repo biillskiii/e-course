@@ -91,7 +91,7 @@ const Dashboard = () => {
                 <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
                 <Button label={"Lihat Semua"} size="small" variant="submenu" />
               </div>
-              <div className="grid grid-cols-2 mt-4 mb-8">
+              <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
                 {userKelas.map((kelas) => (
                   <Card
                     img={kelas.img}
@@ -106,7 +106,7 @@ const Dashboard = () => {
                 <h1 className="font-bold text-2xl">Webinar yang Kamu Ikuti</h1>
                 <Button label={"Lihat Semua"} size="small" variant="submenu" />
               </div>
-              <div className="grid grid-cols-2 mt-4 mb-8">
+              <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
                 {userWebinar.map((webinar) => (
                   <Card
                     img={webinar.img}
