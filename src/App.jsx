@@ -17,6 +17,7 @@ import DashboardUser from "./pages/user/DashboardUser";
 import KelasUser from "./pages/user/KelasUser";
 import WebinarUser from "./pages/user/WebinarUser";
 import DaftarTransaksi from "./pages/user/DaftarTransaksi";
+import DetailTransaksi from "./pages/user/DetailTransaksi";
 // import DashboardUser from "./pages/username/dashboard/Dashboard";
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/user/kelas" element={<KelasUser />} />
         <Route path="/user/webinar" element={<WebinarUser />} />
         <Route path="/user/daftar-transaksi" element={<DaftarTransaksi />} />
+        <Route path="/detail/:billNumber" element={<DetailTransaksi />} />
         {/* <Route path={`/${username}/dashboard`} element={<DashboardUser />} /> */}
       </Routes>
     </Router>
