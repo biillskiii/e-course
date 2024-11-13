@@ -10,8 +10,16 @@ import { Icon } from "@iconify/react";
 import Button from "./Button";
 import ProgressBar from "./ProgressBar";
 
-const PriceDisplay = ({ price, premium, hasDiscount }) => {
-  if (premium === 0) {
+
+const calculateFontSize = (text) => {
+  if (!text) return "16px"; // default font size if text is undefined
+  if (text.length <= 30) return "24px";
+  else if (text.length <= 50) return "20px";
+  return "16px";
+};
+
+const PriceDisplay = ({ price, hasDiscount }) => {
+  if (price === null) {
     return (
       <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
         <p className="text-primary-500 font-bold text-base">GRATIS</p>
@@ -63,7 +71,7 @@ const ProfileSection = ({ img, name, job, size = "large" }) => {
       <div
         className={`rounded-full ${imageSize} bg-primary-500 overflow-hidden`}
       >
-        <img src={img} alt={name} className="w-full h-full object-cover" />
+        {/* <img src={img} alt={name} className="w-full h-full object-cover" /> */}
       </div>
       <div className="flex flex-col justify-between">
         <p className="font-bold text-base">{name}</p>
@@ -73,27 +81,34 @@ const ProfileSection = ({ img, name, job, size = "large" }) => {
   );
 };
 
-const BaseCard = ({ img, title, name, job, variant = "default", children }) => {
+const BaseCard = ({
+  img,
+  class_name,
+  name,
+  title,
+  job,
+  variant = "default",
+  children,
+}) => {
   const Header = () => (
     <div
-      className="w-full h-[180px] rounded-xl flex justify-center items-center"
-      style={{
-        backgroundImage: `url(${img})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="w-full flex justify-between h-[180px] rounded-xl"
+
     >
-      <h1
-        className="text-primary-800 font-bold text-2xl text-center"
-        style={{
-          lineHeight: "1.2em",
-          backgroundColor: "rgba(255, 255, 255, 0.7)",
-          padding: "0.5rem 1rem",
-          borderRadius: "8px",
-        }}
-      >
-        {title}
-      </h1>
+    <img src={img} alt={title} className="bg-cover flex justify-center" />
+      {/* <div className="flex flex-col justify-between h-full py-5">
+        <h1
+          className="text-primary-800 font-bold h-full"
+          style={{
+            fontSize: calculateFontSize(className),
+            lineHeight: "1.2em",
+          }}
+        >
+          {truncateText(className, 50)}
+        </h1>
+        <ProfileSection img={img} name={name} job={job} size="small" />
+      </div>
+      <img className="w-[153px] h-full" src={img} alt={className} /> */}
     </div>
   );
 
@@ -106,18 +121,18 @@ const BaseCard = ({ img, title, name, job, variant = "default", children }) => {
   }
 
   return (
-    <div className="w-[340px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
+    <div className="w-[382px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
       <Header />
       <div className="flex flex-col flex-grow mt-5">
-        {/* Conditionally render the title and ProfileSection if the variant is not "webinar" */}
-        {variant !== "webinar" && (
-          <>
-            <h1 className="font-bold text-xl line-clamp-2 h-[30px]">{title}</h1>
-            <div className="mt-4">
-              <ProfileSection img={img} name={name} job={job} size="small" />
-            </div>
-          </>
-        )}
+        <h1
+          style={{ fontSize: calculateFontSize(class_name) }}
+          className="font-bold text-xl line-clamp-2 h-[60px]"
+        >
+          {title}
+        </h1>
+        <div className="flex gap-x-5">
+          <ProfileSection img={img} name={name} job={job} />
+        </div>
         {children}
       </div>
     </div>
@@ -169,11 +184,15 @@ const Card = ({
         <div className="flex flex-col gap-2">
           <div className="flex items-center">
             <Calendar className="text-primary-500" size={24} />
-            <p className="text-primary-500 font-bold ml-2 text-center">{schedule}</p>
+            <p className="text-primary-500 font-bold ml-2 text-center">
+              {schedule}
+            </p>
           </div>
           <div className="flex">
             <Clock className="text-primary-500" size={24} />
-            <p className="text-primary-500 font-bold ml-2 text-center">{time}</p>
+            <p className="text-primary-500 font-bold ml-2 text-center">
+              {time}
+            </p>
           </div>
         </div>
       </div>
@@ -185,7 +204,7 @@ const Card = ({
             <RatingStars rating={rating} />
             <p className="ml-2">{ratingNum}</p>
           </div>
-          <p className="flex font-bold items-center gap-x-2">
+          <p className="flex font-bold capitalize items-center gap-x-2">
             <Level size={24} color="#0A181F" />
             {level}
           </p>
@@ -195,7 +214,6 @@ const Card = ({
             <p className="text-xl font-bold text-primary-500 mb-4">
               <PriceDisplay
                 price={price}
-                premium={premium}
                 hasDiscount={hasDiscount}
               />
             </p>
