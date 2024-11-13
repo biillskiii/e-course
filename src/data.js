@@ -241,11 +241,12 @@ export const courseData = [
   {
     img: "path_to_image2",
     title: "Web React Js dengan Best Practice",
-    billNumber: "AB20240752",
+    billNumber: "AB20240753",
     price: "Rp750.000",
     date: "20 Agustus 2024",
     time: "10.00 WIB",
     status: "Pembayaran Berhasil",
     codePayment: "123457827ABS",
+    paymentMethod: "bank",
   },
 ];
