@@ -128,7 +128,11 @@ const DetailTransaksi = () => {
                 <p>Status Pembayaran</p>
                 <Label
                   label={course.status}
-                  variant={"pending"}
+                  variant={
+                    course.status === "Menunggu Pembayaran"
+                      ? "pending"
+                      : "success"
+                  }
                   size="w-[233px] h-[44px]"
                 />
               </div>
@@ -168,57 +172,61 @@ const DetailTransaksi = () => {
             </div>
 
             {/* Payment Instructions */}
-            {course.paymentMethod === "bank" ? (
-              <div className="border-2 border-primary-500 border-opacity-20 p-4 rounded-3xl space-y-6">
-                <h3 className="text-lg font-bold mb-2">
-                  Cara Pembayaran Bank Transfer
-                </h3>
-                {/* Bank transfer instructions */}
-                <div>
-                  <h4 className="font-semibold mb-6">ATM Mandiri</h4>
-                  <ol className="text-sm list-decimal list-inside space-y-6">
-                    <li>Masukkan kartu ATM dan PIN ATM</li>
-                    <li>Pilih menu Bayar/Beli</li>
-                    <li>Pilih opsi Lainnya {">"} Multipayment</li>
-                    <li>Masukkan kode biller perusahaan</li>
-                    <li>Masukkan nomor Virtual Account {">"} Benar</li>
-                    <li>
-                      Masukkan angka yang diminta untuk memilih tagihan {">"} Ya
-                    </li>
-                  </ol>
+            {course.status !== "Pembayaran Berhasil" &&
+              course.paymentMethod === "bank" && (
+                <div className="border-2 border-primary-500 border-opacity-20 p-4 rounded-3xl space-y-6">
+                  <h3 className="text-lg font-bold mb-2">
+                    Cara Pembayaran Bank Transfer
+                  </h3>
+                  {/* Bank transfer instructions */}
+                  <div>
+                    <h4 className="font-semibold mb-6">ATM Mandiri</h4>
+                    <ol className="text-sm list-decimal list-inside space-y-6">
+                      <li>Masukkan kartu ATM dan PIN ATM</li>
+                      <li>Pilih menu Bayar/Beli</li>
+                      <li>Pilih opsi Lainnya {">"} Multipayment</li>
+                      <li>Masukkan kode biller perusahaan</li>
+                      <li>Masukkan nomor Virtual Account {">"} Benar</li>
+                      <li>
+                        Masukkan angka yang diminta untuk memilih tagihan {">"}{" "}
+                        Ya
+                      </li>
+                    </ol>
+                  </div>
+                  <hr className="border border-primary-500 border-opacity-20" />
+                  <div>
+                    <h4 className="font-semibold mb-6">M-Banking</h4>
+                    <ol className="text-sm list-decimal list-inside space-y-6">
+                      <li>Masuk aplikasi Livin by Mandiri</li>
+                      <li>Klik Menu Bayar/VA pada beranda</li>
+                      <li>
+                        Masukkan merchant atau masukkan VA di kolom pencarian
+                      </li>
+                      <li>Pilih sumber dana</li>
+                      <li>Klik Lanjutkan</li>
+                      <li>Masukkan PIN Livin</li>
+                      <li>Bayar tagihan berhasil</li>
+                    </ol>
+                  </div>
                 </div>
-                <hr className="border border-primary-500 border-opacity-20" />
-                <div>
-                  <h4 className="font-semibold mb-6">M-Banking</h4>
-                  <ol className="text-sm list-decimal list-inside space-y-6">
-                    <li>Masuk aplikasi Livin by Mandiri</li>
-                    <li>Klik Menu Bayar/VA pada beranda</li>
-                    <li>
-                      Masukkan merchant atau masukkan VA di kolom pencarian
-                    </li>
-                    <li>Pilih sumber dana</li>
-                    <li>Klik Lanjutkan</li>
-                    <li>Masukkan PIN Livin</li>
-                    <li>Bayar tagihan berhasil</li>
-                  </ol>
+              )}
+            {course.status !== "Pembayaran Berhasil" &&
+              course.paymentMethod === "e-wallet" && (
+                <div className="border-2 border-primary-500 border-opacity-20 p-4 rounded-3xl space-y-6">
+                  <h3 className="text-lg font-bold mb-2">
+                    Cara Pembayaran QRIS/E-Wallet
+                  </h3>
+                  {/* QRIS/e-wallet instructions */}
+                  <div>
+                    <ol className="text-sm list-decimal list-inside space-y-6">
+                      <li>Buka aplikasi e-wallet atau m-banking</li>
+                      <li>Pindai kode QR yang tertera</li>
+                      <li>Konfirmasi pembayaran pada aplikasi</li>
+                      <li>Pembayaran selesai</li>
+                    </ol>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="border-2 border-primary-500 border-opacity-20 p-4 rounded-3xl space-y-6">
-                <h3 className="text-lg font-bold mb-2">
-                  Cara Pembayaran QRIS/E-Wallet
-                </h3>
-                {/* QRIS/e-wallet instructions */}
-                <div>
-                  <ol className="text-sm list-decimal list-inside space-y-6">
-                    <li>Buka aplikasi e-wallet atau m-banking</li>
-                    <li>Pindai kode QR yang tertera</li>
-                    <li>Konfirmasi pembayaran pada aplikasi</li>
-                    <li>Pembayaran selesai</li>
-                  </ol>
-                </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>
