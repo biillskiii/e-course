@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import InputBase from "./InputForm";
+import { Icon } from "@iconify/react";
 
 const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
-  const [selectedCategories, setSelectedCategoriesState] = useState(["Semua Kategori"]);
+  const [selectedCategories, setSelectedCategoriesState] = useState([
+    "Semua Kategori",
+  ]);
   const [selectedLevels, setSelectedLevelsState] = useState(["Semua Level"]);
 
   const categories = [
@@ -20,8 +22,13 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
       ? selectedCategories.filter((item) => item !== category)
       : [...selectedCategories, category];
 
-    if (updatedCategories.includes("Semua Kategori") && updatedCategories.length > 1) {
-      setSelectedCategoriesState(updatedCategories.filter(item => item !== "Semua Kategori"));
+    if (
+      updatedCategories.includes("Semua Kategori") &&
+      updatedCategories.length > 1
+    ) {
+      setSelectedCategoriesState(
+        updatedCategories.filter((item) => item !== "Semua Kategori")
+      );
     } else {
       setSelectedCategoriesState(updatedCategories);
     }
@@ -33,7 +40,9 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
       ? selectedLevels.filter((item) => item !== level)
       : [...selectedLevels, level];
     if (updatedLevels.includes("Semua Level") && updatedLevels.length > 1) {
-      setSelectedLevelsState(updatedLevels.filter(item => item !== "Semua Level"));
+      setSelectedLevelsState(
+        updatedLevels.filter((item) => item !== "Semua Level")
+      );
     } else {
       setSelectedLevelsState(updatedLevels);
     }
@@ -42,7 +51,7 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
 
   const resetFilters = () => {
     setSelectedCategoriesState(["Semua Kategori"]);
-    setFilteredCategories(["Semua Kategori"]); 
+    setFilteredCategories(["Semua Kategori"]);
 
     setSelectedLevelsState(["Semua Level"]);
     setFilteredLevels(["Semua Level"]);
@@ -80,16 +89,24 @@ const FilterSection = ({ title, options, selectedOptions, onOptionChange }) => {
       <h3 className="font-bold text-lg mb-2">{title}</h3>
       <div>
         {options.map((option, index) => (
-          <li key={index} className="flex items-center mb-4">
-            <InputBase
+          <div key={index} className="flex items-center mb-4">
+            <input
               type="checkbox"
-              checked={selectedOptions.includes(option)}  
+              id={option}
+              checked={selectedOptions.includes(option)}
               onChange={() => onOptionChange(option)}
+              className="form-checkbox h-5 w-5 rounded-lg border-2 border-green-500 text-green-500 focus:ring-green-500"
             />
+            {/* {selectedOptions.includes(option) && (
+              <Icon
+                icon="mingcute:check-fill"
+                className="text-green-500 absolute ml-1"
+              />
+            )} */}
             <label htmlFor={option} className="ml-2 text-gray-700">
               {option}
             </label>
-          </li>
+          </div>
         ))}
       </div>
     </div>
