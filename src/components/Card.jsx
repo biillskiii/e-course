@@ -6,12 +6,13 @@ import Button from "./Button";
 import ProgressBar from "./ProgressBar";
 
 const calculateFontSize = (text) => {
+  if (!text) return "16px"; // default font size if text is undefined
   if (text.length <= 30) return "24px";
   else if (text.length <= 50) return "20px";
   return "16px";
 };
 
-const truncateText = (text, limit) => {
+const truncateText = (text = "", limit) => {
   return text.length > limit ? `${text.substring(0, limit)}...` : text;
 };
 
@@ -71,7 +72,6 @@ const ProfileSection = ({ img, name, job, size = "large" }) => {
         <img src={img} alt={name} className="w-full h-full object-cover" />
       </div>
       <div className="flex flex-col justify-between">
-        <p className="font-bold text-base">{name}</p>
         <p className="text-sm">{job}</p>
       </div>
     </div>
@@ -80,22 +80,20 @@ const ProfileSection = ({ img, name, job, size = "large" }) => {
 
 const BaseCard = ({
   img,
-  className,
+  class_name,
   name,
   job,
   variant = "default",
   children,
 }) => {
   const Header = () => (
-    <div
-      className="w-full flex justify-between h-[180px] rounded-xl pl-4"
-      style={{
-        backgroundImage: `url(${BgCard})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="flex flex-col justify-between h-full py-5">
+    <div className="w-full flex justify-between h-[180px] rounded-xl pl-4">
+      <img
+        src={img}
+        alt={name}
+        className="bg-cover flex justify-center items-center"
+      />
+      {/* <div className="flex flex-col justify-between h-full py-5">
         <h1
           className="text-primary-800 font-bold h-full"
           style={{
@@ -107,7 +105,7 @@ const BaseCard = ({
         </h1>
         <ProfileSection img={img} name={name} job={job} size="small" />
       </div>
-      <img className="w-[153px] h-full" src={img} alt={className} />
+      <img className="w-[153px] h-full" src={img} alt={className} /> */}
     </div>
   );
 
@@ -124,12 +122,14 @@ const BaseCard = ({
       <Header />
       <div className="flex flex-col flex-grow mt-5">
         <h1
-          style={{ fontSize: calculateFontSize(className) }}
+          style={{ fontSize: calculateFontSize(class_name) }}
           className="font-bold text-xl line-clamp-2 h-[60px]"
         >
-          {className}
+          {name}
         </h1>
-        <ProfileSection img={img} name={name} job={job} />
+        <div className="flex gap-x-5">
+          <ProfileSection img={img} name={name} job={job} />
+        </div>
         {children}
       </div>
     </div>
@@ -139,7 +139,7 @@ const BaseCard = ({
 const Card = ({
   img,
   courseCode,
-  className,
+  class_name,
   description,
   name,
   job,
@@ -149,6 +149,7 @@ const Card = ({
   price,
   premium,
   hasDiscount,
+  onClick,
   variant = "default",
 }) => {
   const variantContent = {
@@ -199,6 +200,7 @@ const Card = ({
               size="full"
               variant="primary"
               className="mt-4"
+              onClick={onClick}
             />
           </div>
         </div>
@@ -209,7 +211,7 @@ const Card = ({
   return (
     <BaseCard
       img={img}
-      className={className}
+      className={class_name}
       name={name}
       job={job}
       variant={variant}

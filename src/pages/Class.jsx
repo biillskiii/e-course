@@ -21,6 +21,7 @@ function App() {
         "https://be-course.serpihantech.com/api/courses"
       );
       const result = await response.json();
+  
       if (result.status === "success") {
         setKelas(result.data);
       }
@@ -101,8 +102,8 @@ function App() {
 
   return (
     <section className="w-full min-h-screen bg-gray-50">
+      <Navbar />
       <div className="container px-10 mx-auto">
-        <Navbar />
         <div className="flex items-start px-[120px] gap-x-16 justify-center py-10">
           <FilterSidebarKelas />
           <div className="flex flex-col space-y-10">
@@ -115,6 +116,7 @@ function App() {
                       key={item.id}
                       class_name={item.class_name}
                       level={item.level}
+                      img={item.path_photo}
                       description={item.description}
                       rating={item.rating}
                       price={item.price}

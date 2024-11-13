@@ -117,22 +117,25 @@ const Home = () => {
   };
   const fetchClasses = async () => {
     try {
-      const response = await fetch("https://be-course.serpihantech.com/api/courses");
+      const response = await fetch(
+        "https://be-course.serpihantech.com/api/courses"
+      );
       const result = await response.json();
       setClasses(result.data);
+      console.log(result.data);
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
   };
-  const fetchWebinar = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/api/webinars");
-      const result = await response.json();
-      setWebinars(result.data);
-    } catch (error) {
-      console.error("Error fetching classes:", error);
-    }
-  };
+  // const fetchWebinar = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/webinars");
+  //     const result = await response.json();
+  //     setWebinars(result.data);
+  //   } catch (error) {
+  //     console.error("Error fetching classes:", error);
+  //   }
+  // };
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -164,7 +167,7 @@ const Home = () => {
   }, [isAutoPlay, current]);
   useEffect(() => {
     fetchClasses();
-    fetchWebinar();
+    // fetchWebinar();
   }, []);
 
   return (
@@ -210,7 +213,7 @@ const Home = () => {
           <h1 className="text-3xl font-bold">Kelas Populer</h1>
           <Slider {...settings} className="w-full mt-10 flex items-center">
             {classes.length > 0 ? (
-              classes.map((item) => <Card  key={item.id} {...item} />)
+              classes.map((item) => <Card key={item.id} {...item} />)
             ) : (
               <div className="w-full text-center text-primary-500 font-bold">
                 Tidak ada kelas yang tersedia
