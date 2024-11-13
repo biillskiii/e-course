@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import {
@@ -15,11 +15,27 @@ import Card from "../../components/Card";
 
 const Kelas = () => {
   const navigate = useNavigate();
+  const [classes, setClasses] = useState([]);
   const [kelasStatus, setKelasStatus] = useState("Dalam Progress");
-
   const handleNavigation = (path) => {
     navigate(path);
   };
+  const fetchClasses = async () => {
+    try {
+      const response = await fetch(
+        "https://be-course.serpihantech.com/api/courses"
+      );
+      const result = await response.json();
+      setClasses(result.data);
+      console.log(result.data);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
+  useEffect(() => {
+    fetchClasses();
+    // fetchWebinar();
+  }, []);
 
   return (
     <section>
@@ -110,16 +126,17 @@ const Kelas = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-flow-col mt-4">
+              <div className="grid grid-cols-3 gap-4 mt-4">
                 {kelasStatus === "Dalam Progress" ? (
                   <>
-                    {userKelas.map((kelas) => (
+                    {classes.map((kelas) => (
                       <Card
-                        img={kelas.img}
-                        title={kelas.title}
-                        name={kelas.name}
-                        job={kelas.job}
-                        variant={kelas.variant}
+                        img={kelas.path_photo}
+                        title={kelas.name}
+                        name={kelas.mentor.name}
+                        job={kelas.mentor.specialist}
+                        price={kelas.price}
+                        level={kelas.level}
                       />
                     ))}
                   </>

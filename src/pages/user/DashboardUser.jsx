@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Category,
   Home,
@@ -16,10 +16,26 @@ import Sertifikat from "../../assets/Certificate.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
+  const [classes, setClasses] = useState([]);
   const handleNavigation = (path) => {
     navigate(path);
   };
+  const fetchClasses = async () => {
+    try {
+      const response = await fetch(
+        "https://be-course.serpihantech.com/api/courses"
+      );
+      const result = await response.json();
+      setClasses(result.data);
+      console.log(result.data);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
+  useEffect(() => {
+    fetchClasses();
+    // fetchWebinar();
+  }, []);
 
   return (
     <section>
@@ -92,13 +108,14 @@ const Dashboard = () => {
                 <Button label={"Lihat Semua"} size="small" variant="submenu" />
               </div>
               <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
-                {userKelas.map((kelas) => (
+                {classes.map((kelas) => (
                   <Card
-                    img={kelas.img}
-                    title={kelas.title}
-                    name={kelas.name}
-                    job={kelas.job}
-                    variant={kelas.variant}
+                    img={kelas.path_photo}
+                    title={kelas.name}
+                    name={kelas.mentor.name}
+                    job={kelas.mentor.specialist}
+                    price={kelas.price}
+                    level={kelas.level}
                   />
                 ))}
               </div>
