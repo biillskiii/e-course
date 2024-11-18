@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { courseData, userData } from "../../data";
 import Label from "../../components/Label";
 import {
@@ -24,6 +24,11 @@ const copyToClipboard = (text) => {
 
 const DetailTransaksi = () => {
   const { billNumber } = useParams();
+  const navigate = useNavigate();
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
   const course = courseData.find((item) => item.billNumber === billNumber);
 
   if (!course) {
