@@ -17,6 +17,7 @@ import Sertifikat from "../../assets/Certificate.png";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -25,6 +26,7 @@ const Dashboard = () => {
       const response = await fetch(
         "https://be-course.serpihantech.com/api/courses"
       );
+      setIsLoading(false);
       const result = await response.json();
       setClasses(result.data);
       console.log(result.data);
@@ -33,6 +35,7 @@ const Dashboard = () => {
     }
   };
   useEffect(() => {
+    setIsLoading(true);
     fetchClasses();
     // fetchWebinar();
   }, []);
@@ -107,18 +110,24 @@ const Dashboard = () => {
                 <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
                 <Button label={"Lihat Semua"} size="small" variant="submenu" />
               </div>
-              <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
-                {classes.map((kelas) => (
-                  <Card
-                    img={kelas.path_photo}
-                    title={kelas.name}
-                    name={kelas.mentor.name}
-                    job={kelas.mentor.specialist}
-                    price={kelas.price}
-                    level={kelas.level}
-                  />
-                ))}
-              </div>
+              {isLoading ? (
+                <div className="w-full h-screen flex items-start mt-52 justify-center">
+                  <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
+                  {classes.map((kelas) => (
+                    <Card
+                      img={kelas.path_photo}
+                      title={kelas.name}
+                      name={kelas.mentor.name}
+                      job={kelas.mentor.specialist}
+                      price={kelas.price}
+                      level={kelas.level}
+                    />
+                  ))}
+                </div>
+              )}
               <div className="flex w-[728px] justify-between mr-16 items-center">
                 <h1 className="font-bold text-2xl">Webinar yang Kamu Ikuti</h1>
                 <Button label={"Lihat Semua"} size="small" variant="submenu" />

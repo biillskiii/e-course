@@ -12,11 +12,12 @@ import {
 import NavbarDashboard from "../../components/NavbarDashboard";
 import { userData, userKelas, sertifKelas } from "../../data";
 import Card from "../../components/Card";
-
+import { NotificationCircle } from "iconsax-react";
 const Kelas = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [kelasStatus, setKelasStatus] = useState("Dalam Progress");
+  const [isLoading, setIsLoading] = useState(true);
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -25,6 +26,7 @@ const Kelas = () => {
       const response = await fetch(
         "https://be-course.serpihantech.com/api/courses"
       );
+      setIsLoading(false);
       const result = await response.json();
       setClasses(result.data);
       console.log(result.data);
@@ -33,6 +35,7 @@ const Kelas = () => {
     }
   };
   useEffect(() => {
+    setIsLoading(true);
     fetchClasses();
     // fetchWebinar();
   }, []);
@@ -126,34 +129,40 @@ const Kelas = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                {kelasStatus === "Dalam Progress" ? (
-                  <>
-                    {classes.map((kelas) => (
-                      <Card
-                        img={kelas.path_photo}
-                        title={kelas.name}
-                        name={kelas.mentor.name}
-                        job={kelas.mentor.specialist}
-                        price={kelas.price}
-                        level={kelas.level}
-                      />
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    {sertifKelas.map((kelas) => (
-                      <Card
-                        img={kelas.img}
-                        title={kelas.title}
-                        name={kelas.name}
-                        job={kelas.job}
-                        variant={kelas.variant}
-                      />
-                    ))}
-                  </>
-                )}
-              </div>
+              {isLoading ? (
+                <div className="w-full h-screen flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  {kelasStatus === "Dalam Progress" ? (
+                    <>
+                      {classes.map((kelas) => (
+                        <Card
+                          img={kelas.path_photo}
+                          title={kelas.name}
+                          name={kelas.mentor.name}
+                          job={kelas.mentor.specialist}
+                          price={kelas.price}
+                          level={kelas.level}
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {sertifKelas.map((kelas) => (
+                        <Card
+                          img={kelas.img}
+                          title={kelas.title}
+                          name={kelas.name}
+                          job={kelas.job}
+                          variant={kelas.variant}
+                        />
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

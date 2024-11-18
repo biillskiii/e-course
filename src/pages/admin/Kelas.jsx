@@ -3,6 +3,7 @@ import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
 import { userData, kelasData } from "../../data";
 import { useNavigate } from "react-router-dom";
+import { NotificationCircle } from "iconsax-react";
 import {
   Home,
   People,
@@ -22,13 +23,14 @@ const Kelas = () => {
   const [filteredData, setFilteredData] = useState(kelasData);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
   const handleNavigation = (path) => {
     navigate(path);
   };
-  // Filter data based on search term
+
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -173,56 +175,64 @@ const Kelas = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg shadow mx-6">
-          <table className="w-full">
-            <thead className="bg-primary-50/75">
-              <tr className="text-left">
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">KODE KELAS</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">NAMA KELAS</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.map((kelas, index) => (
-                <tr key={index} className="border-t border-gray-100">
-                  <td className="px-6 py-4">{kelas.kode}</td>
-                  <td className="px-6 py-4">{kelas.kategori}</td>
-                  <td className="px-6 py-4">{kelas.nama}</td>
-                  <td className="px-6 py-4 text-[#20B1A8]">{kelas.mentee}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">
-                        <Edit2 size={20} />
-                      </button>
-                      <button className="p-2 text-red-500 hover:bg-gray-100 rounded">
-                        <Trash size={20} />
-                      </button>
-                    </div>
-                  </td>
+        {isLoading ? (
+          <NotificationCircle className="animate spin text-primary-500 w-10 h-10" />
+        ) : (
+          <div className="bg-white rounded-lg shadow mx-6">
+            <table className="w-full">
+              <thead className="bg-primary-50/75">
+                <tr className="text-left">
+                  <th className="px-6 py-4 text-sm text-[#20B1A8]">
+                    KODE KELAS
+                  </th>
+                  <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
+                  <th className="px-6 py-4 text-sm text-[#20B1A8]">
+                    NAMA KELAS
+                  </th>
+                  <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th>
+                  <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentData.map((kelas, index) => (
+                  <tr key={index} className="border-t border-gray-100">
+                    <td className="px-6 py-4">{kelas.kode}</td>
+                    <td className="px-6 py-4">{kelas.kategori}</td>
+                    <td className="px-6 py-4">{kelas.nama}</td>
+                    <td className="px-6 py-4 text-[#20B1A8]">{kelas.mentee}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">
+                          <Edit2 size={20} />
+                        </button>
+                        <button className="p-2 text-red-500 hover:bg-gray-100 rounded">
+                          <Trash size={20} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          {/* Pagination */}
-          <div className="flex justify-end gap-2 p-4">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i + 1)}
-                className={`px-3 py-1 border rounded ${
-                  currentPage === i + 1
-                    ? "bg-[#20B1A8] text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
+            {/* Pagination */}
+            <div className="flex justify-end gap-2 p-4">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={`px-3 py-1 border rounded ${
+                    currentPage === i + 1
+                      ? "bg-[#20B1A8] text-white"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
