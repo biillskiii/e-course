@@ -49,14 +49,14 @@ const InputBase = ({
     className
   );
 
-  const labelClasses = clsx("block text-sm font-semibold mb-1", {
+  const labelClasses = clsx("block text-sm font-semibold mb-4", {
     "text-gray-700": variant === "primary" && !disabled,
     "text-primary-500": variant === "secondary" && !disabled,
     "text-gray-400": disabled,
   });
 
   return (
-    <div className="">
+    <div className="flex w-full">
       <div className="flex flex-col w-full">
         <label htmlFor={id} className={labelClasses}>
           {label}
