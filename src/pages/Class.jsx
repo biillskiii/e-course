@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Card from "../components/Card";
 import FilterSidebarKelas from "../components/FilterSidebarKelas";
 import Navbar from "../components/Navbar";
@@ -8,88 +8,70 @@ import Pagination from "../components/Pagination";
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);
-  const [kelas, setKelas] = useState([]);
   const [filteredLevels, setFilteredLevels] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 4;
 
-  const fetchKelas = async () => {
+  // Fetch classes data
+  const fetchClasses = async () => {
     try {
       const response = await fetch(
         "https://be-course.serpihantech.com/api/courses"
       );
-      const result = await response.json();
-      if (result.status === "success") {
-        setKelas(result.data);
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
       }
+      const result = await response.json();
+      setClasses(result.data);
     } catch (error) {
       console.error("Error fetching classes:", error);
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      await fetchKelas();
-    } catch (error) {
-      console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filterAndPaginateCards = () => {
-    const filtered = kelas.filter((card) => {
-      const matchesSearch = card.class_name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesCategory =
-        filteredCategories.length === 0 ||
-        filteredCategories.includes("Semua Kategori") ||
-        filteredCategories.includes(card.category?.category_name);
-      const matchesLevel =
-        filteredLevels.length === 0 ||
-        filteredLevels.includes("Semua Level") ||
-        filteredLevels.includes(card.level);
-
-      return matchesSearch && matchesCategory && matchesLevel;
-    });
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filtered.slice(startIndex, startIndex + itemsPerPage);
-  };
-
-  const getTotalPages = () => {
-    const filtered = kelas.filter((card) => {
-      const matchesSearch = card.class_name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesCategory =
-        filteredCategories.length === 0 ||
-        filteredCategories.includes("Semua Kategori") ||
-        filteredCategories.includes(card.category?.category_name);
-      const matchesLevel =
-        filteredLevels.length === 0 ||
-        filteredLevels.includes("Semua Level") ||
-        filteredLevels.includes(card.level);
-
-      return matchesSearch && matchesCategory && matchesLevel;
-    });
-    return Math.ceil(filtered.length / itemsPerPage);
-  };
-
+  // Fetch data on component mount
   useEffect(() => {
-    fetchData();
+    setIsLoading(true);
+    fetchClasses();
   }, []);
 
+  // Filter function to apply search term, category, and level filters
+  const applyFilters = (card) => {
+    const className = card.name || ""; 
+    const matchesSearch = className
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      filteredCategories.length === 0 ||
+      filteredCategories.includes("Semua Kategori") ||
+      filteredCategories.includes(card.category?.category_name);
+    const matchesLevel =
+      filteredLevels.length === 0 ||
+      filteredLevels.includes("Semua Level") ||
+      filteredLevels.includes(card.level);
+
+    return matchesSearch && matchesCategory && matchesLevel;
+  };
+
+  // Memoize filtered and paginated classes
+  const filteredClasses = useMemo(() => {
+    return classes.filter(applyFilters);
+  }, [classes, searchTerm, filteredCategories, filteredLevels]);
+
+  const paginatedCards = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredClasses.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredClasses, currentPage]);
+
+  const totalPages = Math.ceil(filteredClasses.length / itemsPerPage);
+
+  // Handle page changes
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
-  const paginatedCards = filterAndPaginateCards();
-  const totalPages = getTotalPages();
 
   if (isLoading) {
     return (
@@ -104,7 +86,10 @@ function App() {
       <div className="container px-10 mx-auto">
         <Navbar />
         <div className="flex items-start px-[120px] gap-x-16 justify-center py-10">
-          <FilterSidebarKelas />
+          <FilterSidebarKelas
+            setFilteredCategories={setFilteredCategories}
+            setFilteredLevels={setFilteredLevels}
+          />
           <div className="flex flex-col space-y-10">
             <SearchBar setSearchTerm={setSearchTerm} />
             <div className="mt-[160px]">
@@ -113,7 +98,10 @@ function App() {
                   paginatedCards.map((item) => (
                     <Card
                       key={item.id}
-                      class_name={item.class_name}
+                      img={item.path_photo}
+                      title={item.name}
+                      name={item.mentor.name}
+                      job={item.mentor.specialist}
                       level={item.level}
                       description={item.description}
                       rating={item.rating}
