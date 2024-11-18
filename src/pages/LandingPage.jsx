@@ -213,7 +213,18 @@ const Home = () => {
           <h1 className="text-3xl font-bold">Kelas Populer</h1>
           <Slider {...settings} className="w-full mt-10 flex items-center">
             {classes.length > 0 ? (
-              classes.map((item) => <Card key={item.id} {...item} />)
+
+              classes.map((kelas) => (
+                <Card
+                  key={kelas.id}
+                  img={kelas.path_photo}
+                  title={kelas.name}
+                  name={kelas.mentor.name}
+                  job={kelas.mentor.specialist}
+                  price={kelas.price}
+                  level={kelas.level}
+                />
+              ))
             ) : (
               <div className="w-full text-center text-primary-500 font-bold">
                 Tidak ada kelas yang tersedia

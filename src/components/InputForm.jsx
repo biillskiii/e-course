@@ -38,7 +38,7 @@ const InputBase = ({
   const inputClasses = clsx(
     "w-full px-3 py-2 border rounded-3xl shadow-sm focus:outline-none",
     {
-      "border-gray-300 focus:ring-gray-500 focus:border-gray-500":
+      "border-gray-200 focus:ring-gray-500 focus:border-primary-500":
         variant === "primary" && !error && !disabled,
       "border-primary-500 focus:ring-primary-500 focus:border-primary-500 text-primary-500":
         variant === "secondary" && !error && !disabled,
@@ -49,15 +49,15 @@ const InputBase = ({
     className
   );
 
-  const labelClasses = clsx("block text-sm font-semibold mb-1", {
+  const labelClasses = clsx("block text-sm font-semibold mb-4", {
     "text-gray-700": variant === "primary" && !disabled,
     "text-primary-500": variant === "secondary" && !disabled,
     "text-gray-400": disabled,
   });
 
   return (
-    <div>
-      <div className="">
+    <div className="flex w-full">
+      <div className="flex flex-col w-full">
         <label htmlFor={id} className={labelClasses}>
           {label}
         </label>
@@ -70,6 +70,15 @@ const InputBase = ({
               onChange={onChange}
               disabled={disabled}
               rows={rows}
+              className={inputClasses}
+            />
+          ) : type === "date" ? (
+            <input
+              type="date"
+              id={id}
+              value={value}
+              onChange={onChange}
+              disabled={disabled}
               className={inputClasses}
             />
           ) : type !== "checkbox" ? (

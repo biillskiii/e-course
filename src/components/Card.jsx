@@ -1,9 +1,15 @@
 import React from "react";
-import { Level, DiscountCircle } from "iconsax-react";
+import {
+  Level,
+  DiscountCircle,
+  Calendar,
+  CloseCircle,
+  Clock,
+} from "iconsax-react";
 import { Icon } from "@iconify/react";
-import BgCard from "../assets/bg-class.png";
 import Button from "./Button";
 import ProgressBar from "./ProgressBar";
+
 
 const calculateFontSize = (text) => {
   if (!text) return "16px"; // default font size if text is undefined
@@ -12,12 +18,10 @@ const calculateFontSize = (text) => {
   return "16px";
 };
 
-const truncateText = (text = "", limit) => {
-  return text.length > limit ? `${text.substring(0, limit)}...` : text;
-};
 
-const PriceDisplay = ({ price, premium, hasDiscount }) => {
-  if (premium === 0) {
+const PriceDisplay = ({ price, hasDiscount }) => {
+  if (price === null) {
+
     return (
       <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
         <p className="text-primary-500 font-bold text-base">GRATIS</p>
@@ -69,7 +73,7 @@ const ProfileSection = ({ img, name, job, size = "large" }) => {
       <div
         className={`rounded-full ${imageSize} bg-primary-500 overflow-hidden`}
       >
-        <img src={img} alt={name} className="w-full h-full object-cover" />
+        {/* <img src={img} alt={name} className="w-full h-full object-cover" /> */}
       </div>
       <div className="flex flex-col justify-between">
         <p className="text-sm">{job}</p>
@@ -82,17 +86,19 @@ const BaseCard = ({
   img,
   class_name,
   name,
+  title,
   job,
   variant = "default",
   children,
 }) => {
   const Header = () => (
-    <div className="w-full flex justify-between h-[180px] rounded-xl pl-4">
-      <img
-        src={img}
-        alt={name}
-        className="bg-cover flex justify-center items-center"
-      />
+
+    <div
+      className="w-full flex justify-between h-[180px] rounded-xl"
+
+    >
+    <img src={img} alt={title} className="bg-cover flex justify-center" />
+
       {/* <div className="flex flex-col justify-between h-full py-5">
         <h1
           className="text-primary-800 font-bold h-full"
@@ -125,7 +131,9 @@ const BaseCard = ({
           style={{ fontSize: calculateFontSize(class_name) }}
           className="font-bold text-xl line-clamp-2 h-[60px]"
         >
-          {name}
+
+          {title}
+
         </h1>
         <div className="flex gap-x-5">
           <ProfileSection img={img} name={name} job={job} />
@@ -139,7 +147,9 @@ const BaseCard = ({
 const Card = ({
   img,
   courseCode,
-  class_name,
+
+  title,
+
   description,
   name,
   job,
@@ -151,6 +161,8 @@ const Card = ({
   hasDiscount,
   onClick,
   variant = "default",
+  schedule,
+  time,
 }) => {
   const variantContent = {
     progress: (
@@ -174,6 +186,25 @@ const Card = ({
         />
       </div>
     ),
+    webinar: (
+      <div className="flex flex-col">
+        <h2 className="font-bold text-xl mb-4">{title}</h2>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center">
+            <Calendar className="text-primary-500" size={24} />
+            <p className="text-primary-500 font-bold ml-2 text-center">
+              {schedule}
+            </p>
+          </div>
+          <div className="flex">
+            <Clock className="text-primary-500" size={24} />
+            <p className="text-primary-500 font-bold ml-2 text-center">
+              {time}
+            </p>
+          </div>
+        </div>
+      </div>
+    ),
     default: (
       <>
         <div className="flex items-center gap-x-5 mt-4">
@@ -181,7 +212,7 @@ const Card = ({
             <RatingStars rating={rating} />
             <p className="ml-2">{ratingNum}</p>
           </div>
-          <p className="flex font-bold items-center gap-x-2">
+          <p className="flex font-bold capitalize items-center gap-x-2">
             <Level size={24} color="#0A181F" />
             {level}
           </p>
@@ -191,7 +222,6 @@ const Card = ({
             <p className="text-xl font-bold text-primary-500 mb-4">
               <PriceDisplay
                 price={price}
-                premium={premium}
                 hasDiscount={hasDiscount}
               />
             </p>
@@ -209,13 +239,9 @@ const Card = ({
   };
 
   return (
-    <BaseCard
-      img={img}
-      className={class_name}
-      name={name}
-      job={job}
-      variant={variant}
-    >
+
+    <BaseCard img={img} title={title} name={name} job={job} variant={variant}>
+
       {variant === "header-only"
         ? null
         : variantContent[variant] || variantContent.default}

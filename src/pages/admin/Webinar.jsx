@@ -117,7 +117,7 @@ const Kelas = () => {
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
-          onClick={() => handleNavigation("/login")}
+          onClick={() => handleNavigation("/masuk")}
         />
       </div>
 

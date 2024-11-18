@@ -1,3 +1,5 @@
+import Avatar from "./assets/avatar1.png";
+
 export const userData = {
   username: "John Doe",
   avatar:
@@ -137,62 +139,115 @@ export const transactionData = {
   job: "Instructor Position",
   amount: "Rp560.000",
 };
-export const Mentee = [
+
+
+export const userKelas = [
   {
-    id: 1,
-    name: "Mentee 1",
-    email: "halodek@gmail.com",
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
   },
+
   {
-    id: 2,
-    name: "Mentee 2",
-    email: "halodek2@gmail.com",
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
   },
+
   {
-    id: 3,
-    name: "Mentee 3",
-    email: "halodek3@gmail.com",
-  },
-  {
-    id: 4,
-    name: "Mentee 4",
-    email: "halodek4@gmail.com",
-  },
-  {
-    id: 5,
-    name: "Mentee 5",
-    email: "halodek5@gmail.com",
-  },
-  {
-    id: 6,
-    name: "Mentee 6",
-    email: "halodek6@gmail.com",
-  },
-  {
-    id: 7,
-    name: "Mentee 7",
-    email: "halodek7@gmail.com",
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "progress",
   },
 ];
-export const mentorData = [
+export const sertifKelas = [
   {
-    id: 1,
-    name: "Mentor 1",
-    specialist: "UI/UX Specialist"
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+
+  {
+    img: { Avatar },
+    title: "React Development Course",
+    name: "John Doe",
+    job: "Senior Developer",
+    variant: "certificate",
+  },
+];
+
+export const userWebinar = [
+  {
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
   },
   {
-    id: 2,
-    name: "Mentor 2",
-    specialist: "Programmer"
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
   },
   {
-    id: 3,
-    name: "Mentor 3",
-    specialist: "UX Researcher"
+    img: { Avatar },
+    title: "Bangun Personal Brandingmu Sebagai UI/UX Designer",
+    variant: "webinar",
+    schedule: "Senin, 23 September 2024",
+    time: "13.00 - 15.00 WIB",
+  },
+];
+
+export const courseData = [
+  {
+    img: "path_to_image",
+    title: "UI/UX Fundamental",
+    billNumber: "AB20240701",
+    price: "Rp560.000",
+    date: "17 Agustus 2024",
+    time: "13.59 WIB",
+    status: "Menunggu Pembayaran",
+    codePayment: "123457827ABS",
+    paymentMethod: "bank",
   },
   {
-    id: 4,
-    name: "Mentor 4",
-    specialist: "Data Scientist"
-  }
-]
+    img: "path_to_image2",
+    title: "Web React Js dengan Best Practice",
+    billNumber: "AB20240752",
+    price: "Rp750.000",
+    date: "20 Agustus 2024",
+    time: "10.00 WIB",
+    status: "Menunggu Pembayaran",
+    codePayment: "123457827ABS",
+    paymentMethod: "e-wallet",
+  },
+  {
+    img: "path_to_image2",
+    title: "Web React Js dengan Best Practice",
+    billNumber: "AB20240753",
+    price: "Rp750.000",
+    date: "20 Agustus 2024",
+    time: "10.00 WIB",
+    status: "Pembayaran Berhasil",
+    codePayment: "123457827ABS",
+    paymentMethod: "bank",
+  },
+];
