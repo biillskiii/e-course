@@ -122,6 +122,7 @@ const Home = () => {
       );
       const result = await response.json();
       setClasses(result.data);
+      console.log(result.data);
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
@@ -212,6 +213,7 @@ const Home = () => {
           <h1 className="text-3xl font-bold">Kelas Populer</h1>
           <Slider {...settings} className="w-full mt-10 flex items-center">
             {classes.length > 0 ? (
+
               classes.map((kelas) => (
                 <Card
                   key={kelas.id}

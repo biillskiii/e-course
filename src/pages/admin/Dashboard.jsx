@@ -58,18 +58,21 @@ const Dashboard = () => {
               variant="side-primary"
               leftIcon={<People />}
               size="very-big"
+              onClick={() => handleNavigation("/admin/mentee")}
             />
             <Button
               label="Mentor"
               variant="side-primary"
               leftIcon={<Teacher />}
               size="very-big"
+              onClick={() => handleNavigation("/admin/mentor")}
             />
             <Button
               label="Daftar Transaksi"
               variant="side-primary"
               leftIcon={<Wallet />}
               size="very-big"
+              onClick={() => handleNavigation("/admin/daftar-transaksi")}
             />
             <Button
               label="Pengaturan"

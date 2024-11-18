@@ -18,8 +18,10 @@ const calculateFontSize = (text) => {
   return "16px";
 };
 
+
 const PriceDisplay = ({ price, hasDiscount }) => {
   if (price === null) {
+
     return (
       <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
         <p className="text-primary-500 font-bold text-base">GRATIS</p>
@@ -74,7 +76,6 @@ const ProfileSection = ({ img, name, job, size = "large" }) => {
         {/* <img src={img} alt={name} className="w-full h-full object-cover" /> */}
       </div>
       <div className="flex flex-col justify-between">
-        <p className="font-bold text-base">{name}</p>
         <p className="text-sm">{job}</p>
       </div>
     </div>
@@ -91,11 +92,13 @@ const BaseCard = ({
   children,
 }) => {
   const Header = () => (
+
     <div
       className="w-full flex justify-between h-[180px] rounded-xl"
 
     >
     <img src={img} alt={title} className="bg-cover flex justify-center" />
+
       {/* <div className="flex flex-col justify-between h-full py-5">
         <h1
           className="text-primary-800 font-bold h-full"
@@ -128,7 +131,9 @@ const BaseCard = ({
           style={{ fontSize: calculateFontSize(class_name) }}
           className="font-bold text-xl line-clamp-2 h-[60px]"
         >
+
           {title}
+
         </h1>
         <div className="flex gap-x-5">
           <ProfileSection img={img} name={name} job={job} />
@@ -142,7 +147,9 @@ const BaseCard = ({
 const Card = ({
   img,
   courseCode,
+
   title,
+
   description,
   name,
   job,
@@ -152,6 +159,7 @@ const Card = ({
   price,
   premium,
   hasDiscount,
+  onClick,
   variant = "default",
   schedule,
   time,
@@ -222,6 +230,7 @@ const Card = ({
               size="full"
               variant="primary"
               className="mt-4"
+              onClick={onClick}
             />
           </div>
         </div>
@@ -230,7 +239,9 @@ const Card = ({
   };
 
   return (
+
     <BaseCard img={img} title={title} name={name} job={job} variant={variant}>
+
       {variant === "header-only"
         ? null
         : variantContent[variant] || variantContent.default}

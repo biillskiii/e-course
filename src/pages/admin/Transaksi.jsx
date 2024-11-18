@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
-import { userData, kelasData } from "../../data";
+import { userData, transactions } from "../../data";
 import { useNavigate } from "react-router-dom";
-import { NotificationCircle } from "iconsax-react";
 import {
   Home,
   People,
@@ -13,17 +12,19 @@ import {
   Setting3,
   LogoutCurve,
   Teacher,
-  SearchNormal1,
   Filter,
+  SearchNormal1,
   Edit2,
   Trash,
 } from "iconsax-react";
-const Kelas = () => {
+
+const Mentor = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(kelasData);
+  const [filteredData, setFilteredData] = useState(
+    Array.isArray(transactions) ? transactions : []
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
@@ -31,15 +32,17 @@ const Kelas = () => {
     navigate(path);
   };
 
+  // Filter data based on search term
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
     if (value.trim() === "") {
-      setFilteredData(kelasData);
+      setFilteredData(Array.isArray(transactions) ? transactions : []);
     } else {
-      const filtered = kelasData.filter((kelas) =>
-        kelas.nama.toLowerCase().includes(value.toLowerCase())
+      const filtered = (Array.isArray(transactions) ? transactions : []).filter(
+        (transaction) =>
+          transaction.namaProgram.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredData(filtered);
     }
@@ -48,13 +51,18 @@ const Kelas = () => {
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentData = Array.isArray(filteredData)
+    ? filteredData.slice(indexOfFirstItem, indexOfLastItem)
+    : [];
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const totalPages = Math.ceil(
+    (Array.isArray(filteredData) ? filteredData.length : 0) / itemsPerPage
+  );
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -72,7 +80,6 @@ const Kelas = () => {
           />
           <Button
             label="Kelas"
-            active={true}
             variant="side-primary"
             leftIcon={<Monitor />}
             size="very-big"
@@ -101,6 +108,7 @@ const Kelas = () => {
           />
           <Button
             label="Daftar Transaksi"
+            active={true}
             variant="side-primary"
             leftIcon={<Wallet />}
             size="very-big"
@@ -131,7 +139,7 @@ const Kelas = () => {
 
         {/* Header Section */}
         <div className="flex justify-between items-center p-6">
-          <h1 className="text-2xl font-semibold">Daftar Kelas</h1>
+          <h1 className="text-2xl font-semibold">Daftar Transaksi</h1>
           <div className="flex gap-4 items-center">
             {/* Animated Search Bar */}
             <div
@@ -168,77 +176,67 @@ const Kelas = () => {
             </div>
 
             {/* Add Class Button */}
-            <Button
-              label="Tambah Kelas"
-              size="small"
-              variant="primary"
-              onClick={() => handleNavigation("/admin/kelas/tambah-kelas")}
-            />
+            <Button label="Tambah Kelas" size="small" variant="primary" />
           </div>
         </div>
 
         {/* Table */}
-        {isLoading ? (
-          <NotificationCircle className="animate spin text-primary-500 w-10 h-10" />
-        ) : (
-          <div className="bg-white rounded-lg shadow mx-6">
-            <table className="w-full">
-              <thead className="bg-primary-50/75">
-                <tr className="text-left">
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">
-                    KODE KELAS
-                  </th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">
-                    NAMA KELAS
-                  </th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
+        <div className="mt-8 bg-white rounded-lg p-6 shadow-sm">
+          <table className="w-full">
+            <thead>
+              <tr className="text-left text-gray-500">
+                <th className="pb-4">ID</th>
+                <th className="pb-4">NAMA PROGRAM</th>
+                <th className="pb-4">STATUS</th>
+                <th className="pb-4">METODE</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.map((transaction, index) => (
+                <tr key={index} className="border-t border-gray-100">
+                  <td className="py-3 text-[#1DA599]">{transaction.id}</td>
+                  <td className="py-3 text-[#1DA599]">
+                    {transaction.kodeProgram}
+                  </td>
+                  <td className="py-3">{transaction.namaProgram}</td>
+                  <td className="py-3">
+                    <span
+                      className={`px-4 py-2 rounded-full text-sm ${
+                        transaction.status === "Menunggu Pembayaran"
+                          ? "bg-orange-100 text-orange-500"
+                          : transaction.status === "Pembayaran Berhasil"
+                          ? "bg-green-100 text-green-500"
+                          : "bg-red-100 text-red-500"
+                      }`}
+                    >
+                      {transaction.status}
+                    </span>
+                  </td>
+                  <td className="py-3">{transaction.metode}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {currentData.map((kelas, index) => (
-                  <tr key={index} className="border-t border-gray-100">
-                    <td className="px-6 py-4">{kelas.kode}</td>
-                    <td className="px-6 py-4">{kelas.kategori}</td>
-                    <td className="px-6 py-4">{kelas.nama}</td>
-                    <td className="px-6 py-4 text-[#20B1A8]">{kelas.mentee}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">
-                          <Edit2 size={20} />
-                        </button>
-                        <button className="p-2 text-red-500 hover:bg-gray-100 rounded">
-                          <Trash size={20} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className="flex justify-end gap-2 p-4">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => handlePageChange(i + 1)}
-                  className={`px-3 py-1 border rounded ${
-                    currentPage === i + 1
-                      ? "bg-[#20B1A8] text-white"
-                      : "bg-gray-200"
-                  }`}
-                >
-                  {i + 1}
-                </button>
               ))}
-            </div>
+            </tbody>
+          </table>
+          {/* Pagination Controls */}
+          <div className="flex justify-center mt-4">
+            {[...Array(totalPages)].map((_, pageIndex) => (
+              <button
+                key={pageIndex}
+                onClick={() => handlePageChange(pageIndex + 1)}
+                className={`mx-1 px-3 py-1 rounded ${
+                  currentPage === pageIndex + 1
+                    ? "bg-primary-500 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {pageIndex + 1}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default Kelas;
+export default Mentor;

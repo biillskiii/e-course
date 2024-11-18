@@ -22,6 +22,7 @@ function App() {
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
+
       }
       const result = await response.json();
       setClasses(result.data);
@@ -83,8 +84,8 @@ function App() {
 
   return (
     <section className="w-full min-h-screen bg-gray-50">
+      <Navbar />
       <div className="container px-10 mx-auto">
-        <Navbar />
         <div className="flex items-start px-[120px] gap-x-16 justify-center py-10">
           <FilterSidebarKelas
             setFilteredCategories={setFilteredCategories}
@@ -103,6 +104,7 @@ function App() {
                       name={item.mentor.name}
                       job={item.mentor.specialist}
                       level={item.level}
+                      img={item.path_photo}
                       description={item.description}
                       rating={item.rating}
                       price={item.price}
