@@ -22,7 +22,6 @@ function App() {
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
-
       }
       const result = await response.json();
       setClasses(result.data);
@@ -41,7 +40,7 @@ function App() {
 
   // Filter function to apply search term, category, and level filters
   const applyFilters = (card) => {
-    const className = card.name || ""; 
+    const className = card.name || "";
     const matchesSearch = className
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -83,7 +82,7 @@ function App() {
   }
 
   return (
-    <section className="w-full min-h-screen bg-gray-50">
+    <section className="w-full min-h-screen">
       <Navbar />
       <div className="container px-10 mx-auto">
         <div className="flex items-start px-[120px] gap-x-16 justify-center py-10">
@@ -100,11 +99,11 @@ function App() {
                     <Card
                       key={item.id}
                       img={item.path_photo}
+                      mentorImg={item.mentor.path_photo}
                       title={item.name}
                       name={item.mentor.name}
                       job={item.mentor.specialist}
                       level={item.level}
-                      img={item.path_photo}
                       description={item.description}
                       rating={item.rating}
                       price={item.price}

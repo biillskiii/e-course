@@ -119,6 +119,7 @@ const Dashboard = () => {
                   {classes.map((kelas) => (
                     <Card
                       img={kelas.path_photo}
+                      mentorImg={kelas.mentor.path_photo}
                       title={kelas.name}
                       name={kelas.mentor.name}
                       job={kelas.mentor.specialist}

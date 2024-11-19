@@ -213,11 +213,11 @@ const Home = () => {
           <h1 className="text-3xl font-bold">Kelas Populer</h1>
           <Slider {...settings} className="w-full mt-10 flex items-center">
             {classes.length > 0 ? (
-
               classes.map((kelas) => (
                 <Card
                   key={kelas.id}
                   img={kelas.path_photo}
+                  mentorImg={kelas.mentor.path_photo}
                   title={kelas.name}
                   name={kelas.mentor.name}
                   job={kelas.mentor.specialist}
