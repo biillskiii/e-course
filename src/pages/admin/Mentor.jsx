@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
 import { userData, mentorData } from "../../data";
@@ -19,12 +19,43 @@ import {
 } from "iconsax-react";
 const Mentor = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(mentorData);
+  const [mentorData, setMentorData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const itemsPerPage = 5;
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          "https://be-course.serpihantech.com/api/mentors"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+        const data = await response.json();
+        console.log(data.data.name);
+        // Validasi apakah data adalah array
+        if (!Array.isArray(data.data)) {
+          throw new Error("Unexpected data format from API");
+        }
 
+        setMentorData(data.data); // Data sesuai respons API
+        setFilteredData(data.data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -34,10 +65,10 @@ const Mentor = () => {
     setSearchTerm(value);
 
     if (value.trim() === "") {
-      setFilteredData(kelasData);
+      setFilteredData(mentorData);
     } else {
-      const filtered = kelasData.filter((kelas) =>
-        kelas.nama.toLowerCase().includes(value.toLowerCase())
+      const filtered = mentorData.filter((mentor) =>
+        mentor.name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredData(filtered);
     }
@@ -182,25 +213,35 @@ const Mentor = () => {
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
               </tr>
             </thead>
-            <tbody>
-              {currentData.map((kelas, index) => (
-                <tr key={index} className="border-t border-gray-100">
-                  <td className="px-6 py-4">{kelas.id}</td>
-                  <td className="px-6 py-4">{kelas.name}</td>
-                  <td className="px-6 py-4">{kelas.specialist}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">
-                        <Edit2 size={20} />
-                      </button>
-                      <button className="p-2 text-red-500 hover:bg-gray-100 rounded">
-                        <Trash size={20} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            {isLoading ? (
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+              </div>
+            ) : error ? (
+              <div className="w-full text-red-500 text-center py-10">
+                {error}
+              </div>
+            ) : (
+              <tbody>
+                {currentData.map((mentor, index) => (
+                  <tr key={index} className="border-t border-gray-100">
+                    <td className="px-6 py-4">{mentor.id}</td>
+                    <td className="px-6 py-4">{mentor.name}</td>
+                    <td className="px-6 py-4">{mentor.specialist}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">
+                          <Edit2 size={20} />
+                        </button>
+                        <button className="p-2 text-red-500 hover:bg-gray-100 rounded">
+                          <Trash size={20} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
           </table>
 
           {/* Pagination */}
