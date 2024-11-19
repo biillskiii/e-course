@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
-import { userData, kelasData } from "../../data";
+import { userData } from "../../data";
 import { useNavigate } from "react-router-dom";
 import { NotificationCircle } from "iconsax-react";
 import {
@@ -18,14 +18,48 @@ import {
   Edit2,
   Trash,
 } from "iconsax-react";
+
 const Kelas = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(kelasData);
+  const [kelasData, setKelasData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const itemsPerPage = 5;
   const navigate = useNavigate();
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          "https://be-course.serpihantech.com/api/courses"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+        const data = await response.json();
+
+        // Validasi apakah data adalah array
+        if (!Array.isArray(data.data)) {
+          throw new Error("Unexpected data format from API");
+        }
+
+        setKelasData(data.data); // Data sesuai respons API
+        setFilteredData(data.data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -55,6 +89,7 @@ const Kelas = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -178,46 +213,53 @@ const Kelas = () => {
         </div>
 
         {/* Table */}
-        {isLoading ? (
-          <NotificationCircle className="animate spin text-primary-500 w-10 h-10" />
-        ) : (
-          <div className="bg-white rounded-lg shadow mx-6">
-            <table className="w-full">
-              <thead className="bg-primary-50/75">
-                <tr className="text-left">
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">
-                    KODE KELAS
-                  </th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">
-                    NAMA KELAS
-                  </th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th>
-                  <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
-                </tr>
-              </thead>
+
+        <div className="bg-white rounded-lg shadow mx-6">
+          <table className="w-full">
+            <thead className="bg-primary-50/75">
+              <tr className="text-left">
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">KODE KELAS</th>
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">NAMA KELAS</th>
+                {/* <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th> */}
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
+              </tr>
+            </thead>
+            {isLoading ? (
+              <div className="w-full h-screen flex items-start mt-32 ml-32 justify-center">
+                <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+              </div>
+            ) : error ? (
+              <div className="w-full text-red-500 text-center py-10">{error}</div>
+            ) : (
               <tbody>
                 {currentData.map((kelas, index) => (
                   <tr key={index} className="border-t border-gray-100">
-                    <td className="px-6 py-4">{kelas.kode}</td>
-                    <td className="px-6 py-4">{kelas.kategori}</td>
-                    <td className="px-6 py-4">{kelas.nama}</td>
-                    <td className="px-6 py-4 text-[#20B1A8]">{kelas.mentee}</td>
+                    <td className="px-6 py-4">{kelas.course_code}</td>
+                    <td className="px-6 py-4">{kelas.category_id}</td>
+                    <td className="px-6 py-4">{kelas.name}</td>
+                    {/* <td className="px-6 py-4 text-[#20B1A8]">{kelas.mentee}</td> */}
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
-                        <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">
-                          <Edit2 size={20} />
+                        <button className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg">
+                          <Edit2 />
                         </button>
-                        <button className="p-2 text-red-500 hover:bg-gray-100 rounded">
-                          <Trash size={20} />
+                        <button className="p-2 text-danger-500 hover:bg-danger-50 rounded-lg">
+                          <Trash />
                         </button>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-
+            )}
+          </table>
+          {/* Pagination */}
+          <div className="flex w-full justify-between items-center py-6 px-6">
+            <div>
+              Showing {indexOfFirstItem + 1}-{indexOfLastItem} of{" "}
+              {filteredData.length} entries
+            </div>
             {/* Pagination */}
             <div className="flex justify-end gap-2 p-4">
               {Array.from({ length: totalPages }, (_, i) => (
@@ -235,7 +277,7 @@ const Kelas = () => {
               ))}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
