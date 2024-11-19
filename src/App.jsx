@@ -13,6 +13,9 @@ import Dashboard from "./pages/admin/Dashboard";
 import Kelas from "./pages/admin/Kelas";
 import Webinar from "./pages/admin/Webinar";
 import TambahKelas from "./pages/admin/TambahKelas";
+import Mentee from "./pages/admin/Mentee";
+import Mentor from "./pages/admin/Mentor";
+import Transaksi from "./pages/admin/Transaksi";
 import DashboardUser from "./pages/user/DashboardUser";
 import KelasUser from "./pages/user/KelasUser";
 import WebinarUser from "./pages/user/WebinarUser";
@@ -38,6 +41,9 @@ function App() {
         <Route path="/admin/kelas" element={<Kelas />} />
         <Route path="/admin/kelas/tambah-kelas" element={<TambahKelas />} />
         <Route path="/admin/webinar" element={<Webinar />} />
+        <Route path="/admin/mentee" element={<Mentee />} />
+        <Route path="/admin/mentor" element={<Mentor />} />
+        <Route path="/admin/daftar-transaksi" element={<Transaksi />} />
         <Route path="/user/dashboard" element={<DashboardUser />} />
         <Route path="/user/kelas" element={<KelasUser />} />
         <Route path="/user/webinar" element={<WebinarUser />} />
