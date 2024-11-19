@@ -140,7 +140,6 @@ export const transactionData = {
   amount: "Rp560.000",
 };
 
-
 export const userKelas = [
   {
     img: { Avatar },
@@ -251,3 +250,62 @@ export const courseData = [
     paymentMethod: "bank",
   },
 ];
+export const Mentee = [
+  {
+    id: 1,
+    name: "Mentee 1",
+    email: "halodek@gmail.com",
+  },
+  {
+    id: 2,
+    name: "Mentee 2",
+    email: "halodek2@gmail.com",
+  },
+  {
+    id: 3,
+    name: "Mentee 3",
+    email: "halodek3@gmail.com",
+  },
+  {
+    id: 4,
+    name: "Mentee 4",
+    email: "halodek4@gmail.com",
+  },
+  {
+    id: 5,
+    name: "Mentee 5",
+    email: "halodek5@gmail.com",
+  },
+  {
+    id: 6,
+    name: "Mentee 6",
+    email: "halodek6@gmail.com",
+  },
+  {
+    id: 7,
+    name: "Mentee 7",
+    email: "halodek7@gmail.com",
+  },
+];
+export const mentorData = [
+  {
+    id: 1,
+    name: "Mentor 1",
+    specialist: "UI/UX Specialist"
+  },
+  {
+    id: 2,
+    name: "Mentor 2",
+    specialist: "Programmer"
+  },
+  {
+    id: 3,
+    name: "Mentor 3",
+    specialist: "UX Researcher"
+  },
+  {
+    id: 4,
+    name: "Mentor 4",
+    specialist: "Data Scientist"
+  }
+]
