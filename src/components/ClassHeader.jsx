@@ -1,6 +1,5 @@
 import React from "react";
 import { Level, Book, Clock } from "iconsax-react";
-import BgCard from "../assets/bg-class.png";
 
 const ClassHeader = ({
   category,
@@ -12,6 +11,7 @@ const ClassHeader = ({
   job,
   img,
   description,
+  imgMentor,
 }) => {
   return (
     <div className="w-[560px]">
@@ -33,29 +33,17 @@ const ClassHeader = ({
       </div>
 
       {/* Bagian card */}
-      <div
-        className="w-[560px] flex justify-between h-[315px] mt-10 rounded-xl pl-4"
-        style={{
-          backgroundImage: `url(${BgCard})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="flex flex-col justify-between h-full space-y-10 py-5">
-          <h1 className="text-primary-800 font-bold text-4xl flex w-[180px]">
-            {title}
-          </h1>
-          <div>
-            <p className="text-xl font-bold text-primary-800">{name}</p>
-            <p className="text-[20px] font-bold text-primary-800">{job}</p>
-          </div>
-        </div>
+      <div className="w-[560px] flex justify-between h-[315px] mt-10 rounded-xl">
         <img className="flex items-end" src={img} alt={title} />
       </div>
       <h1 className="font-bold text-2xl mt-10">Pengajar</h1>
       <div className="flex gap-x-2 items-center mt-5">
         <div className="rounded-full w-12 h-12 bg-primary-500 overflow-hidden">
-          <img src={img} alt={title} className="w-full h-full object-cover" />
+          <img
+            src={imgMentor}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="flex flex-col justify-between">
           <p className="font-bold text-base">{name}</p>
