@@ -213,17 +213,23 @@ const Mentor = () => {
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
               </tr>
             </thead>
-            {isLoading ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
-              </div>
-            ) : error ? (
-              <div className="w-full text-red-500 text-center py-10">
-                {error}
-              </div>
-            ) : (
-              <tbody>
-                {currentData.map((mentor, index) => (
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-10">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500"></div>
+                    </div>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan="4" className="text-center text-red-500 py-10">
+                    {error}
+                  </td>
+                </tr>
+              ) : (
+                currentData.map((mentor, index) => (
                   <tr key={index} className="border-t border-gray-100">
                     <td className="px-6 py-4">{mentor.id}</td>
                     <td className="px-6 py-4">{mentor.name}</td>
@@ -239,9 +245,9 @@ const Mentor = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            )}
+                ))
+              )}
+            </tbody>
           </table>
 
           {/* Pagination */}

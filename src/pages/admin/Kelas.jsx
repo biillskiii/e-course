@@ -225,20 +225,27 @@ const Kelas = () => {
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
               </tr>
             </thead>
-            {isLoading ? (
-              <div className="w-full h-screen flex items-start mt-32 ml-32 justify-center">
-                <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
-              </div>
-            ) : error ? (
-              <div className="w-full text-red-500 text-center py-10">{error}</div>
-            ) : (
-              <tbody>
-                {currentData.map((kelas, index) => (
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="4" className="py-10 text-center">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+                    </div>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan="4" className="py-10 text-center text-red-500">
+                    {error}
+                  </td>
+                </tr>
+              ) : (
+                currentData.map((kelas, index) => (
                   <tr key={index} className="border-t border-gray-100">
                     <td className="px-6 py-4">{kelas.course_code}</td>
                     <td className="px-6 py-4">{kelas.category_id}</td>
                     <td className="px-6 py-4">{kelas.name}</td>
-                    {/* <td className="px-6 py-4 text-[#20B1A8]">{kelas.mentee}</td> */}
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg">
@@ -250,9 +257,9 @@ const Kelas = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            )}
+                ))
+              )}
+            </tbody>
           </table>
           {/* Pagination */}
           <div className="flex w-full justify-between items-center py-6 px-6">
