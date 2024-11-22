@@ -13,6 +13,7 @@ import { ArrowUp2, ArrowDown2, Next, Previous } from "iconsax-react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useNavigate } from "react-router-dom";
 const faqData = [
   {
     question: "Kelas apa saja yang tersedia di PIXELCODE?",
@@ -107,6 +108,7 @@ const Home = () => {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const slidesPerView = 2;
   const [openIndex, setOpenIndex] = useState(null);
+  const navigate = useNavigate();
   const settings = {
     nextArrow: <Next />,
     prevArrow: <Previous />,
@@ -223,6 +225,9 @@ const Home = () => {
                   job={kelas.mentor.specialist}
                   price={kelas.price}
                   level={kelas.level}
+                  onClick={() =>
+                    kelas?.id && navigate(`/user/detail/${kelas.id}`)
+                  }
                 />
               ))
             ) : (
