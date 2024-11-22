@@ -74,7 +74,7 @@ const ProfileSection = ({ mentorImg, name, job, size = "large" }) => {
         <img
           src={mentorImg} // Use mentorImg if available, else fallback to img
           alt={name}
-          className="w-full h-full object-cover"
+          className="w-10 h-12 ml-1 mt-1 "
         />
       </div>
       <div className="flex flex-col justify-between">
@@ -144,6 +144,7 @@ const Card = ({
   variant = "default",
   schedule,
   time,
+  onClick,
 }) => {
   const variantContent = {
     progress: (
@@ -208,6 +209,7 @@ const Card = ({
               size="full"
               variant="primary"
               className="mt-4"
+              onClick={onClick}
             />
           </div>
         </div>
