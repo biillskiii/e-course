@@ -4,7 +4,7 @@ import FilterSidebarKelas from "../components/FilterSidebarKelas";
 import Navbar from "../components/Navbar";
 import SearchBar from "../components/SearchBar";
 import Pagination from "../components/Pagination";
-
+import { useNavigate } from "react-router-dom";
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -13,7 +13,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 4;
-
+  const navigate = useNavigate();
   // Fetch classes data
   const fetchClasses = async () => {
     try {
@@ -73,14 +73,6 @@ function App() {
     setCurrentPage(page);
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-500"></div>
-      </div>
-    );
-  }
-
   return (
     <section className="w-full min-h-screen">
       <Navbar />
@@ -93,28 +85,37 @@ function App() {
           <div className="flex flex-col space-y-10">
             <SearchBar setSearchTerm={setSearchTerm} />
             <div className="mt-[160px]">
-              <div className="flex flex-wrap gap-5">
-                {paginatedCards.length > 0 ? (
-                  paginatedCards.map((item) => (
-                    <Card
-                      key={item.id}
-                      img={item.path_photo}
-                      mentorImg={item.mentor.path_photo}
-                      title={item.name}
-                      name={item.mentor.name}
-                      job={item.mentor.specialist}
-                      level={item.level}
-                      description={item.description}
-                      rating={item.rating}
-                      price={item.price}
-                    />
-                  ))
-                ) : (
-                  <div className="w-full text-center text-primary-500 font-bold">
-                    Tidak ada kelas yang tersedia
-                  </div>
-                )}
-              </div>
+              {isLoading ? (
+                <div className="w-full h-screen flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-5">
+                  {paginatedCards.length > 0 ? (
+                    paginatedCards.map((item) => (
+                      <Card
+                        key={item.id}
+                        img={item.path_photo}
+                        mentorImg={item.mentor.path_photo}
+                        title={item.name}
+                        name={item.mentor.name}
+                        job={item.mentor.specialist}
+                        level={item.level}
+                        description={item.description}
+                        rating={item.rating}
+                        price={item.price}
+                        onClick={() =>
+                          item?.id && navigate(`/user/detail/${item.id}`)
+                        }
+                      />
+                    ))
+                  ) : (
+                    <div className="w-full text-center text-primary-500 font-bold">
+                      Tidak ada kelas yang tersedia
+                    </div>
+                  )}
+                </div>
+              )}
               {totalPages > 1 && (
                 <Pagination
                   currentPage={currentPage}
