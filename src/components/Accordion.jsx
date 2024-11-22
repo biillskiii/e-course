@@ -1,75 +1,44 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ArrowUp2, ArrowDown2, VideoSquare, Book } from "iconsax-react";
-import clsx from "clsx";
-
+import React, { useState } from "react";
+import { ArrowDown2, ArrowUp2 } from "iconsax-react";
 const Accordion = ({ items }) => {
-  const [activeIndex, setActiveIndex] = useState(null);
-  const contentRefs = useRef([]);
+  const [openIndex, setOpenIndex] = useState(null);
 
   const toggleAccordion = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
+    setOpenIndex(index === openIndex ? null : index);
   };
 
-  useEffect(() => {
-    contentRefs.current.forEach((ref, index) => {
-      if (ref) {
-        ref.style.height =
-          activeIndex === index ? `${ref.scrollHeight}px` : "0px";
-      }
-    });
-  }, [activeIndex]);
-
   return (
-    <div className="w-full mx-auto">
-      {items.map((item, index) => (
-        <div key={index} className="">
-          {/* Accordion Header */}
+    <div className="space-y-4">
+      {items.map((chapter, index) => (
+        <div key={chapter.id} className="border-b pb-4">
+          {/* Chapter Header */}
           <button
-            className={clsx(
-              "w-full flex justify-between items-center py-4 bg-white",
-              activeIndex === index ? "mb-2" : ""
-            )}
             onClick={() => toggleAccordion(index)}
-            aria-expanded={activeIndex === index}
-            aria-controls={`accordion-panel-${index}`}
+            className="flex justify-between w-full py-4 text-lg font-semibold focus:outline-none"
           >
-            <div className="flex items-center">
-              <div className="text-left">
-                <p className="text-xl font-medium">{item.title}</p>
-              </div>
-            </div>
-            <span>
-              {activeIndex === index ? (
-                <ArrowUp2 size="24" className="text-black" />
-              ) : (
-                <ArrowDown2 size="24" className="text-black" />
-              )}
-            </span>
+            {chapter.name_chapter}
+            <span>{openIndex === index ? <ArrowUp2 /> : <ArrowDown2 />}</span>
           </button>
 
-          {/* Accordion Panel */}
-          <div
-            id={`accordion-panel-${index}`}
-            ref={(el) => (contentRefs.current[index] = el)}
-            className={clsx(
-              "transition-all duration-300 ease-in-out overflow-hidden",
-              activeIndex === index ? "max-h-screen" : "max-h-0"
-            )}
-            style={{ transitionProperty: "height" }}
-            aria-hidden={activeIndex !== index}
-          >
-            {item.subItems.map((subItem, subIndex) => (
-              <div key={subIndex} className="flex justify-between text-sm py-2">
-                <div className="flex items-center gap-x-2">
-                  {subItem.logo}
-                  <span>{subItem.content}</span>
+          {/* Videos List */}
+          {openIndex === index && (
+            <div className="space-y-3">
+              {chapter.video.map((video) => (
+                <div
+                  key={video.id}
+                  className="flex justify-between items-center text-sm"
+                >
+                  <div>
+                    <p className="font-medium">{video.video_title}</p>
+                    <p className="text-gray-500">{video.video_description}</p>
+                  </div>
+                  <div className="text-primary-600">
+                    {video.is_premium ? "Premium" : `${video.number} mnt`}
+                  </div>
                 </div>
-                <div className="text-primary-500 text-sm font-medium">
-                  {subItem.duration}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>
