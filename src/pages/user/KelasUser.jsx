@@ -146,6 +146,9 @@ const Kelas = () => {
                           job={kelas.mentor.specialist}
                           price={kelas.price}
                           level={kelas.level}
+                          onClick={() =>
+                            kelas?.id && navigate(`/user/detail/${kelas.id}`)
+                          }
                         />
                       ))}
                     </>
