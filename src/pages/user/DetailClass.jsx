@@ -6,7 +6,7 @@ import Chapter from "../../components/Chapter";
 import Accordion from "../../components/Accordion";
 import { benefitsList } from "../../data";
 import { TickCircle } from "iconsax-react";
-const DetailClassPage = () => {
+const DetailClassPage = (order_code, user_id, course_id) => {
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +58,67 @@ const DetailClassPage = () => {
   if (error) {
     return <div className="p-10 text-red-500">Error: {error}</div>;
   }
+  const fetchOrder = async (order_code, user_id, course_id) => {
+    try {
+      const response = await fetch(
+        "https://be-course.serpihantech.com/api/order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_code: "AAA12",
+            user_id: 1,
+            course_id: classDetail.course.id,
+          }),
+        }
+      );
 
+      if (!response.ok) {
+        const errorDetails = await response.text(); // Dapatkan detail error jika ada
+        throw new Error(
+          `HTTP error! Status: ${response.status}. Details: ${errorDetails}`
+        );
+      }
+
+      const data = await response.json();
+      console.log("Order fetched successfully:", data);
+      console.log("Token received:", data.data.snapToken);
+
+      // Trigger Midtrans Snap payment
+      if (window.snap) {
+        window.snap.pay(data.data.snapToken);
+      } else {
+        console.error("Midtrans Snap is not loaded.");
+      }
+    } catch (error) {
+      console.error("Error fetching order:", error);
+    } finally {
+      console.log("Fetch attempt completed.");
+    }
+  };
+  // Dynamically load Midtrans Snap script
+  const useMidtransScript = () => {
+    useEffect(() => {
+      const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js";
+      const clientKey = import.meta.env.VITE_API_KEY;
+
+      // Cek apakah skrip sudah dimuat
+      if (!document.querySelector(script[(src = "${snapScript}")])) {
+        const script = document.createElement("script");
+        script.src = snapScript;
+        script.setAttribute("data-client-key", clientKey);
+        script.async = true;
+
+        document.body.appendChild(script);
+
+        return () => {
+          document.body.removeChild(script);
+        };
+      }
+    }, [useMidtransScript]);
+  };
   return (
     <div>
       <Navbar />
@@ -80,7 +140,10 @@ const DetailClassPage = () => {
           <p>Tidak ada detail kelas</p>
         )}
         <div>
-          <Chapter price={classDetail.course.price} />
+          <Chapter
+            price={classDetail.course.price}
+            onClick={() => fetchOrder(order_code, user_id, course_id)}
+          />
           <Accordion items={classDetail.chapter} />
           <div className="flex flex-col mt-10"></div>
           <h1 className="text-2xl font-bold mb-4">Yang akan kamu dapatkan</h1>
