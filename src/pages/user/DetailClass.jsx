@@ -4,12 +4,14 @@ import ClassHeader from "../../components/ClassHeader";
 import Navbar from "../../components/Navbar";
 import Chapter from "../../components/Chapter";
 import Accordion from "../../components/Accordion";
-
+import { benefitsList } from "../../data";
+import { TickCircle } from "iconsax-react";
 const DetailClassPage = () => {
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [benefit, setBenefit] = useState([benefitsList]);
 
   const fetchClassDetail = async () => {
     try {
@@ -80,6 +82,16 @@ const DetailClassPage = () => {
         <div>
           <Chapter price={classDetail.course.price} />
           <Accordion items={classDetail.chapter} />
+          <div className="flex flex-col mt-10"></div>
+          <h1 className="text-2xl font-bold mb-4">Yang akan kamu dapatkan</h1>
+          <ul className="list-disc list-inside">
+            {benefitsList.map((benefit, index) => (
+              <li key={index} className="flex items-center mb-4 text-base">
+                <TickCircle size="24" className="mr-2 text-primary-500" />
+                {benefit}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
