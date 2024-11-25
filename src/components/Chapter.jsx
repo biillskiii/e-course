@@ -1,7 +1,9 @@
 import React from "react";
 import Accordion from "../components/Accordion";
 import Button from "./Button";
-const Chapter = ({ price, accordionItems }) => {
+const Chapter = ({ price, accordionItems, onClick }) => {
+  // Fetch token and initiate Snap payment
+
   return (
     <div>
       {" "}
@@ -13,6 +15,7 @@ const Chapter = ({ price, accordionItems }) => {
             size="small"
             variant="primary"
             label={"Beli Kelas"}
+            onClick={onClick}
           />
         </div>
         <div className="">
