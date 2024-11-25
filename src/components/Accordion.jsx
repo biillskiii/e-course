@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowDown2, ArrowUp2 } from "iconsax-react";
+import { ArrowDown2, ArrowUp2, VideoSquare } from "iconsax-react";
 const Accordion = ({ items }) => {
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -28,9 +28,12 @@ const Accordion = ({ items }) => {
                   key={video.id}
                   className="flex justify-between items-center text-sm"
                 >
-                  <div>
-                    <p className="font-medium">{video.video_title}</p>
-                    <p className="text-gray-500">{video.video_description}</p>
+                  <div className="flex gap-x-3 items-center">
+                    <VideoSquare size="24" color="#111" />
+                    <div>
+                      <p className="font-medium">{video.video_title}</p>
+                      <p className="text-gray-500">{video.video_description}</p>
+                    </div>
                   </div>
                   <div className="text-primary-600">
                     {video.is_premium ? "Premium" : `${video.number} mnt`}
