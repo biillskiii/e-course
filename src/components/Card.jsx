@@ -129,9 +129,7 @@ const Card = ({
   variant = "default",
   schedule,
   time,
-  order_code,
-  user_id,
-  course_id,
+  onClick
 }) => {
   useMidtransScript(); // Load Midtrans script
 
@@ -165,7 +163,7 @@ const Card = ({
               size="full"
               variant="primary"
               className="mt-4"
-              onClick={() => fetchOrder(order_code, user_id, course_id)}
+              onClick={onClick}
             />
           </div>
         </div>
