@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
-import { userData, popularClasses, statsCards, transactions } from "../../data";
-import { useNavigate } from "react-router-dom";
 import CardDashboard from "../../components/CardDashboard";
+import { popularClasses, statsCards, transactions } from "../../data";
+
 import {
   Home,
   People,
@@ -16,12 +19,40 @@ import {
 } from "iconsax-react";
 
 const Dashboard = () => {
-  // Data for statistics cards
   const navigate = useNavigate();
+  const [userProfile, setUserProfile] = useState({
+    username: "",
+    avatar: "",
+  });
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserProfile({
+        username: decodedToken.name || "",
+        avatar: decodedToken.avatar || "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
 
   const handleNavigation = (path) => {
     navigate(path);
   };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("accessToken");
+    navigate("/login");
+  };
+
   return (
     <div>
       <div className="flex justify-start">
@@ -92,12 +123,13 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="w-full pl-60">
           <NavbarDashboard
-            avatar={userData.avatar}
-            username={userData.username}
+            avatar={userProfile.avatar}
+            username={userProfile.username}
           />
 
-          {/* Stats Cards Grid */}
-          <div className="p-8 ">
+          {/* Rest of the dashboard content remains the same */}
+          <div className="p-8">
+            {/* Stats Cards and other sections */}
             <div className="flex justify-between">
               <div className="flex w-7/12 flex-wrap gap-5">
                 {statsCards.map((kelas) => (
@@ -120,7 +152,7 @@ const Dashboard = () => {
                       className="flex items-center justify-between border-primary-50 border-2 p-4 rounded-lg"
                     >
                       <div className="flex items-center gap-4">
-                        <span className="bg-primary-50 text-primary-500  text-3xl rounded-lg w-12 h-12 flex justify-center items-center font-semibold">
+                        <span className="bg-primary-50 text-primary-500 text-3xl rounded-lg w-12 h-12 flex justify-center items-center font-semibold">
                           {kelas.id}
                         </span>
                         <span className="text-base font-medium">
