@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
-import { userData } from "../../data";
 import { useNavigate } from "react-router-dom";
 import { NotificationCircle } from "iconsax-react";
 import {
@@ -18,16 +17,23 @@ import {
   Edit2,
   Trash,
 } from "iconsax-react";
+import { jwtDecode } from "jwt-decode";
 
 const Kelas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [kelasData, setKelasData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
+  const perPage = 5;
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const itemsPerPage = 5;
+  const [userProfile, setUserProfile] = useState({
+    username: "",
+    avatar: "",
+  });
   const navigate = useNavigate();
 
   // Fetch data from API
@@ -36,21 +42,34 @@ const Kelas = () => {
       setIsLoading(true);
       setError(null);
       try {
+        const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
-          "https://be-course.serpihantech.com/api/courses"
+          "https://be-course.serpihantech.com/api/courses",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
+
         if (!response.ok) {
           throw new Error("Failed to fetch courses");
         }
-        const data = await response.json();
 
-        // Validasi apakah data adalah array
-        if (!Array.isArray(data.data)) {
+        const result = await response.json();
+
+        // Updated data validation for the new API structure
+        if (!Array.isArray(result.data)) {
           throw new Error("Unexpected data format from API");
         }
 
-        setKelasData(data.data); // Data sesuai respons API
-        setFilteredData(data.data);
+        setKelasData(result.data);
+        setFilteredData(result.data);
+
+        // Update pagination-related state
+        setTotalItems(result.total || result.data.length);
+        setLastPage(result.last_page || 1);
+        setCurrentPage(result.current_page || 1);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -61,10 +80,41 @@ const Kelas = () => {
     fetchData();
   }, []);
 
+  // Authentication and token validation
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+
+    try {
+      const decodedToken = jwtDecode(token);
+
+      // Check role_id
+      if (decodedToken.role_id != 1) {
+        navigate("/masuk");
+        return;
+      }
+
+      setUserProfile({
+        username: decodedToken.name || "1",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
+
+  // Navigation handler
   const handleNavigation = (path) => {
     navigate(path);
   };
 
+  // Search handler
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -73,21 +123,42 @@ const Kelas = () => {
       setFilteredData(kelasData);
     } else {
       const filtered = kelasData.filter((kelas) =>
-        kelas.nama.toLowerCase().includes(value.toLowerCase())
+        kelas.class_name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredData(filtered);
     }
   };
 
-  // Pagination logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  // Pagination handler
+  const handlePageChange = async (pageNumber) => {
+    setIsLoading(true);
+    try {
+      const token = sessionStorage.getItem("accessToken");
+      const response = await fetch(
+        `https://be-course.serpihantech.com/api/courses?page=${pageNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      if (!response.ok) {
+        throw new Error("Failed to fetch courses");
+      }
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+      const result = await response.json();
+
+      setKelasData(result.data);
+      setFilteredData(result.data);
+      setCurrentPage(result.current_page || pageNumber);
+      setTotalItems(result.total || result.data.length);
+      setLastPage(result.last_page || 1);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -160,8 +231,8 @@ const Kelas = () => {
       {/* Main Content */}
       <div className="flex-1 pl-60">
         <NavbarDashboard
-          avatar={userData.avatar}
-          username={userData.username}
+          avatar={userProfile.avatar}
+          username={userProfile.username}
         />
 
         {/* Header Section */}
@@ -213,7 +284,6 @@ const Kelas = () => {
         </div>
 
         {/* Table */}
-
         <div className="bg-white rounded-lg shadow mx-6">
           <table className="w-full">
             <thead className="bg-primary-50/75">
@@ -221,7 +291,6 @@ const Kelas = () => {
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">KODE KELAS</th>
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">NAMA KELAS</th>
-                {/* <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th> */}
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
               </tr>
             </thead>
@@ -241,17 +310,29 @@ const Kelas = () => {
                   </td>
                 </tr>
               ) : (
-                currentData.map((kelas, index) => (
-                  <tr key={index} className="border-t border-gray-100">
+                filteredData.map((kelas) => (
+                  <tr key={kelas.id} className="border-t border-gray-100">
                     <td className="px-6 py-4">{kelas.course_code}</td>
-                    <td className="px-6 py-4">{kelas.category_id}</td>
-                    <td className="px-6 py-4">{kelas.name}</td>
+                    <td className="px-6 py-4">
+                      {kelas.category.category_name}
+                    </td>
+                    <td className="px-6 py-4">{kelas.class_name}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
-                        <button className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg">
+                        <button
+                          className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
+                          onClick={() =>
+                            handleNavigation(`/admin/kelas/edit/${kelas.id}`)
+                          }
+                        >
                           <Edit2 />
                         </button>
-                        <button className="p-2 text-danger-500 hover:bg-danger-50 rounded-lg">
+                        <button
+                          className="p-2 text-danger-500 hover:bg-danger-50 rounded-lg"
+                          onClick={() => {
+                            /* Tambahkan logika hapus kelas */
+                          }}
+                        >
                           <Trash />
                         </button>
                       </div>
@@ -261,15 +342,16 @@ const Kelas = () => {
               )}
             </tbody>
           </table>
+
           {/* Pagination */}
           <div className="flex w-full justify-between items-center py-6 px-6">
             <div>
-              Showing {indexOfFirstItem + 1}-{indexOfLastItem} of{" "}
-              {filteredData.length} entries
+              Showing {(currentPage - 1) * perPage + 1}-
+              {Math.min(currentPage * perPage, totalItems)} of {totalItems}{" "}
+              entries
             </div>
-            {/* Pagination */}
             <div className="flex justify-end gap-2 p-4">
-              {Array.from({ length: totalPages }, (_, i) => (
+              {Array.from({ length: lastPage }, (_, i) => (
                 <button
                   key={i}
                   onClick={() => handlePageChange(i + 1)}
