@@ -47,7 +47,7 @@ function LoginPage() {
 
       try {
         const response = await fetch(
-          "https://be-course.serpihantech.com/api/login",
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/login`, // Using the environment variable
           {
             method: "POST",
             headers: {

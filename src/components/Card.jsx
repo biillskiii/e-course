@@ -8,7 +8,7 @@ import ProgressBar from "./ProgressBar";
 const fetchOrder = async (order_code, user_id, course_id) => {
   try {
     const response = await fetch(
-      "https://be-course.serpihantech.com/api/order",
+      `${import.meta.env.VITE_LOCAL_API_KEY}/api/order`,
       {
         method: "POST",
         headers: {
@@ -129,7 +129,7 @@ const Card = ({
   variant = "default",
   schedule,
   time,
-  onClick
+  onClick,
 }) => {
   useMidtransScript(); // Load Midtrans script
 

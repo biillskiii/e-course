@@ -18,7 +18,7 @@ function App() {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        "https://be-course.serpihantech.com/api/courses"
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
@@ -97,7 +97,7 @@ function App() {
                         key={item.id}
                         img={item.path_photo}
                         mentorImg={item.mentor.path_photo}
-                        title={item.name}
+                        title={item.class_name}
                         name={item.mentor.name}
                         job={item.mentor.specialist}
                         level={item.level}

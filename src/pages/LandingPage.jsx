@@ -3,7 +3,6 @@ import Navbar from "../components/Navbar";
 import Hero from "../assets/hero.png";
 import CardCategory from "../components/CardCategory";
 import Card from "../components/Card";
-import Avatar from "../assets/avatar1.png";
 import CardWebinar from "../components/CardWebinar";
 import Footer from "../components/Footer";
 import Manfaat from "../assets/manfaat.png";
@@ -14,6 +13,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from "react-router-dom";
+
 const faqData = [
   {
     question: "Kelas apa saja yang tersedia di PIXELCODE?",
@@ -44,6 +44,7 @@ const faqData = [
       "Lorem ipsum dolor sit amet consectetur. Tempus ornare massa quisque gravida massa morbi pulvinar aenean neque...",
   },
 ];
+
 const testimonials = [
   {
     testimonial:
@@ -76,7 +77,6 @@ const testimonials = [
     job: "Mentee",
     img: "https://via.placeholder.com/150",
   },
-  // Add more testimonials as needed
 ];
 
 const categories = [
@@ -101,6 +101,7 @@ const categories = [
     title: "Data Science",
   },
 ];
+
 const Home = () => {
   const [current, setCurrent] = useState(0);
   const [classes, setClasses] = useState([]);
@@ -109,6 +110,7 @@ const Home = () => {
   const slidesPerView = 2;
   const [openIndex, setOpenIndex] = useState(null);
   const navigate = useNavigate();
+
   const settings = {
     nextArrow: <Next />,
     prevArrow: <Previous />,
@@ -117,10 +119,32 @@ const Home = () => {
     slidesToShow: 3,
     slidesToScroll: 3,
   };
+
+  const checkAuth = () => {
+    const token = localStorage.getItem("token");
+    return !!token;
+  };
+
+  const handleCardClick = (classId) => {
+    if (!checkAuth()) {
+      navigate("/masuk");
+    } else {
+      navigate(`/user/detail/${classId}`);
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (!checkAuth()) {
+      navigate("/masuk");
+    } else {
+      navigate("/user/catalog");
+    }
+  };
+
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        "https://be-course.serpihantech.com/api/courses"
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
       );
       const result = await response.json();
       setClasses(result.data);
@@ -129,19 +153,11 @@ const Home = () => {
       console.error("Error fetching classes:", error);
     }
   };
-  // const fetchWebinar = async () => {
-  //   try {
-  //     const response = await fetch("http://localhost:8000/api/webinars");
-  //     const result = await response.json();
-  //     setWebinars(result.data);
-  //   } catch (error) {
-  //     console.error("Error fetching classes:", error);
-  //   }
-  // };
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
   const nextSlide = () => {
     setCurrent((prevIndex) =>
       prevIndex + slidesPerView >= testimonials.length
@@ -167,9 +183,9 @@ const Home = () => {
     }
     return () => clearInterval(interval);
   }, [isAutoPlay, current]);
+
   useEffect(() => {
     fetchClasses();
-    // fetchWebinar();
   }, []);
 
   return (
@@ -193,7 +209,11 @@ const Home = () => {
               UI/UX, dan banyak lagi. Kursus interaktif, materi praktis, dan
               mentor berpengalaman siap membantu kamu berkembang di era digital.
             </p>
-            <Button label={"Katalog kelas"} size="small" />
+            <Button
+              label={"Katalog kelas"}
+              size="small"
+              onClick={handleButtonClick}
+            />
           </div>
           <div className="w-[584px]">
             <img src={Hero} alt="Hero" />
@@ -220,14 +240,12 @@ const Home = () => {
                   key={kelas.id}
                   img={kelas.path_photo}
                   mentorImg={kelas.mentor.path_photo}
-                  title={kelas.name}
+                  title={kelas.class_name}
                   name={kelas.mentor.name}
                   job={kelas.mentor.specialist}
                   price={kelas.price}
                   level={kelas.level}
-                  onClick={() =>
-                    kelas?.id && navigate(`/user/detail/${kelas.id}`)
-                  }
+                  onClick={() => handleCardClick(kelas.id)}
                 />
               ))
             ) : (
@@ -237,21 +255,6 @@ const Home = () => {
             )}
           </Slider>
         </section>
-
-        {/* Webinar Section */}
-        {/* <section className="container mx-auto flex flex-col items-start px-36 mt-[160px]">
-          <h1 className="text-3xl font-bold">Webinar Terbaru</h1>
-
-          <Slider {...settings} className="w-full mt-10 flex items-center">
-            {webinars.length > 0 ? (
-              webinars.map((item) => <CardWebinar key={item.id} {...item} />)
-            ) : (
-              <div className="w-full text-center text-primary-500 font-bold">
-                Tidak ada webinar yang tersedia
-              </div>
-            )}
-          </Slider>
-        </section> */}
 
         {/* Manfaat Section */}
         <section className="container mx-auto flex items-center justify-center gap-x-32 px-36 mt-[160px]">
@@ -275,17 +278,17 @@ const Home = () => {
             </ul>
           </div>
         </section>
+
+        {/* Testimonial Section */}
         <div className="bg-teal-50 pt-32 h-[524px] mt-[160px]">
-          <div className="container  mx-auto pl-32 flex justify-between items-center">
+          <div className="container mx-auto pl-32 flex justify-between items-center">
             <div className="w-[433px] mb-10 space-y-4">
               <h2 className="text-3xl font-bold text-primary-500">
                 Testimonial
               </h2>
               <h3 className="text-5xl font-medium">Apa yang mereka katakan?</h3>
 
-              {/* Controls for Carousel */}
               <div className="flex justify-start items-center gap-x-10">
-                {/* Previous Button */}
                 <button
                   onClick={prevSlide}
                   className="bg-white p-3 rounded-full shadow-lg flex items-center justify-center"
@@ -306,7 +309,6 @@ const Home = () => {
                   </svg>
                 </button>
 
-                {/* Next Button */}
                 <button
                   onClick={nextSlide}
                   className="bg-white p-3 rounded-full shadow-lg flex items-center justify-center"
@@ -329,9 +331,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Testimonial Cards */}
             <div className="w-[846px] mx-5 relative">
-              {/* Testimonial Slide */}
               <div className="relative overflow-hidden">
                 <div
                   className="flex transition-transform duration-500 ease-in-out"
@@ -351,6 +351,8 @@ const Home = () => {
             </div>
           </div>
         </div>
+
+        {/* FAQ Section */}
         <section className="py-16">
           <div className="container mx-auto px-32 flex justify-between items-start">
             <div className="text-left w-full max-w-lg mt-16 space-y-8">
@@ -389,6 +391,8 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        {/* Footer Section */}
         <section className="flex flex-col items-start mt-[160px]">
           <Footer />
         </section>

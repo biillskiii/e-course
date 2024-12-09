@@ -16,7 +16,7 @@ const DetailClassPage = (order_code, user_id, course_id) => {
   const fetchClassDetail = async () => {
     try {
       const response = await fetch(
-        `https://be-course.serpihantech.com/api/courses/${id}`
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses/${id}`
       );
 
       if (!response.ok) {
@@ -61,7 +61,7 @@ const DetailClassPage = (order_code, user_id, course_id) => {
   const fetchOrder = async (order_code, user_id, course_id) => {
     try {
       const response = await fetch(
-        "https://be-course.serpihantech.com/api/order",
+        "`${import.meta.env.VITE_LOCAL_API_KEY}api/order",
         {
           method: "POST",
           headers: {
