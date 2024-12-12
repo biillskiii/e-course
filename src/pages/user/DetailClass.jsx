@@ -6,6 +6,7 @@ import { TickCircle } from "iconsax-react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import { useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import ProgressBar from "../../components/ProgressBar";
 const CourseDetail = () => {
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
@@ -79,7 +80,10 @@ const CourseDetail = () => {
           <div className="flex gap-x-52">
             <div className="w-full">
               <ClassHeader
-              category={classDetail.category.category_name || ""}
+                level={classDetail.level}
+                time={"3 Jam Belajar"}
+                module={classDetail.chapters ? classDetail.chapters.length : 0}
+                category={classDetail.category.category_name || ""}
                 title={classDetail.class_name || "Nama Kelas Tidak Tersedia"}
                 imgMentor={classDetail.mentor?.path_photo || ""}
                 img={classDetail.path_photo || ""}
@@ -107,7 +111,9 @@ const CourseDetail = () => {
               )}
               <div className="border-2 border-gray-100 p-4 rounded-3xl">
                 <p className="font-bold text-2xl">Materi Kelas</p>
-                <p>Progress Kamu</p>
+                <div className="my-5">
+                  <ProgressBar progress={10} variant="above" />
+                </div>
                 {classDetail.chapters && classDetail.chapters.length > 0 ? (
                   <Accordion items={classDetail.chapters} />
                 ) : (
