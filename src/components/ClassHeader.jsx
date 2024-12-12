@@ -24,13 +24,13 @@ const ClassHeader = ({
         <p className="capitalize text-xl font-medium mb-2">{category}</p>
         <h1 className="capitalize text-4xl font-bold mb-4">{title}</h1>
         <ul className="flex text-sm font-bold gap-10">
-          <li className="flex items-center gap-2">
+          <li className="flex capitalize items-center gap-2">
             <Level /> {level}
           </li>
-          <li className="flex items-center gap-2">
-            <Book /> {module}
+          <li className="flex capitalize items-center gap-2">
+            <Book /> {module} Module
           </li>
-          <li className="flex items-center gap-2">
+          <li className="flex capitalize items-center gap-2">
             <Clock /> {time}
           </li>
         </ul>
