@@ -158,7 +158,7 @@ const Card = ({
             <p className="text-xl font-bold text-primary-500 mb-4">
               <PriceDisplay price={price} hasDiscount={hasDiscount} />
             </p>
-            <ProgressBar progress={progress} color="bg-primary-500" />
+            <ProgressBar progress={progress} variant="below" color="bg-primary-500" />
           </div>
         </div>
       </>
@@ -166,7 +166,10 @@ const Card = ({
   };
 
   return (
-    <div className="w-[382px] h-full flex flex-col rounded-3xl border border-gray-200/50 p-4">
+    <div
+      onClick={onClick}
+      className="w-[382px] cursor-pointer h-full flex flex-col rounded-3xl border border-gray-200/50 p-4"
+    >
       <div className="w-full flex justify-between h-[180px] rounded-xl">
         <img src={img} alt={title} className="bg-cover flex justify-center" />
       </div>
