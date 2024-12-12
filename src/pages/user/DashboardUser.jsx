@@ -18,12 +18,16 @@ import { jwtDecode } from "jwt-decode";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
+  const [visibleClasses, setVisibleClasses] = useState([]);
   const [userData, setUserData] = useState(null); // Tambahkan state untuk data pengguna
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState("");
+  const [showAllClasses, setShowAllClasses] = useState(false);
+
   const handleNavigation = (path) => {
     navigate(path);
   };
+
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     if (!token) {
@@ -43,7 +47,7 @@ const Dashboard = () => {
       navigate("/masuk");
     }
   }, [navigate]);
-  // FetcheckUserRolecheckUserRole kelas dari API
+
   const fetchClasses = async () => {
     try {
       const response = await fetch(
@@ -52,15 +56,26 @@ const Dashboard = () => {
       setIsLoading(false);
       const result = await response.json();
       setClasses(result.data);
-      console.log(result.data);
+      setVisibleClasses(result.data.slice(0, 4)); // Menampilkan hanya 6 card pertama
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
   };
+
   useEffect(() => {
     setIsLoading(true);
     fetchClasses();
   }, []);
+
+  const handleShowAllClasses = () => {
+    if (showAllClasses) {
+      setVisibleClasses(classes.slice(0, 6));
+    } else {
+      setVisibleClasses(classes);
+    }
+    setShowAllClasses(!showAllClasses);
+  };
+
   return (
     <section>
       <div className="flex justify-start">
@@ -127,7 +142,14 @@ const Dashboard = () => {
             <div className="flex flex-col">
               <div className="flex w-[728px] justify-between mr-16 items-center">
                 <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
-                <Button label={"Lihat Semua"} size="small" variant="submenu" />
+                <Button
+                  label={
+                    showAllClasses ? "Tampilkan Lebih Sedikit" : "Lihat Semua"
+                  }
+                  size="small"
+                  variant="submenu"
+                  onClick={handleShowAllClasses}
+                />
               </div>
               {isLoading ? (
                 <div className="w-full h-screen flex items-start mt-52 justify-center">
@@ -135,7 +157,7 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
-                  {classes.map((kelas) => (
+                  {visibleClasses.map((kelas) => (
                     <CardUser
                       key={kelas.id}
                       img={kelas.path_photo}
@@ -152,23 +174,6 @@ const Dashboard = () => {
                   ))}
                 </div>
               )}
-              {/* <div className="flex w-[728px] justify-between mr-16 items-center">
-                <h1 className="font-bold text-2xl">Webinar yang Kamu Ikuti</h1>
-                <Button label={"Lihat Semua"} size="small" variant="submenu" />
-              </div>
-              <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
-                {userWebinar.map((webinar) => (
-                  <CardUser
-                    key={webinar.id}
-                    img={webinar.img}
-                    title={webinar.title}
-                    job={webinar.job}
-                    variant={webinar.variant}
-                    schedule={webinar.schedule}
-                    time={webinar.time}
-                  />
-                ))}
-              </div> */}
             </div>
             <div className="flex flex-col">
               <div className="flex w-[425px] justify-between items-center">
@@ -186,4 +191,5 @@ const Dashboard = () => {
     </section>
   );
 };
+
 export default Dashboard;
