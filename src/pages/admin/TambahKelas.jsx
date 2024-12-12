@@ -15,7 +15,7 @@ import { userData } from "../../data";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import axios from "axios";
-
+import InputBase from "../../components/InputForm";
 const EditKelas = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -40,9 +40,15 @@ const EditKelas = () => {
   // New useEffect to fetch mentors
   useEffect(() => {
     const fetchMentors = async () => {
+      const token = sessionStorage.getItem("accessToken");
       try {
         const response = await axios.get(
-          "https://be-course.serpihantech.com/api/mentors"
+          "`${import.meta.env.VITE_SERVER_API_KEY}api/mentors",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         if (response.data.data) {
           setMentors(response.data.data);
@@ -178,7 +184,7 @@ const EditKelas = () => {
       });
 
       const response = await axios.post(
-        "https://be-course.serpihantech.com/api/courses",
+        "`${import.meta.env.VITE_SERVER_API_KEY}api/courses",
         formDataToSend,
         {
           headers: {
@@ -304,29 +310,21 @@ const EditKelas = () => {
 
               {/* Rest of your existing form fields... */}
               <div>
-                <label className="block mb-2">
-                  Course Code <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="course_code"
+                <InputBase
+                  label={"Course Code"}
+                  type={"text"}
                   value={formData.course_code}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   disabled={isLoading}
                 />
               </div>
 
               <div>
-                <label className="block mb-2">
-                  Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
+                <InputBase
+                  label={"Name"}
+                  type={"text"}
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   disabled={isLoading}
                 />
               </div>
