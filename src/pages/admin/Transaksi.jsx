@@ -20,19 +20,18 @@ import {
 import { jwtDecode } from "jwt-decode";
 const Mentor = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(
-    Array.isArray(transactions) ? transactions : []
-  );
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTransaction, setTransaction] = useState([]);
-  const itemsPerPage = 5;
+
+  const itemsPerPage = 10;
   const [userProfile, setUserProfile] = useState({
     username: "",
     avatar: "",
   });
   const navigate = useNavigate();
+
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     if (!token) {
@@ -44,7 +43,7 @@ const Mentor = () => {
       const decodedToken = jwtDecode(token);
 
       // Check role_id
-      if (decodedToken.role_id != 1) {
+      if (decodedToken.role_id !== 1) {
         navigate("/masuk");
         return;
       }
@@ -60,6 +59,7 @@ const Mentor = () => {
       navigate("/masuk");
     }
   }, [navigate]);
+
   const fetchTransactions = async () => {
     const token = sessionStorage.getItem("accessToken");
     try {
@@ -73,52 +73,47 @@ const Mentor = () => {
         throw new Error("Failed to fetch data");
       }
       const result = await response.json();
-      setTransaction(result); // Simpan panjang data courses
+      setTransaction(result);
     } catch (error) {
-      console.error("Error fetching classes:", error);
+      console.error("Error fetching transactions:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     setIsLoading(true);
     fetchTransactions();
   }, []);
+
+  const filteredData = isTransaction.filter((transaction) =>
+    transaction.course.class_name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset ke halaman pertama saat pencarian
+  };
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
   const handleNavigation = (path) => {
     navigate(path);
   };
-
-  // Filter data based on search term
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-
-    if (value.trim() === "") {
-      setFilteredData(Array.isArray(transactions) ? transactions : []);
-    } else {
-      const filtered = (Array.isArray(transactions) ? transactions : []).filter(
-        (transaction) =>
-          transaction.namaProgram.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredData(filtered);
-    }
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
   };
-
-  // Pagination logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = Array.isArray(filteredData)
-    ? filteredData.slice(indexOfFirstItem, indexOfLastItem)
-    : [];
-
-  const totalPages = Math.ceil(
-    (Array.isArray(filteredData) ? filteredData.length : 0) / itemsPerPage
-  );
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -143,7 +138,7 @@ const Mentor = () => {
           />
           <Button
             label="Webinar"
-            variant="side-primary"
+            variant="disable"
             leftIcon={<MonitorRecorder />}
             size="very-big"
             onClick={() => handleNavigation("/admin/webinar")}
@@ -169,19 +164,13 @@ const Mentor = () => {
             leftIcon={<Wallet />}
             size="very-big"
           />
-          <Button
-            label="Pengaturan"
-            variant="side-primary"
-            leftIcon={<Setting3 />}
-            size="very-big"
-          />
         </div>
         <Button
           label="Keluar"
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
-          onClick={() => handleNavigation("/login")}
+          onClick={handleLogout}
         />
       </div>
 
@@ -196,7 +185,6 @@ const Mentor = () => {
         <div className="flex justify-between items-center p-6">
           <h1 className="text-2xl font-semibold">Daftar Transaksi</h1>
           <div className="flex gap-4 items-center">
-            {/* Animated Search Bar */}
             <div
               className={`relative flex items-center transition-all duration-300 ${
                 isSearchActive ? "w-64" : "w-10"
@@ -219,8 +207,6 @@ const Mentor = () => {
                 onClick={() => setIsSearchActive(true)}
               />
             </div>
-
-            {/* Filter Button */}
             <button className="p-2 border border-gray-200 rounded-lg">
               <Filter />
             </button>
@@ -228,54 +214,77 @@ const Mentor = () => {
         </div>
 
         {/* Table */}
-        <div className="mt-8 bg-white rounded-lg p-6 shadow-sm">
+        <div className="bg-white rounded-lg shadow mx-6">
           <table className="w-full">
-            <thead>
-              <tr className="text-left text-gray-500">
-                <th className="pb-4">ID</th>
-                <th className="pb-4">NAMA</th>
-                <th className="pb-4">NAMA PROGRAM</th>
-                <th className="pb-4">STATUS</th>
-                <th className="pb-4">METODE</th>
+            <thead className="bg-primary-50/75">
+              <tr className="text-center">
+                <th className="px-6 py-4 text-[#20B1A8]">ID</th>
+                <th className="px-6 py-4 text-[#20B1A8]">NAMA</th>
+                <th className="px-6 py-4 text-[#20B1A8]">NAMA KELAS</th>
+                <th className="px-6 py-4 text-[#20B1A8]">STATUS</th>
+                <th className="px-6 py-4 text-[#20B1A8]">METODE</th>
               </tr>
             </thead>
-            <tbody>
-              {isTransaction.map((transaction, index) => (
-                <tr key={index} className="border-t border-gray-100">
-                  <td className="py-3 text-[#1DA599]">
-                    {transaction.transaction_id}
+            <tbody className="text-center">
+              {isLoading ? (
+                <tr>
+                  <td colSpan="5" className="py-10 text-center">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+                    </div>
                   </td>
-                  <td className="py-3 text-[#1DA599]">
-                    {transaction.user.name}
-                  </td>
-                  <td className="py-3">{transaction.course.class_name}</td>
-                  <td className="py-3">
-                    <span
-                      className={`px-4 py-2 rounded-full text-sm uppercase font-semibold ${
-                        transaction.status === "pending"
-                          ? "bg-orange-100 text-orange-500"
-                          : transaction.status === "completed"
-                          ? "bg-green-100 text-green-500"
-                          : "bg-red-100 text-red-500"
-                      }`}
-                    >
-                      {transaction.status}
-                    </span>
-                  </td>
-                  <td className="py-3">{transaction.payment_method}</td>
                 </tr>
-              ))}
+              ) : currentData.length > 0 ? (
+                currentData.map((transaction, index) => (
+                  <tr key={index} className="border-t border-gray-100">
+                    <td className="py-3 text-[#1DA599]">
+                      {transaction.transaction_id}
+                    </td>
+                    <td className="py-3 text-[#1DA599]">
+                      {transaction.user.name}
+                    </td>
+                    <td className="capitalize py-3">
+                      {transaction.course.class_name}
+                    </td>
+                    <td className="py-3">
+                      <span
+                        className={`px-4 py-2 rounded-full text-sm uppercase font-semibold ${
+                          transaction.status === "pending"
+                            ? "bg-orange-100 text-orange-500"
+                            : transaction.status === "completed"
+                            ? "bg-green-100 text-green-500"
+                            : "bg-red-100 text-red-500"
+                        }`}
+                      >
+                        {transaction.status}
+                      </span>
+                    </td>
+                    <td className="uppercase py-3">
+                      {transaction.payment_method === "echannel"
+                        ? "VA"
+                        : transaction.payment_method}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="py-10 text-center text-gray-500">
+                    Tidak ada data transaksi.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+
           {/* Pagination Controls */}
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-end mr-4 gap-x-2 pb-4 mt-4">
             {[...Array(totalPages)].map((_, pageIndex) => (
               <button
                 key={pageIndex}
                 onClick={() => handlePageChange(pageIndex + 1)}
-                className={`mx-1 px-3 py-1 rounded ${
+                className={`px-3 py-1 border rounded ${
                   currentPage === pageIndex + 1
-                    ? "bg-primary-500 text-white"
+                    ? "bg-[#20B1A8] text-white"
                     : "bg-gray-200"
                 }`}
               >
