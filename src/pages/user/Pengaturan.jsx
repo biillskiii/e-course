@@ -38,7 +38,10 @@ const Pengaturan = () => {
       reader.readAsDataURL(file);
     }
   };
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <section>
       <div>
@@ -64,7 +67,7 @@ const Pengaturan = () => {
             />
             <Button
               label="Webinar"
-              variant="side-primary"
+              variant="disable"
               leftIcon={<Ticket />}
               size="very-big"
               onClick={() => handleNavigation("/user/webinar")}
@@ -82,7 +85,7 @@ const Pengaturan = () => {
               variant="side-primary"
               leftIcon={<Category />}
               size="very-big"
-              onClick={() => handleNavigation("/user/pengaturan")}
+              onClick={handleLogout}
             />
           </div>
           <div className="mt-20">
