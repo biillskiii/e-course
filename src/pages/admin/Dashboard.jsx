@@ -24,12 +24,32 @@ const Dashboard = () => {
   const [totalMentee, setTotalMentee] = useState(0);
   const [topCourse, setTopCourse] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [transaction, setTransaction] = useState([]);
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState({
     username: "",
     avatar: "",
   });
+
+  const LoadingCard = () => (
+    <div className="animate-pulse bg-primary-500/20  w-[300px] h-[180.5px] rounded-[24px] p-6 shadow-sm">
+      <div className="h-4 bg-primary-500/20  rounded w-1/4 mb-4"></div>
+      <div className="h-8 bg-primary-500/20  rounded w-1/2"></div>
+      <div className="h-8 bg-primary-500/20  rounded w-1/2"></div>
+    </div>
+  );
+
+  const LoadingTable = () => (
+    <div className="animate-pulse">
+      <div className="h-8 bg-primary-500/20 rounded w-1/4 mb-4"></div>
+      <div className="space-y-4">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="h-12 bg-primary-500/20 rounded"></div>
+        ))}
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     if (!token) {
@@ -54,6 +74,7 @@ const Dashboard = () => {
       navigate("/masuk");
     }
   }, [navigate]);
+
   const fetchClasses = async () => {
     try {
       const response = await fetch(
@@ -63,13 +84,14 @@ const Dashboard = () => {
         throw new Error("Failed to fetch data");
       }
       const result = await response.json();
-      setTotalCourses(result.data.length); // Simpan panjang data courses
+      setTotalCourses(result.data.length);
     } catch (error) {
       console.error("Error fetching classes:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
   const fetchMentor = async () => {
     const token = sessionStorage.getItem("accessToken");
     try {
@@ -83,13 +105,14 @@ const Dashboard = () => {
         throw new Error("Failed to fetch data");
       }
       const result = await response.json();
-      setTotalMentor(result.data.length); // Simpan panjang data courses
+      setTotalMentor(result.data.length);
     } catch (error) {
-      console.error("Error fetching classes:", error);
+      console.error("Error fetching mentors:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
   const fetchMentee = async () => {
     const token = sessionStorage.getItem("accessToken");
     try {
@@ -103,13 +126,14 @@ const Dashboard = () => {
         throw new Error("Failed to fetch data");
       }
       const result = await response.json();
-      setTotalMentee(result.length); // Simpan panjang data courses
+      setTotalMentee(result.length);
     } catch (error) {
-      console.error("Error fetching classes:", error);
+      console.error("Error fetching mentees:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
   const fetchTopCourse = async () => {
     setIsLoading(true);
     try {
@@ -129,7 +153,6 @@ const Dashboard = () => {
 
       const result = await response.json();
 
-      // Updated data validation for the new API structure
       if (!Array.isArray(result.data)) {
         throw new Error("Unexpected data format from API");
       }
@@ -137,18 +160,43 @@ const Dashboard = () => {
       setTopCourse(result.data);
     } catch (error) {
       console.error("Error fetching top courses:", error);
-      setTopCourse([]); // Set to an empty array in case of error
+      setTopCourse([]);
     } finally {
       setIsLoading(false);
     }
   };
-  // Fetch data on component mount
+
+  const fetchTransactions = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/transactions`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const result = await response.json();
+      const sortedTransactions = result
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 5);
+      setTransaction(sortedTransactions);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     setIsLoading(true);
     fetchClasses();
     fetchMentor();
     fetchMentee();
     fetchTopCourse();
+    fetchTransactions();
   }, []);
 
   const handleNavigation = (path) => {
@@ -157,7 +205,7 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
-    navigate("/login");
+    navigate("/masuk");
   };
 
   return (
@@ -186,7 +234,7 @@ const Dashboard = () => {
             />
             <Button
               label="Webinar"
-              variant="side-primary"
+              variant="disable"
               leftIcon={<MonitorRecorder />}
               size="very-big"
               onClick={() => handleNavigation("/admin/webinar")}
@@ -212,18 +260,13 @@ const Dashboard = () => {
               size="very-big"
               onClick={() => handleNavigation("/admin/daftar-transaksi")}
             />
-            <Button
-              label="Pengaturan"
-              variant="side-primary"
-              leftIcon={<Setting3 />}
-              size="very-big"
-            />
           </div>
           <Button
             label="Keluar"
             variant="side-danger"
             leftIcon={<LogoutCurve />}
             size="very-big"
+            onClick={handleLogout}
           />
         </div>
 
@@ -234,93 +277,139 @@ const Dashboard = () => {
             username={userProfile.username}
           />
 
-          {/* Rest of the dashboard content remains the same */}
           <div className="p-8">
-            {/* Stats Cards and other sections */}
+            {/* Stats Cards Section */}
             <div className="flex justify-between">
               <div className="flex w-7/12 flex-wrap gap-5">
-                <CardDashboard id={1} type={"Kelas"} sum={totalCourses} />
-                <CardDashboard id={2} type={"Webinar Aktif"} sum={"0"} />
-                <CardDashboard id={3} type={"Total Mentor"} sum={totalMentor} />
-                <CardDashboard id={4} type={"Total Mentee"} sum={totalMentee} />
+                {isLoading ? (
+                  <>
+                    <LoadingCard />
+                    <LoadingCard />
+                    <LoadingCard />
+                    <LoadingCard />
+                  </>
+                ) : (
+                  <>
+                    <CardDashboard id={1} type={"Kelas"} sum={totalCourses} />
+                    <CardDashboard id={2} type={"Webinar Aktif"} sum={"0"} />
+                    <CardDashboard
+                      id={3}
+                      type={"Total Mentor"}
+                      sum={totalMentor}
+                    />
+                    <CardDashboard
+                      id={4}
+                      type={"Total Mentee"}
+                      sum={totalMentee}
+                    />
+                  </>
+                )}
               </div>
 
               {/* Popular Classes Section */}
               <div className="w-[600px] bg-white rounded-lg p-6 shadow-sm">
                 <h2 className="text-lg font-semibold mb-4">Kelas Populer</h2>
-                <div className="space-y-4">
-                  {topCourse && topCourse.length > 0 ? (
-                    topCourse
-                      .sort((a, b) => b.user_count - a.user_count)
-                      .slice(0, 3)
-
-                      .map((kelas, index) => (
+                {isLoading ? (
+                  <div className="space-y-4">
+                    <div className="animate-pulse">
+                      {[1, 2, 3].map((i) => (
                         <div
-                          key={index + 1}
-                          className="flex items-center justify-between border-primary-50 border-2 p-4 rounded-lg"
-                        >
-                          <div className="flex items-center gap-4">
-                            <span className="bg-primary-50 text-primary-500 text-3xl rounded-lg w-12 h-12 flex justify-center items-center font-semibold">
-                              {index + 1}
-                            </span>
-                            <span className="text-base font-medium">
-                              {kelas.class_name}
-                            </span>
+                          key={i}
+                          className="h-20 bg-primary-500/20  rounded-lg mb-4"
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {topCourse && topCourse.length > 0 ? (
+                      topCourse
+                        .sort((a, b) => b.user_count - a.user_count)
+                        .slice(0, 3)
+                        .map((kelas, index) => (
+                          <div
+                            key={index + 1}
+                            className="flex items-center justify-between border-primary-50 border-2 p-4 rounded-lg"
+                          >
+                            <div className="flex items-center gap-4">
+                              <span className="bg-primary-50 text-primary-500 text-3xl rounded-lg w-12 h-12 flex justify-center items-center font-semibold">
+                                {index + 1}
+                              </span>
+                              <span className="capitalize text-base font-medium">
+                                {kelas.class_name}
+                              </span>
+                            </div>
+                            <div className="text-gray-500">
+                              <span className="text-3xl text-primary-500 font-bold">
+                                {kelas.user_count}{" "}
+                              </span>{" "}
+                              <br /> Mentee
+                            </div>
                           </div>
-                          <div className="text-gray-500">
-                            <span className="text-3xl text-primary-500 font-bold">
-                              {kelas.user_count}{" "}
-                            </span>{" "}
-                            <br /> mentee
-                          </div>
-                        </div>
-                      ))
-                  ) : (
-                    <p className="text-gray-500">No popular classes found</p>
-                  )}
-                </div>
+                        ))
+                    ) : (
+                      <p className="text-gray-500">No popular classes found</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Transactions Table */}
             <div className="mt-8 bg-white rounded-lg p-6 shadow-sm">
               <h2 className="text-lg font-semibold mb-4">Transaksi Terbaru</h2>
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left text-gray-500">
-                    <th className="pb-4">ID</th>
-                    <th className="pb-4">KODE PROGRAM</th>
-                    <th className="pb-4">NAMA PROGRAM</th>
-                    <th className="pb-4">STATUS</th>
-                    <th className="pb-4">METODE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((transaction, index) => (
-                    <tr key={index} className="border-t border-gray-100">
-                      <td className="py-3 text-[#1DA599]">{transaction.id}</td>
-                      <td className="py-3 text-[#1DA599]">
-                        {transaction.kodeProgram}
-                      </td>
-                      <td className="py-3">{transaction.namaProgram}</td>
-                      <td className="py-3">
-                        <span
-                          className={`px-4 py-2 rounded-full text-sm ${
-                            transaction.status === "Menunggu Pembayaran"
-                              ? "bg-orange-100 text-orange-500"
-                              : transaction.status === "Pembayaran Berhasil"
-                              ? "bg-green-100 text-green-500"
-                              : "bg-red-100 text-red-500"
-                          }`}
-                        >
-                          {transaction.status}
-                        </span>
-                      </td>
-                      <td className="py-3">{transaction.metode}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {isLoading ? (
+                <LoadingTable />
+              ) : (
+                <div className="bg-white rounded-lg shadow ">
+                  <table className="w-full rounded-lg">
+                    <thead className="bg-primary-50/75">
+                      <tr className="text-center">
+                        <th className="px-6 py-4 text-[#20B1A8]">ID</th>
+                        <th className="px-6 py-4 text-[#20B1A8]">NAMA</th>
+                        <th className="px-6 py-4 text-[#20B1A8]">
+                          NAMA PROGRAM
+                        </th>
+                        <th className="px-6 py-4 text-[#20B1A8]">STATUS</th>
+                        <th className="px-6 py-4 text-[#20B1A8]">METODE</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-center">
+                      {transaction.map((transaction, index) => (
+                        <tr key={index} className="border-t border-gray-100">
+                          <td className="py-3 text-[#1DA599]">
+                            {transaction.transaction_id}
+                          </td>
+                          <td className="py-3 text-[#1DA599]">
+                            {transaction.user.name}
+                          </td>
+                          <td className="capitalize py-3">
+                            {transaction.course.class_name}
+                          </td>
+                          <td className="py-3">
+                            <span
+                              className={`px-4 py-2  rounded-full text-sm uppercase font-semibold ${
+                                transaction.status === "pending"
+                                  ? "bg-orange-100 text-orange-500"
+                                  : transaction.status === "completed"
+                                  ? "bg-green-100 text-green-500"
+                                  : "bg-red-100 text-red-500"
+                              }`}
+                            >
+                              {transaction.status}
+                            </span>
+                          </td>
+                          <td className="uppercase  py-3">
+                            {transaction.payment_method === "echannel"
+                              ? "VA"
+                              : transaction.payment_method}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>
