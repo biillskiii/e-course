@@ -8,21 +8,20 @@ const ProgressBar = ({ progress, color = "bg-teal-500" }) => {
   };
 
   return (
-    <div className="w-full bg-teal-100 rounded-full h-2 overflow-hidden">
-      <div
-        className={clsx(
-          "h-full rounded-full transition-all duration-300 ease-out",
-          color
-        )}
-        style={progressStyle}
-      ></div>
+    <div className="w-full">
+      <div className="bg-teal-100 rounded-full h-2 overflow-hidden relative">
+        <div
+          className={clsx(
+            "h-full rounded-full transition-all duration-300 ease-out flex items-center justify-center text-white font-bold",
+            color
+          )}
+          style={progressStyle}
+        ></div>
+      </div>
+      <p className="text-start mt-2 text-primary-500 font-bold">{progress}%</p>
     </div>
   );
 };
 
-ProgressBar.propTypes = {
-  progress: PropTypes.number.isRequired, // Angka dari 0 hingga 100 untuk nilai progress
-  color: PropTypes.string, // Kelas Tailwind untuk warna progress
-};
 
 export default ProgressBar;
