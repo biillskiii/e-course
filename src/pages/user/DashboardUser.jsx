@@ -22,7 +22,6 @@ const Dashboard = () => {
   const [userData, setUserData] = useState(null); // Tambahkan state untuk data pengguna
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState("");
-  const [showAllClasses, setShowAllClasses] = useState(false);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -66,16 +65,13 @@ const Dashboard = () => {
     setIsLoading(true);
     fetchClasses();
   }, []);
-
-  const handleShowAllClasses = () => {
-    if (showAllClasses) {
-      setVisibleClasses(classes.slice(0, 6));
-    } else {
-      setVisibleClasses(classes);
-    }
-    setShowAllClasses(!showAllClasses);
+  const handleCourses = () => {
+    navigate("/user/kelas");
+  }
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
   };
-
   return (
     <section>
       <div className="flex justify-start">
@@ -102,7 +98,7 @@ const Dashboard = () => {
             />
             <Button
               label="Webinar"
-              variant="side-primary"
+              variant="disable"
               leftIcon={<Ticket />}
               size="very-big"
               onClick={() => handleNavigation("/user/webinar")}
@@ -128,7 +124,7 @@ const Dashboard = () => {
               variant="side-danger"
               leftIcon={<LogoutCurve />}
               size="very-big"
-              onClick={() => handleNavigation("/masuk")}
+              onClick={handleLogout}
             />
           </div>
         </div>
@@ -143,12 +139,10 @@ const Dashboard = () => {
               <div className="flex w-[728px] justify-between mr-16 items-center">
                 <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
                 <Button
-                  label={
-                    showAllClasses ? "Tampilkan Lebih Sedikit" : "Lihat Semua"
-                  }
+                  label={"Lihat Semua"}
                   size="small"
                   variant="submenu"
-                  onClick={handleShowAllClasses}
+                  onClick={handleCourses}
                 />
               </div>
               {isLoading ? (

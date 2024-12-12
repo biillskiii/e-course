@@ -52,7 +52,7 @@ const DaftarTransaksi = () => {
             />
             <Button
               label="Webinar"
-              variant="side-primary"
+              variant="disable"
               leftIcon={<Ticket />}
               size="very-big"
               onClick={() => handleNavigation("/user/webinar")}
@@ -94,7 +94,8 @@ const DaftarTransaksi = () => {
               <h1 className="font-bold text-3xl">Daftar Transaksi</h1>
               {courseData.map((course, index) => (
                 <TransactionCard key={index} course={course} />
-              ))};
+              ))}
+              ;
             </div>
           </div>
         </div>
