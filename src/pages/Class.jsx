@@ -18,7 +18,7 @@ function App() {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
