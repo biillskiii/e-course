@@ -16,6 +16,7 @@ import {
   Filter,
   Edit2,
   Trash,
+  Eye,
 } from "iconsax-react";
 import { jwtDecode } from "jwt-decode";
 
@@ -36,7 +37,6 @@ const Kelas = () => {
   });
   const navigate = useNavigate();
 
-  // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -44,7 +44,7 @@ const Kelas = () => {
       try {
         const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`,
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/course-admin`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -110,8 +110,8 @@ const Kelas = () => {
   }, [navigate]);
 
   // Navigation handler
-  const handleNavigation = (path) => {
-    navigate(path);
+  const handleNavigation = (path, state = null) => {
+    navigate(path, { state });
   };
 
   // Search handler
@@ -135,7 +135,7 @@ const Kelas = () => {
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses?page=${pageNumber}`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses?page=${pageNumber}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -291,6 +291,7 @@ const Kelas = () => {
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">KODE KELAS</th>
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">NAMA KELAS</th>
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th>
                 <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
               </tr>
             </thead>
@@ -313,12 +314,19 @@ const Kelas = () => {
                 filteredData.map((kelas) => (
                   <tr key={kelas.id} className="border-t border-gray-100">
                     <td className="px-6 py-4">{kelas.course_code}</td>
-                    <td className="px-6 py-4">
-                      {kelas.category.category_name}
-                    </td>
+                    <td className="px-6 py-4">{kelas.category}</td>
                     <td className="px-6 py-4">{kelas.class_name}</td>
+                    <td className="px-6 py-4">{kelas.user_count}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
+                        <button
+                          className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
+                          onClick={() =>
+                            handleNavigation(`/admin/kelas/${kelas.id}`)
+                          }
+                        >
+                          <Eye />
+                        </button>
                         <button
                           className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
                           onClick={() =>
@@ -333,7 +341,7 @@ const Kelas = () => {
                             /* Tambahkan logika hapus kelas */
                           }}
                         >
-                          <Trash />
+                          <Trash color="red" />
                         </button>
                       </div>
                     </td>
