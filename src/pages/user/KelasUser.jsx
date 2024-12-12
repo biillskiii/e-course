@@ -13,18 +13,43 @@ import NavbarDashboard from "../../components/NavbarDashboard";
 import { userData, userKelas, sertifKelas } from "../../data";
 import CardUser from "../../components/CardUser";
 import { NotificationCircle } from "iconsax-react";
+import { jwtDecode } from "jwt-decode";
 const Kelas = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [kelasStatus, setKelasStatus] = useState("Dalam Progress");
   const [isLoading, setIsLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState("");
   const handleNavigation = (path) => {
     navigate(path);
   };
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserProfile({
+        username: decodedToken.name || "",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
   const fetchClasses = async () => {
+    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        "https://be-course.serpihantech.com/api/courses"
+        "https://be-course.serpihantech.com/api/courses",
+        {
+          headers: { Authorization: { token } },
+        }
       );
       setIsLoading(false);
       const result = await response.json();
@@ -39,7 +64,10 @@ const Kelas = () => {
     fetchClasses();
     // fetchWebinar();
   }, []);
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <section>
       <div>
@@ -66,7 +94,7 @@ const Kelas = () => {
             />
             <Button
               label="Webinar"
-              variant="side-primary"
+              variant="disable"
               leftIcon={<Ticket />}
               size="very-big"
               onClick={() => handleNavigation("/user/webinar")}
@@ -83,7 +111,7 @@ const Kelas = () => {
               variant="side-primary"
               leftIcon={<Category />}
               size="very-big"
-              onClick={() => handleNavigation("/user/pengaturan")}
+              onClick={handleLogout}
             />
           </div>
           <div className="mt-20">
@@ -100,8 +128,8 @@ const Kelas = () => {
         {/* Main Content */}
         <div className="w-full pl-60">
           <NavbarDashboard
-            avatar={userData.avatar}
-            username={userData.username}
+            avatar={userProfile.avatar}
+            username={userProfile.username}
           />
 
           <div className="w-full flex flex-col p-10">

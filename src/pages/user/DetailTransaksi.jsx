@@ -25,7 +25,7 @@ const copyToClipboard = (text) => {
 const DetailTransaksi = () => {
   const { billNumber } = useParams();
   const navigate = useNavigate();
-
+  const [userProfile, setUserProfile] = useState("");
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -34,10 +34,31 @@ const DetailTransaksi = () => {
   if (!course) {
     return <p>Data tidak ditemukan.</p>;
   }
-
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserProfile({
+        username: decodedToken.name || "",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
   const isPending = course.status === "Menunggu Pembayaran";
   const isSuccessful = course.status === "Pembayaran Berhasil";
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <section>
       <div>
@@ -63,7 +84,7 @@ const DetailTransaksi = () => {
             />
             <Button
               label="Webinar"
-              variant="side-primary"
+              variant="disable"
               leftIcon={<Ticket />}
               size="very-big"
               onClick={() => handleNavigation("/user/webinar")}
@@ -90,14 +111,14 @@ const DetailTransaksi = () => {
               variant="side-danger"
               leftIcon={<LogoutCurve />}
               size="very-big"
-              onClick={() => handleNavigation("/masuk")}
+              onClick={handleLogout}
             />
           </div>
         </div>
         <div className="w-full pl-60">
           <NavbarDashboard
-            avatar={userData.avatar}
-            username={userData.username}
+            avatar={userProfile.avatar}
+            username={userProfile.username}
           />
 
           <div className="p-10 space-y-8">
