@@ -11,7 +11,7 @@ import {
 } from "iconsax-react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import { userData, userKelas, sertifKelas } from "../../data";
-import Card from "../../components/Card";
+import CardUser from "../../components/CardUser";
 import { NotificationCircle } from "iconsax-react";
 const Kelas = () => {
   const navigate = useNavigate();
@@ -138,16 +138,17 @@ const Kelas = () => {
                   {kelasStatus === "Dalam Progress" ? (
                     <>
                       {classes.map((kelas) => (
-                        <Card
+                        <CardUser
                           img={kelas.path_photo}
                           mentorImg={kelas.mentor.path_photo}
-                          title={kelas.name}
+                          title={kelas.class_name}
                           name={kelas.mentor.name}
                           job={kelas.mentor.specialist}
                           price={kelas.price}
                           level={kelas.level}
                           onClick={() =>
-                            kelas?.id && navigate(`/user/detail/${kelas.id}`)
+                            kelas?.id &&
+                            navigate(`/user/detail-user/${kelas.id}`)
                           }
                         />
                       ))}

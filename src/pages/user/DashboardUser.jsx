@@ -11,7 +11,7 @@ import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import { userKelas, userWebinar } from "../../data";
-import Card from "../../components/Card";
+import CardUser from "../../components/CardUser";
 import Sertifikat from "../../assets/Certificate.png";
 import { jwtDecode } from "jwt-decode";
 
@@ -136,7 +136,7 @@ const Dashboard = () => {
               ) : (
                 <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
                   {classes.map((kelas) => (
-                    <Card
+                    <CardUser
                       key={kelas.id}
                       img={kelas.path_photo}
                       mentorImg={kelas.mentor.path_photo}
@@ -152,13 +152,13 @@ const Dashboard = () => {
                   ))}
                 </div>
               )}
-              <div className="flex w-[728px] justify-between mr-16 items-center">
+              {/* <div className="flex w-[728px] justify-between mr-16 items-center">
                 <h1 className="font-bold text-2xl">Webinar yang Kamu Ikuti</h1>
                 <Button label={"Lihat Semua"} size="small" variant="submenu" />
               </div>
               <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
                 {userWebinar.map((webinar) => (
-                  <Card
+                  <CardUser
                     key={webinar.id}
                     img={webinar.img}
                     title={webinar.title}
@@ -168,7 +168,7 @@ const Dashboard = () => {
                     time={webinar.time}
                   />
                 ))}
-              </div>
+              </div> */}
             </div>
             <div className="flex flex-col">
               <div className="flex w-[425px] justify-between items-center">
