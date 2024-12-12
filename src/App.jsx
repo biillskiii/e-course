@@ -22,7 +22,8 @@ import WebinarUser from "./pages/user/WebinarUser";
 import DaftarTransaksi from "./pages/user/DaftarTransaksi";
 import DetailTransaksi from "./pages/user/DetailTransaksi";
 import Pengaturan from "./pages/user/Pengaturan";
-import DetailClass from "./pages/user/DetailClass";
+import DetailClass from "./components/CourseDetail";
+import SiswaList from "./pages/admin/SiswaList";
 
 function App() {
   return (
@@ -43,8 +44,10 @@ function App() {
         <Route path="/admin/kelas/tambah-kelas" element={<TambahKelas />} />
         <Route path="/admin/webinar" element={<Webinar />} />
         <Route path="/admin/mentee" element={<Mentee />} />
+
         <Route path="/admin/mentor" element={<Mentor />} />
         <Route path="/admin/daftar-transaksi" element={<Transaksi />} />
+        <Route path="/admin/kelas/:id" element={<SiswaList />} />
         <Route path="/user/dashboard" element={<DashboardUser />} />
         <Route path="/user/kelas" element={<KelasUser />} />
         <Route path="/user/webinar" element={<WebinarUser />} />
