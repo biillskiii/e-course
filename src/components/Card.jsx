@@ -128,7 +128,7 @@ const Card = ({
   hasDiscount,
   variant = "default",
   schedule,
-  time,
+  label,
   onClick,
 }) => {
   useMidtransScript(); // Load Midtrans script
@@ -159,7 +159,7 @@ const Card = ({
               <PriceDisplay price={price} hasDiscount={hasDiscount} />
             </p>
             <Button
-              label="Daftar Kelas"
+              label={label}
               size="full"
               variant="primary"
               className="mt-4"
@@ -179,7 +179,7 @@ const Card = ({
       <div className="flex flex-col flex-grow mt-5">
         <h1
           style={{ fontSize: calculateFontSize(title) }}
-          className="font-bold text-xl line-clamp-2 h-[60px]"
+          className="capitalize font-bold text-xl line-clamp-2 h-[60px]"
         >
           {title}
         </h1>
