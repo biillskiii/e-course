@@ -24,6 +24,7 @@ import DetailTransaksi from "./pages/user/DetailTransaksi";
 import Pengaturan from "./pages/user/Pengaturan";
 import DetailClass from "./components/CourseDetail";
 import SiswaList from "./pages/admin/SiswaList";
+import DetailClassUser from "./pages/user/DetailClass";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
         <Route path="/detail/:billNumber" element={<DetailTransaksi />} />
         <Route path="/user/pengaturan" element={<Pengaturan />} />
         <Route path="/user/detail/:id" element={<DetailClass />} />
+        <Route path="/user/detail-user/:id" element={<DetailClassUser />} />
       </Routes>
     </Router>
   );

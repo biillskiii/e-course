@@ -10,21 +10,44 @@ import {
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 import NavbarDashboard from "../../components/NavbarDashboard";
-import { userData, userKelas, userWebinar } from "../../data";
+import { userKelas, userWebinar } from "../../data";
 import Card from "../../components/Card";
 import Sertifikat from "../../assets/Certificate.png";
+import { jwtDecode } from "jwt-decode";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
+  const [userData, setUserData] = useState(null); // Tambahkan state untuk data pengguna
   const [isLoading, setIsLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState("");
   const handleNavigation = (path) => {
     navigate(path);
   };
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserProfile({
+        username: decodedToken.name || "",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
+  // FetcheckUserRolecheckUserRole kelas dari API
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        "https://be-course.serpihantech.com/api/courses"
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`
       );
       setIsLoading(false);
       const result = await response.json();
@@ -37,9 +60,7 @@ const Dashboard = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchClasses();
-    // fetchWebinar();
   }, []);
-
   return (
     <section>
       <div className="flex justify-start">
@@ -96,14 +117,12 @@ const Dashboard = () => {
             />
           </div>
         </div>
-
         {/* Main Content */}
         <div className="w-full pl-60">
           <NavbarDashboard
-            avatar={userData.avatar}
-            username={userData.username}
+            avatar={userProfile?.avatar} // Gunakan data avatar dari API
+            username={userProfile?.username} // Gunakan username dari API
           />
-
           <div className="flex p-10">
             <div className="flex flex-col">
               <div className="flex w-[728px] justify-between mr-16 items-center">
@@ -118,13 +137,17 @@ const Dashboard = () => {
                 <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
                   {classes.map((kelas) => (
                     <Card
+                      key={kelas.id}
                       img={kelas.path_photo}
                       mentorImg={kelas.mentor.path_photo}
-                      title={kelas.name}
+                      title={kelas.class_name}
                       name={kelas.mentor.name}
                       job={kelas.mentor.specialist}
                       price={kelas.price}
                       level={kelas.level}
+                      onClick={() =>
+                        kelas?.id && navigate(`/user/detail-user/${kelas.id}`)
+                      }
                     />
                   ))}
                 </div>
@@ -136,6 +159,7 @@ const Dashboard = () => {
               <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
                 {userWebinar.map((webinar) => (
                   <Card
+                    key={webinar.id}
                     img={webinar.img}
                     title={webinar.title}
                     job={webinar.job}
@@ -152,8 +176,8 @@ const Dashboard = () => {
                 <Button label={"Lihat Semua"} size="small" variant="submenu" />
               </div>
               <div className="mt-4 space-y-4">
-                <img src={Sertifikat} />
-                <img src={Sertifikat} />
+                <img src={Sertifikat} alt="Sertifikat 1" />
+                <img src={Sertifikat} alt="Sertifikat 2" />
               </div>
             </div>
           </div>
@@ -162,5 +186,4 @@ const Dashboard = () => {
     </section>
   );
 };
-
 export default Dashboard;

@@ -3,7 +3,7 @@ import ClassHeader from "./ClassHeader";
 import Chapter from "./Chapter";
 import Accordion from "./Accordion";
 import { TickCircle } from "iconsax-react";
-import NavbarDashboard from "./Navbar";
+import NavbarDashboard from "./NavbarDashboard";
 import { useParams } from "react-router-dom";
 
 const CourseDetail = () => {
@@ -84,6 +84,7 @@ const CourseDetail = () => {
         {classDetail ? (
           <>
             <ClassHeader
+              
               title={classDetail.class_name || "Nama Kelas Tidak Tersedia"}
               imgMentor={classDetail.mentor?.path_photo || ""}
               img={classDetail.path_photo || ""}

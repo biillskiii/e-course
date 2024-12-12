@@ -1,34 +1,54 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import ClassHeader from "../../components/ClassHeader";
-import Navbar from "../../components/Navbar";
 import Chapter from "../../components/Chapter";
 import Accordion from "../../components/Accordion";
-import { benefitsList } from "../../data";
 import { TickCircle } from "iconsax-react";
-const DetailClassPage = (order_code, user_id, course_id) => {
+import NavbarDashboard from "../../components/NavbarDashboard";
+import { useNavigate, useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+const CourseDetail = () => {
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [benefit, setBenefit] = useState([benefitsList]);
+  const [userProfile, setUserProfile] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserProfile({
+        username: decodedToken.name || "",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
 
   const fetchClassDetail = async () => {
+    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${id}`
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const result = await response.json();
-
       // Logging tambahan untuk debugging
       console.log("Full API Response:", result);
       console.log("Data yang akan diset:", result.data);
-
       setClassDetail(result.data);
     } catch (error) {
       console.error("Error fetching class detail:", error);
@@ -37,128 +57,72 @@ const DetailClassPage = (order_code, user_id, course_id) => {
       setIsLoading(false);
     }
   };
-
+  // Placeholder fetchOrder function (implement actual implementation)
+  const fetchOrder = (order_code, user_id, course_id) => {
+    // Implement order processing logic
+    console.log("Processing order", { order_code, user_id, course_id });
+  };
   useEffect(() => {
     fetchClassDetail();
   }, [id]);
 
-  // Debugging log untuk classDetail
-  useEffect(() => {
-    console.log("Current classDetail state:", classDetail);
-  }, [classDetail]);
+  const hasToken = !!sessionStorage.getItem("accessToken");
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="p-10 text-red-500">Error: {error}</div>;
-  }
-  const fetchOrder = async (order_code, user_id, course_id) => {
-    try {
-      const response = await fetch(
-        "`${import.meta.env.VITE_SERVER_API_KEY}api/order",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_code: "AAA12",
-            user_id: 1,
-            course_id: classDetail.course.id,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorDetails = await response.text(); // Dapatkan detail error jika ada
-        throw new Error(
-          `HTTP error! Status: ${response.status}. Details: ${errorDetails}`
-        );
-      }
-
-      const data = await response.json();
-      console.log("Order fetched successfully:", data);
-      console.log("Token received:", data.data.snapToken);
-
-      // Trigger Midtrans Snap payment
-      if (window.snap) {
-        window.snap.pay(data.data.snapToken);
-      } else {
-        console.error("Midtrans Snap is not loaded.");
-      }
-    } catch (error) {
-      console.error("Error fetching order:", error);
-    } finally {
-      console.log("Fetch attempt completed.");
-    }
-  };
-  // Dynamically load Midtrans Snap script
-  const useMidtransScript = () => {
-    useEffect(() => {
-      const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js";
-      const clientKey = import.meta.env.VITE_API_KEY;
-
-      // Cek apakah skrip sudah dimuat
-      if (!document.querySelector(script[(src = "${snapScript}")])) {
-        const script = document.createElement("script");
-        script.src = snapScript;
-        script.setAttribute("data-client-key", clientKey);
-        script.async = true;
-
-        document.body.appendChild(script);
-
-        return () => {
-          document.body.removeChild(script);
-        };
-      }
-    }, [useMidtransScript]);
-  };
   return (
     <div>
-      <Navbar />
-      <div className="flex justify-between px-32 my-20">
+      <NavbarDashboard
+        avatar={userProfile?.avatar} // Gunakan data avatar dari API
+        username={userProfile?.username} // Gunakan username dari API
+      />
+      <div className="flex justify-center px-32 my-20">
         {classDetail ? (
-          <>
-            {/* Tambahkan log tambahan */}
-            {console.log("Rendering DetailClass with:", classDetail)}
-            <ClassHeader
-              title={classDetail.course.name}
-              imgMentor={classDetail.course.mentor?.path_photo}
-              img={classDetail.course.path_photo}
-              description={classDetail.course.description}
-              name={classDetail.course.mentor?.name}
-              job={classDetail.course.mentor?.specialist}
-            />
-          </>
+          <div className="flex gap-x-52">
+            <div className="w-full">
+              <ClassHeader
+              category={classDetail.category.category_name || ""}
+                title={classDetail.class_name || "Nama Kelas Tidak Tersedia"}
+                imgMentor={classDetail.mentor?.path_photo || ""}
+                img={classDetail.path_photo || ""}
+                description={classDetail.description || "Tidak ada deskripsi"}
+                name={classDetail.mentor?.name || "Nama Mentor Tidak Tersedia"}
+                job={
+                  classDetail.mentor?.specialist || "Spesialis Tidak Tersedia"
+                }
+              />
+            </div>
+            <div className="w-full">
+              {/* Cek apakah memiliki token */}
+              {!hasToken && (
+                <Chapter
+                  onClick={() =>
+                    fetchOrder(
+                      classDetail.order_code || "",
+                      classDetail.user_id || "",
+                      classDetail.id || ""
+                    )
+                  }
+                  price={classDetail.price || 0}
+                  accordionItems={classDetail.chapters || []}
+                />
+              )}
+              <div className="border-2 border-gray-100 p-4 rounded-3xl">
+                <p className="font-bold text-2xl">Materi Kelas</p>
+                <p>Progress Kamu</p>
+                {classDetail.chapters && classDetail.chapters.length > 0 ? (
+                  <Accordion items={classDetail.chapters} />
+                ) : (
+                  <p className="text-gray-500">Tidak ada chapter tersedia</p>
+                )}
+              </div>
+            </div>
+          </div>
         ) : (
-          <p>Tidak ada detail kelas</p>
+          <div className="w-full text-center text-gray-500">
+            Tidak ada detail kelas tersedia
+          </div>
         )}
-        <div>
-          <Chapter
-            price={classDetail.course.price}
-            onClick={() => fetchOrder(order_code, user_id, course_id)}
-          />
-          <Accordion items={classDetail.chapter} />
-          <div className="flex flex-col mt-10"></div>
-          <h1 className="text-2xl font-bold mb-4">Yang akan kamu dapatkan</h1>
-          <ul className="list-disc list-inside">
-            {benefitsList.map((benefit, index) => (
-              <li key={index} className="flex items-center mb-4 text-base">
-                <TickCircle size="24" className="mr-2 text-primary-500" />
-                {benefit}
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     </div>
   );
 };
-
-export default DetailClassPage;
+export default CourseDetail;
