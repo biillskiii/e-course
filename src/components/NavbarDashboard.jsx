@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Notification } from "iconsax-react";
+import { useNavigate } from "react-router-dom";
 const NavbarDashboard = ({ username, avatar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-
+  const navigate = useNavigate();
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -21,7 +22,10 @@ const NavbarDashboard = ({ username, avatar }) => {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <div className="flex justify-between items-center w-full h-24 px-8 md:px-10 shadow-sm">
       <div className="flex flex-col items-start">
@@ -59,8 +63,8 @@ const NavbarDashboard = ({ username, avatar }) => {
                   Pengaturan
                 </a> */}
                 <a
-                  href="/logout"
-                  className="block px-4 py-2 text-sm text-red-500 hover:bg-gray-50"
+                  onClick={handleLogout}
+                  className="block cursor-pointer px-4 py-2 text-sm text-red-500 hover:bg-gray-50"
                 >
                   Keluar
                 </a>
