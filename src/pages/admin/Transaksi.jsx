@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
 import { userData, transactions } from "../../data";
@@ -17,7 +17,7 @@ import {
   Edit2,
   Trash,
 } from "iconsax-react";
-
+import { jwtDecode } from "jwt-decode";
 const Mentor = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState(
@@ -25,9 +25,65 @@ const Mentor = () => {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTransaction, setTransaction] = useState([]);
   const itemsPerPage = 5;
+  const [userProfile, setUserProfile] = useState({
+    username: "",
+    avatar: "",
+  });
   const navigate = useNavigate();
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
 
+    try {
+      const decodedToken = jwtDecode(token);
+
+      // Check role_id
+      if (decodedToken.role_id != 1) {
+        navigate("/masuk");
+        return;
+      }
+
+      setUserProfile({
+        username: decodedToken.email || "Admin",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
+  const fetchTransactions = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/transactions`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const result = await response.json();
+      setTransaction(result); // Simpan panjang data courses
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    setIsLoading(true);
+    fetchTransactions();
+  }, []);
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -112,7 +168,6 @@ const Mentor = () => {
             variant="side-primary"
             leftIcon={<Wallet />}
             size="very-big"
-            onClick={() => handleNavigation("/admin/daftar-transaksi")}
           />
           <Button
             label="Pengaturan"
@@ -133,8 +188,8 @@ const Mentor = () => {
       {/* Main Content */}
       <div className="flex-1 pl-60">
         <NavbarDashboard
-          avatar={userData.avatar}
-          username={userData.username}
+          avatar={userProfile.avatar}
+          username={userProfile.username}
         />
 
         {/* Header Section */}
@@ -169,14 +224,6 @@ const Mentor = () => {
             <button className="p-2 border border-gray-200 rounded-lg">
               <Filter />
             </button>
-
-            {/* Mentee Text */}
-            <div className="flex items-center text-primary-500">
-              <span className="mr-2">Mentee</span>
-            </div>
-
-            {/* Add Class Button */}
-            <Button label="Tambah Kelas" size="small" variant="primary" />
           </div>
         </div>
 
@@ -186,25 +233,28 @@ const Mentor = () => {
             <thead>
               <tr className="text-left text-gray-500">
                 <th className="pb-4">ID</th>
+                <th className="pb-4">NAMA</th>
                 <th className="pb-4">NAMA PROGRAM</th>
                 <th className="pb-4">STATUS</th>
                 <th className="pb-4">METODE</th>
               </tr>
             </thead>
             <tbody>
-              {currentData.map((transaction, index) => (
+              {isTransaction.map((transaction, index) => (
                 <tr key={index} className="border-t border-gray-100">
-                  <td className="py-3 text-[#1DA599]">{transaction.id}</td>
                   <td className="py-3 text-[#1DA599]">
-                    {transaction.kodeProgram}
+                    {transaction.transaction_id}
                   </td>
-                  <td className="py-3">{transaction.namaProgram}</td>
+                  <td className="py-3 text-[#1DA599]">
+                    {transaction.user.name}
+                  </td>
+                  <td className="py-3">{transaction.course.class_name}</td>
                   <td className="py-3">
                     <span
-                      className={`px-4 py-2 rounded-full text-sm ${
-                        transaction.status === "Menunggu Pembayaran"
+                      className={`px-4 py-2 rounded-full text-sm uppercase font-semibold ${
+                        transaction.status === "pending"
                           ? "bg-orange-100 text-orange-500"
-                          : transaction.status === "Pembayaran Berhasil"
+                          : transaction.status === "completed"
                           ? "bg-green-100 text-green-500"
                           : "bg-red-100 text-red-500"
                       }`}
@@ -212,7 +262,7 @@ const Mentor = () => {
                       {transaction.status}
                     </span>
                   </td>
-                  <td className="py-3">{transaction.metode}</td>
+                  <td className="py-3">{transaction.payment_method}</td>
                 </tr>
               ))}
             </tbody>
