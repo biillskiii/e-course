@@ -228,7 +228,10 @@ const Mentor = () => {
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   // Render
   return (
     <div className="flex">
@@ -254,7 +257,7 @@ const Mentor = () => {
           />
           <Button
             label="Webinar"
-            variant="side-primary"
+            variant="disable"
             leftIcon={<MonitorRecorder />}
             size="very-big"
             onClick={() => handleNavigation("/admin/webinar")}
@@ -281,19 +284,13 @@ const Mentor = () => {
             size="very-big"
             onClick={() => handleNavigation("/admin/daftar-transaksi")}
           />
-          <Button
-            label="Pengaturan"
-            variant="side-primary"
-            leftIcon={<Setting3 />}
-            size="very-big"
-          />
         </div>
         <Button
           label="Keluar"
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
-          onClick={() => handleNavigation("/login")}
+          onClick={handleLogout}
         />
       </div>
 
@@ -351,7 +348,10 @@ const Mentor = () => {
           <div className="fixed inset-0  bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white py-10 pb-14 flex flex-col justify-center items-center rounded-lg h-auto w-[672px]">
               <h2 className="text-2xl font-semibold mb-4">Tambah Mentee</h2>
-              <form onSubmit={handleSubmitMentee} className="space-y-10 w-full px-10">
+              <form
+                onSubmit={handleSubmitMentee}
+                className="space-y-10 w-full px-10"
+              >
                 {/* Mentee Name Dropdown */}
                 <div>
                   <label
@@ -384,7 +384,7 @@ const Mentor = () => {
                     htmlFor="menteeClass"
                     className="block text-sm font-medium mb-2"
                   >
-                  Kelas
+                    Kelas
                   </label>
                   <select
                     id="menteeClass"
@@ -460,7 +460,9 @@ const Mentor = () => {
                       <td className="px-6 py-4">{mentee.id}</td>
                       <td className="px-6 py-4">{mentee.user.name}</td>
                       <td className="px-6 py-4">{mentee.user.email}</td>
-                      <td className="px-6 py-4">{mentee.course.class_name}</td>
+                      <td className="capitalize px-6 py-4">
+                        {mentee.course.class_name}
+                      </td>
                     </tr>
                   ))
               ) : (

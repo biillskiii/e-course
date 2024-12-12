@@ -206,7 +206,10 @@ const EditKelas = () => {
       setIsLoading(false);
     }
   };
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <div className="min-h-screen flex">
       {/* Sidebar code remains the same... */}
@@ -232,7 +235,7 @@ const EditKelas = () => {
           />
           <Button
             label="Webinar"
-            variant="side-primary"
+            variant="disable"
             leftIcon={<MonitorRecorder />}
             size="very-big"
             onClick={() => handleNavigation("/admin/webinar")}
@@ -256,13 +259,7 @@ const EditKelas = () => {
             variant="side-primary"
             leftIcon={<Wallet />}
             size="very-big"
-            onClick={() => handleNavigation("/admin/daftar-transaksi")}
-          />
-          <Button
-            label="Pengaturan"
-            variant="side-primary"
-            leftIcon={<Setting3 />}
-            size="very-big"
+            onClick={handleLogout}
           />
         </div>
         <Button

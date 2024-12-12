@@ -162,7 +162,10 @@ const Kelas = () => {
       setIsLoading(false);
     }
   };
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -188,7 +191,7 @@ const Kelas = () => {
           />
           <Button
             label="Webinar"
-            variant="side-primary"
+            variant="disable"
             leftIcon={<MonitorRecorder />}
             size="very-big"
             onClick={() => handleNavigation("/admin/webinar")}
@@ -214,19 +217,13 @@ const Kelas = () => {
             size="very-big"
             onClick={() => handleNavigation("/admin/daftar-transaksi")}
           />
-          <Button
-            label="Pengaturan"
-            variant="side-primary"
-            leftIcon={<Setting3 />}
-            size="very-big"
-          />
         </div>
         <Button
           label="Keluar"
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
-          onClick={() => handleNavigation("/login")}
+          onClick={handleLogout}
         />
       </div>
 

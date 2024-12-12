@@ -160,7 +160,10 @@ const Kelas = () => {
       setIsLoading(false);
     }
   };
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -186,7 +189,7 @@ const Kelas = () => {
           />
           <Button
             label="Webinar"
-            variant="side-primary"
+            variant="disable"
             leftIcon={<MonitorRecorder />}
             size="very-big"
             onClick={() => handleNavigation("/admin/webinar")}
@@ -212,19 +215,13 @@ const Kelas = () => {
             size="very-big"
             onClick={() => handleNavigation("/admin/daftar-transaksi")}
           />
-          <Button
-            label="Pengaturan"
-            variant="side-primary"
-            leftIcon={<Setting3 />}
-            size="very-big"
-          />
         </div>
         <Button
           label="Keluar"
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
-          onClick={() => handleNavigation("/login")}
+          onClick={handleLogout}
         />
       </div>
 
@@ -314,8 +311,8 @@ const Kelas = () => {
                 filteredData.map((kelas) => (
                   <tr key={kelas.id} className="border-t border-gray-100">
                     <td className="px-6 py-4">{kelas.course_code}</td>
-                    <td className="px-6 py-4">{kelas.category}</td>
-                    <td className="px-6 py-4">{kelas.class_name}</td>
+                    <td className="capitalize px-6 py-4">{kelas.category}</td>
+                    <td className="capitalize px-6 py-4">{kelas.class_name}</td>
                     <td className="px-6 py-4">{kelas.user_count}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">

@@ -207,7 +207,10 @@ const Mentor = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
+  const handleLogout = () => {
+    sessionStorage.getItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -232,7 +235,7 @@ const Mentor = () => {
           />
           <Button
             label="Webinar"
-            variant="side-primary"
+            variant="disable"
             leftIcon={<MonitorRecorder />}
             size="very-big"
             onClick={() => handleNavigation("/admin/webinar")}
@@ -259,19 +262,13 @@ const Mentor = () => {
             size="very-big"
             onClick={() => handleNavigation("/admin/daftar-transaksi")}
           />
-          <Button
-            label="Pengaturan"
-            variant="side-primary"
-            leftIcon={<Setting3 />}
-            size="very-big"
-          />
         </div>
         <Button
           label="Keluar"
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
-          onClick={() => handleNavigation("/masuk")}
+          onClick={handleLogout}
         />
       </div>
 
