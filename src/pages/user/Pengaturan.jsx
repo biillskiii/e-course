@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { courseData, userData } from "../../data";
 import Label from "../../components/Label";
@@ -17,15 +17,62 @@ import {
 import Button from "../../components/Button";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import TextInput from "../../components/InputForm";
+import { jwtDecode } from "jwt-decode";
 
 const Pengaturan = () => {
   const navigate = useNavigate();
   const [kelasStatus, setKelasStatus] = useState("Dalam Progress");
   const [profileImage, setProfileImage] = useState(userData.avatar);
   const [activeTab, setActiveTab] = useState("editProfil"); // State untuk tombol aktif
+  const [classes, setClasses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [visibleClasses, setVisibleClasses] = useState([]);
+  const [userProfile, setUserProfile] = useState("");
 
   const handleNavigation = (path) => {
     navigate(path);
+  };
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserProfile({
+        username: decodedToken.name || "",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
+  }, [navigate]);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
+      );
+      setIsLoading(false);
+      const result = await response.json();
+      setClasses(result.data);
+      setVisibleClasses(result.data.slice(0, 4)); // Menampilkan hanya 6 card pertama
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchClasses();
+  }, []);
+  const handleCourses = () => {
+    navigate("/user/kelas");
   };
 
   const handleImageChange = (e) => {
@@ -38,6 +85,7 @@ const Pengaturan = () => {
       reader.readAsDataURL(file);
     }
   };
+
   const handleLogout = () => {
     sessionStorage.getItem("accessToken");
     navigate("/masuk");
