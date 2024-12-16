@@ -47,7 +47,7 @@ function LoginPage() {
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_SERVER_API_KEY}/api/login`, // Using the environment variable
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/login`, // Using the environment variable
           {
             method: "POST",
             headers: {
@@ -67,6 +67,7 @@ function LoginPage() {
 
         const data = await response.json();
         const { access_token } = data;
+        console.log("login");
 
         // Save token to session storage
         sessionStorage.setItem("accessToken", access_token);
