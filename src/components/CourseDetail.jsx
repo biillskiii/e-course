@@ -3,7 +3,7 @@ import ClassHeader from "./ClassHeader";
 import Chapter from "./Chapter";
 import Accordion from "./Accordion";
 import { TickCircle } from "iconsax-react";
-import NavbarDashboard from "./NavbarDashboard";
+import NavbarDashboard from "./Navbar";
 import { useParams } from "react-router-dom";
 
 const CourseDetail = () => {
@@ -23,7 +23,7 @@ const CourseDetail = () => {
   const fetchClassDetail = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${id}`
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses/${id}`
       );
 
       if (!response.ok) {
@@ -80,11 +80,14 @@ const CourseDetail = () => {
   return (
     <div>
       <NavbarDashboard />
-      <div className="flex justify-between px-32 my-20">
+      <div className="flex justify-between px-32 my-20 gap-x-20">
         {classDetail ? (
           <>
             <ClassHeader
-              
+              category={
+                classDetail.category.category_name ||
+                "Nama Kelas Tidak Tersedia"
+              }
               title={classDetail.class_name || "Nama Kelas Tidak Tersedia"}
               imgMentor={classDetail.mentor?.path_photo || ""}
               img={classDetail.path_photo || ""}
@@ -93,7 +96,7 @@ const CourseDetail = () => {
               job={classDetail.mentor?.specialist || "Spesialis Tidak Tersedia"}
             />
 
-            <div>
+            <div className="w-full">
               <Chapter
                 price={classDetail.price || "Harga Tidak Tersedia"}
                 onClick={() =>
