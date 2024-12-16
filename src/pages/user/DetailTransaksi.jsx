@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { courseData, userData } from "../../data";
 import Label from "../../components/Label";
@@ -16,24 +16,22 @@ import NavbarDashboard from "../../components/NavbarDashboard";
 import Mandiri from "../../assets/mandiri.png";
 import Qris from "../../assets/qris.png";
 import QrisQRCode from "../../assets/QRCode.png";
-
+import TransactionDetailCard from "../../components/TransactionDetailCard";
+import { jwtDecode } from "jwt-decode";
 const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text);
   // Optionally add a toast/notification here
 };
 
 const DetailTransaksi = () => {
-  const { billNumber } = useParams();
+  const { transactionId } = useParams();
+  const [transaction, setTransaction] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState("");
   const handleNavigation = (path) => {
     navigate(path);
   };
-  const course = courseData.find((item) => item.billNumber === billNumber);
-
-  if (!course) {
-    return <p>Data tidak ditemukan.</p>;
-  }
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     if (!token) {
@@ -53,12 +51,70 @@ const DetailTransaksi = () => {
       navigate("/masuk");
     }
   }, [navigate]);
+
+  const fetchClasses = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      console.error("No token found.");
+      navigate("/masuk");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_LOCAL_API_KEY
+        }/api/usertransactions/${transactionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setTransaction(result);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching classes:", error.message);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchClasses();
+  }, [transactionId]);
+
+  // Handle single object or array response
+  const course = Array.isArray(transaction)
+    ? transaction.find((item) => item.transactionId === transactionId)
+    : transaction; // Use directly if it's an object
+
+  if (!course) {
+    return (
+      <tr className="w-full h-screen flex justify-center items-center">
+        <td colSpan="4" className="py-10 text-center">
+          <div className="flex justify-center items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
   const isPending = course.status === "Menunggu Pembayaran";
   const isSuccessful = course.status === "Pembayaran Berhasil";
+
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
+
   return (
     <section>
       <div>
@@ -120,139 +176,18 @@ const DetailTransaksi = () => {
             avatar={userProfile.avatar}
             username={userProfile.username}
           />
-
-          <div className="p-10 space-y-8">
-            {/* Transaction Info */}
-            <div className="flex items-center space-x-4">
-              {/* Course Image */}
-              <div className="flex w-80 h-[180px]">
-                <img
-                  src={course.img}
-                  alt={course.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="h-[180px] justify-evenly flex flex-col">
-                <div>
-                  <p className="text-sm">
-                    No Tagihan{" "}
-                    <span className="font-bold">{course.billNumber}</span>
-                  </p>
-                  <p className="text-gray-500 text-sm font-bold">
-                    {course.date}
-                  </p>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold">{course.title}</h1>
-                  <p className="text-[28px] font-bold">{course.price}</p>
-                </div>
-              </div>
+          <div className="w-full flex flex-col p-10">
+            <div className="flex flex-col gap-8">
+              <h1 className="font-bold text-3xl">Daftar Transaksi</h1>
+              <TransactionDetailCard
+                img={course.course.path_photo}
+                title={course.course.class_name}
+                price={course.course.price}
+                status={course.course.status}
+                date={course.updated_at}
+                payment_method={course.payment_method}
+              />
             </div>
-
-            <div className="border-2 flex p-6 rounded-3xl border-primary-500 border-opacity-20 gap-x-32">
-              <div className="flex flex-col gap-2">
-                <p>Status Pembayaran</p>
-                <Label
-                  label={course.status}
-                  variant={
-                    course.status === "Menunggu Pembayaran"
-                      ? "pending"
-                      : "success"
-                  }
-                  size="w-[233px] h-[44px]"
-                />
-              </div>
-              {/* Payment Method Conditional Rendering */}
-              <div>
-                <p>Metode Pembayaran</p>
-                {course.paymentMethod === "bank" ? (
-                  <img src={Mandiri} alt="Mandiri" className="w-[90px]" />
-                ) : (
-                  <img src={Qris} alt="QRIS" className="w-[90px]" />
-                )}
-              </div>
-              <div>
-                <p>Total Tagihan</p>
-                <p className="text-2xl font-bold text-primary-500">
-                  {course.price}
-                </p>
-              </div>
-              {/* Conditional Rendering for Payment Code or QR Code */}
-              <div className="flex flex-col">
-                <p>Kode Pembayaran</p>
-                {course.paymentMethod === "bank" ? (
-                  <div className="flex gap-4">
-                    <p className="text-2xl font-bold">{course.codePayment}</p>
-                    <button onClick={() => copyToClipboard(course.codePayment)}>
-                      <Copy size={24} />
-                    </button>
-                  </div>
-                ) : (
-                  <img
-                    src={QrisQRCode}
-                    alt="QR Code for QRIS"
-                    className="w-[249px] h-[249px]"
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Payment Instructions */}
-            {course.status !== "Pembayaran Berhasil" &&
-              course.paymentMethod === "bank" && (
-                <div className="border-2 border-primary-500 border-opacity-20 p-4 rounded-3xl space-y-6">
-                  <h3 className="text-lg font-bold mb-2">
-                    Cara Pembayaran Bank Transfer
-                  </h3>
-                  {/* Bank transfer instructions */}
-                  <div>
-                    <h4 className="font-semibold mb-6">ATM Mandiri</h4>
-                    <ol className="text-sm list-decimal list-inside space-y-6">
-                      <li>Masukkan kartu ATM dan PIN ATM</li>
-                      <li>Pilih menu Bayar/Beli</li>
-                      <li>Pilih opsi Lainnya {">"} Multipayment</li>
-                      <li>Masukkan kode biller perusahaan</li>
-                      <li>Masukkan nomor Virtual Account {">"} Benar</li>
-                      <li>
-                        Masukkan angka yang diminta untuk memilih tagihan {">"}{" "}
-                        Ya
-                      </li>
-                    </ol>
-                  </div>
-                  <hr className="border border-primary-500 border-opacity-20" />
-                  <div>
-                    <h4 className="font-semibold mb-6">M-Banking</h4>
-                    <ol className="text-sm list-decimal list-inside space-y-6">
-                      <li>Masuk aplikasi Livin by Mandiri</li>
-                      <li>Klik Menu Bayar/VA pada beranda</li>
-                      <li>
-                        Masukkan merchant atau masukkan VA di kolom pencarian
-                      </li>
-                      <li>Pilih sumber dana</li>
-                      <li>Klik Lanjutkan</li>
-                      <li>Masukkan PIN Livin</li>
-                      <li>Bayar tagihan berhasil</li>
-                    </ol>
-                  </div>
-                </div>
-              )}
-            {course.status !== "Pembayaran Berhasil" &&
-              course.paymentMethod === "e-wallet" && (
-                <div className="border-2 border-primary-500 border-opacity-20 p-4 rounded-3xl space-y-6">
-                  <h3 className="text-lg font-bold mb-2">
-                    Cara Pembayaran QRIS/E-Wallet
-                  </h3>
-                  {/* QRIS/e-wallet instructions */}
-                  <div>
-                    <ol className="text-sm list-decimal list-inside space-y-6">
-                      <li>Buka aplikasi e-wallet atau m-banking</li>
-                      <li>Pindai kode QR yang tertera</li>
-                      <li>Konfirmasi pembayaran pada aplikasi</li>
-                      <li>Pembayaran selesai</li>
-                    </ol>
-                  </div>
-                </div>
-              )}
           </div>
         </div>
       </div>
