@@ -53,7 +53,10 @@ function App() {
         <Route path="/user/kelas" element={<KelasUser />} />
         <Route path="/user/webinar" element={<WebinarUser />} />
         <Route path="/user/daftar-transaksi" element={<DaftarTransaksi />} />
-        <Route path="/detail/:billNumber" element={<DetailTransaksi />} />
+        <Route
+          path="/transaction/:transactionId"
+          element={<DetailTransaksi />}
+        />
         <Route path="/user/pengaturan" element={<Pengaturan />} />
         <Route path="/user/detail/:id" element={<DetailClass />} />
         <Route path="/user/detail-user/:id" element={<DetailClassUser />} />
