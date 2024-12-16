@@ -43,7 +43,7 @@ const EditKelas = () => {
       const token = sessionStorage.getItem("accessToken");
       try {
         const response = await axios.get(
-          "`${import.meta.env.VITE_SERVER_API_KEY}api/mentors",
+          "`${import.meta.env.VITE_LOCAL_API_KEY}api/mentors",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -184,7 +184,7 @@ const EditKelas = () => {
       });
 
       const response = await axios.post(
-        "`${import.meta.env.VITE_SERVER_API_KEY}api/courses",
+        "`${import.meta.env.VITE_LOCAL_API_KEY}api/courses",
         formDataToSend,
         {
           headers: {

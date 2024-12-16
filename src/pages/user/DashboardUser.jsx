@@ -50,7 +50,12 @@ const Dashboard = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchased-courses`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
       );
       setIsLoading(false);
       const result = await response.json();
@@ -67,11 +72,12 @@ const Dashboard = () => {
   }, []);
   const handleCourses = () => {
     navigate("/user/kelas");
-  }
+  };
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
+
   return (
     <section>
       <div className="flex justify-start">

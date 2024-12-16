@@ -46,7 +46,7 @@ const Kelas = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        "https://be-course.serpihantech.com/api/courses",
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`,
         {
           headers: { Authorization: { token } },
         }

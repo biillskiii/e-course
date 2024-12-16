@@ -56,7 +56,7 @@ const Mentor = () => {
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchases`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchases`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const Mentor = () => {
 
         // Fetch Users
         const userResponse = await fetch(
-          `${import.meta.env.VITE_SERVER_API_KEY}/api/users`,
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/users`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -106,7 +106,7 @@ const Mentor = () => {
 
         // Fetch Courses
         const courseResponse = await fetch(
-          `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`,
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -167,7 +167,7 @@ const Mentor = () => {
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchases`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchases`,
         {
           method: "POST",
           headers: {
@@ -188,7 +188,7 @@ const Mentor = () => {
 
       // Refresh mentee list
       const fetchResponse = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchases`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchases`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

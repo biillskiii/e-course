@@ -8,7 +8,7 @@ import ProgressBar from "./ProgressBar";
 const fetchOrder = async (order_code, user_id, course_id) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_SERVER_API_KEY}/api/order`,
+      `${import.meta.env.VITE_LOCAL_API_KEY}/api/order`,
       {
         method: "POST",
         headers: {

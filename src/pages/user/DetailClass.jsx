@@ -38,7 +38,7 @@ const CourseDetail = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${id}`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -77,7 +77,7 @@ const CourseDetail = () => {
       />
       <div className="flex justify-center px-32 my-20">
         {classDetail ? (
-          <div className="flex gap-x-52">
+          <div className="flex gap-x-20">
             <div className="w-full">
               <ClassHeader
                 level={classDetail.level}

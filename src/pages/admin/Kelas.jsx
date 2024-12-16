@@ -44,7 +44,7 @@ const Kelas = () => {
       try {
         const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
-          `${import.meta.env.VITE_SERVER_API_KEY}/api/course-admin`,
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/course-admin`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -135,7 +135,7 @@ const Kelas = () => {
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses?page=${pageNumber}`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses?page=${pageNumber}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -50,7 +50,7 @@ function App() {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/register`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/register`,
         {
           name,
           email,
