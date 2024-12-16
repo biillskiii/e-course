@@ -7,7 +7,7 @@ import ProgressBar from "./ProgressBar";
 const fetchOrder = async (order_code, user_id, course_id) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_SERVER_API_KEY}/api/order`,
+      `${import.meta.env.VITE_LOCAL_API_KEY}/api/order`,
       {
         method: "POST",
         headers: {
@@ -76,39 +76,39 @@ const calculateFontSize = (text) => {
 };
 
 // Price display component
-const PriceDisplay = ({ price, hasDiscount }) => {
-  if (price === null) {
-    return (
-      <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
-        <p className="text-primary-500 font-bold text-base">GRATIS</p>
-      </div>
-    );
-  }
+// const PriceDisplay = ({ price, hasDiscount }) => {
+//   if (price === null) {
+//     return (
+//       <div className="bg-primary-100 flex justify-center items-center rounded-lg w-20 h-6">
+//         <p className="text-primary-500 font-bold text-base">GRATIS</p>
+//       </div>
+//     );
+//   }
 
-  if (hasDiscount) {
-    const discountPrice = price * (1 - hasDiscount / 100);
-    return (
-      <div className="flex items-center gap-x-2">
-        <span className="w-16 h-6 rounded-lg text-sm bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
-          <DiscountCircle size="16" color="#00a589" />
-          {hasDiscount}%
-        </span>
-        <span className="line-through font-bold text-sm">
-          Rp. {price?.toLocaleString() || "Rp.0"}
-        </span>
-        <span className="text-primary-500 font-bold text-xl">
-          Rp. {discountPrice.toLocaleString()}
-        </span>
-      </div>
-    );
-  }
+//   if (hasDiscount) {
+//     const discountPrice = price * (1 - hasDiscount / 100);
+//     return (
+//       <div className="flex items-center gap-x-2">
+//         <span className="w-16 h-6 rounded-lg text-sm bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
+//           <DiscountCircle size="16" color="#00a589" />
+//           {hasDiscount}%
+//         </span>
+//         <span className="line-through font-bold text-sm">
+//           Rp. {price?.toLocaleString() || "Rp.0"}
+//         </span>
+//         <span className="text-primary-500 font-bold text-xl">
+//           Rp. {discountPrice.toLocaleString()}
+//         </span>
+//       </div>
+//     );
+//   }
 
-  return (
-    <span className="text-primary-500 font-bold text-xl">
-      Rp. {price?.toLocaleString() || "Rp.0"}
-    </span>
-  );
-};
+//   return (
+//     <span className="text-primary-500 font-bold text-xl">
+//       Rp. {price?.toLocaleString() || "Rp.0"}
+//     </span>
+//   );
+// };
 
 // Main Card component
 const Card = ({
@@ -136,7 +136,7 @@ const Card = ({
   const variantContent = {
     default: (
       <>
-        <div className="flex items-center gap-x-5 mt-4">
+        {/* <div className="flex items-center gap-x-5 mt-4">
           <div className="flex items-center">
             {[...Array(5)].map((_, index) => (
               <Icon
@@ -152,13 +152,17 @@ const Card = ({
             <Level size={24} color="#0A181F" />
             {level}
           </p>
-        </div>
+        </div> */}
         <div className="flex-grow flex items-end mt-4">
           <div className="w-full">
-            <p className="text-xl font-bold text-primary-500 mb-4">
+            {/* <p className="text-xl font-bold text-primary-500 mb-4">
               <PriceDisplay price={price} hasDiscount={hasDiscount} />
-            </p>
-            <ProgressBar progress={progress} variant="below" color="bg-primary-500" />
+            </p> */}
+            <ProgressBar
+              progress={progress}
+              variant="below"
+              color="bg-primary-500"
+            />
           </div>
         </div>
       </>
