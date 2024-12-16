@@ -7,8 +7,8 @@ const Chapter = ({ price, accordionItems, onClick }) => {
   return (
     <div>
       {" "}
-      <div className="flex flex-col gap-10">
-        <div className="flex justify-between gap-x-64">
+      <div className="flex flex-col">
+        <div className="flex justify-between">
           <h1 className="font-bold text-4xl">Rp. {price}</h1>
           <Button
             type="button"
@@ -19,7 +19,7 @@ const Chapter = ({ price, accordionItems, onClick }) => {
           />
         </div>
         <div className="">
-          <h1 className="text-2xl font-bold mb-4">Modul</h1>
+          <h1 className="text-2xl font-bold mb-4 mt-4">Modul</h1>
         </div>
       </div>
     </div>
