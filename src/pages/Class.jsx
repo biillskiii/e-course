@@ -18,7 +18,7 @@ function App() {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
@@ -102,8 +102,9 @@ function App() {
                         job={item.mentor.specialist}
                         level={item.level}
                         description={item.description}
-                        rating={item.rating}
+                        rating={item.avg_star}
                         price={item.price}
+                        label={"Daftar Kelas"}
                         onClick={() =>
                           item?.id && navigate(`/user/detail/${item.id}`)
                         }
