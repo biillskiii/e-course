@@ -229,7 +229,7 @@ const Mentor = () => {
     setIsModalOpen(!isModalOpen);
   };
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
   // Render
