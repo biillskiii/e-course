@@ -65,7 +65,7 @@ const Kelas = () => {
     // fetchWebinar();
   }, []);
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
   return (

@@ -23,7 +23,7 @@ const NavbarDashboard = ({ username, avatar }) => {
     setIsDropdownOpen(!isDropdownOpen);
   };
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
   return (

@@ -111,7 +111,7 @@ const Mentor = () => {
     navigate(path);
   };
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
   return (

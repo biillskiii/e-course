@@ -402,6 +402,8 @@ const Dashboard = () => {
                           <td className="uppercase  py-3">
                             {transaction.payment_method === "echannel"
                               ? "VA"
+                              : transaction.payment_method === null
+                              ? "-"
                               : transaction.payment_method}
                           </td>
                         </tr>

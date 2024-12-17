@@ -161,7 +161,7 @@ const Kelas = () => {
     }
   };
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
   return (
