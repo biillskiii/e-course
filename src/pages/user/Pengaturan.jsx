@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { courseData, userData } from "../../data";
-import Label from "../../components/Label";
+import { jwtDecode } from "jwt-decode";
+import Button from "../../components/Button";
+import NavbarDashboard from "../../components/NavbarDashboard";
+import TextInput from "../../components/InputForm";
 import {
   Copy,
   Home,
@@ -14,21 +16,13 @@ import {
   Key,
   Edit,
 } from "iconsax-react";
-import Button from "../../components/Button";
-import NavbarDashboard from "../../components/NavbarDashboard";
-import TextInput from "../../components/InputForm";
-import { jwtDecode } from "jwt-decode";
 
 const Pengaturan = () => {
   const navigate = useNavigate();
-  const [kelasStatus, setKelasStatus] = useState("Dalam Progress");
-  const [profileImage, setProfileImage] = useState(userData.avatar);
-  const [activeTab, setActiveTab] = useState("editProfil"); // State untuk tombol aktif
-  const [classes, setClasses] = useState([]);
+  const [activeTab, setActiveTab] = useState("editProfil");
+  const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [visibleClasses, setVisibleClasses] = useState([]);
-  const [userProfile, setUserProfile] = useState("");
-
+  const [profileImage, setProfileImage] = useState(null);
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -41,40 +35,31 @@ const Pengaturan = () => {
     }
     try {
       const decodedToken = jwtDecode(token);
-      setUserProfile({
-        username: decodedToken.name || "",
-        avatar:
-          decodedToken.avatar ||
-          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-      });
+      fetchProfileData(decodedToken.id, token); // Pass the token here
     } catch (error) {
       console.error("Error decoding token:", error);
       navigate("/masuk");
     }
   }, [navigate]);
-
-  const fetchClasses = async () => {
+  const fetchProfileData = async (userId, token) => {
+    // Accept token as a parameter
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Use userId in the API endpoint
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
       );
-      setIsLoading(false);
       const result = await response.json();
-      setClasses(result.data);
-      setVisibleClasses(result.data.slice(0, 4)); // Menampilkan hanya 6 card pertama
+      console.log(response);
+      setProfileData(result.user); // setProfileImage(data.path_photo || "default-avatar-url");
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching classes:", error);
+      console.error("Error fetching profile data:", error);
     }
   };
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchClasses();
-  }, []);
-  const handleCourses = () => {
-    navigate("/user/kelas");
-  };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -85,19 +70,45 @@ const Pengaturan = () => {
       reader.readAsDataURL(file);
     }
   };
+  const handleUpdateProfile = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify(profileData),
+        }
+      );
+      if (response.ok) {
+        alert("Profil berhasil diperbarui!");
+      } else {
+        alert("Gagal memperbarui profil.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleLogout = () => {
-    sessionStorage.getItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
+
   return (
     <section>
       <div>
-        {/* Sidebar */}
+        {/* Sidebar */}       
         <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
           <div className="space-y-6">
             <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
-              PIXEL<span className="text-primary-500">CODE.</span>
+              PIXEL<span className="text-primary-500">CODE.</span>   
             </h1>
             <Button
               label="Dashboard"
@@ -146,49 +157,46 @@ const Pengaturan = () => {
             />
           </div>
         </div>
-        {/* Main Content */}
-        <div className="w-full pl-60">
-          <NavbarDashboard
-            avatar={userData.avatar}
-            username={userData.username}
-          />
-          <div className="w-full flex flex-col p-10">
-            <div className="">
-              <div className="mb-8">
-                <h1 className="text-2xl font-bold">Pengaturan</h1>
+      </div>
+      {/* Main Content */}
+      <div className="w-full pl-60">
+        <NavbarDashboard avatar={profileImage} username={profileData.name} />   
+        <div className="w-full flex flex-col p-10">
+          <div>
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold">Pengaturan</h1>
+            </div>
+            <div className="flex w-full">
+              <div className="flex flex-col border-2 w-[360px] h-[160px] p-4 mr-10 rounded-2xl border-primary-500 border-opacity-20 gap-6 justify-center">
+                <Button
+                  label={"Edit Profil"}
+                  variant={
+                    activeTab === "editProfil" ? "submenu-active" : "submenu"
+                  }
+                  size="small"
+                  leftIcon={<UserEdit className="font-primary-500" />}
+                  onClick={() => setActiveTab("editProfil")}
+                />
+                 
+                <Button
+                  label={"Ubah Kata Sandi"}
+                  variant={
+                    activeTab === "ubahKataSandi" ? "submenu-active" : "submenu"
+                  }
+                  size="big"
+                  leftIcon={<Key className="font-primary-500" />}
+                  onClick={() => setActiveTab("ubahKataSandi")}
+                />
               </div>
               <div className="flex w-full">
-                <div className="flex flex-col border-2 w-[360px] h-[160px] p-4 mr-10 rounded-2xl border-primary-500 border-opacity-20 gap-6 justify-center">
-                  <Button
-                    label={"Edit Profil"}
-                    variant={
-                      activeTab === "editProfil" ? "submenu-active" : "submenu"
-                    }
-                    size="small"
-                    leftIcon={<UserEdit className="font-primary-500" />}
-                    onClick={() => setActiveTab("editProfil")}
-                  />
-                  <Button
-                    label={"Ubah Kata Sandi"}
-                    variant={
-                      activeTab === "ubahKataSandi"
-                        ? "submenu-active"
-                        : "submenu"
-                    }
-                    size="big"
-                    leftIcon={<Key className="font-primary-500" />}
-                    onClick={() => setActiveTab("ubahKataSandi")}
-                  />
-                </div>
                 <div className="flex flex-col w-full border-2 p-6 rounded-2xl border-primary-500 border-opacity-20 space-y-6">
                   {activeTab === "editProfil" && (
                     <>
-                      {/* Konten untuk Edit Profil */}
                       <div className="flex items-center justify-center">
                         <img
                           src={profileImage}
                           alt="User Profile"
-                          className="w-40  h-40 rounded-full object-cover"
+                          className="w-40 h-40 rounded-full object-cover"
                         />
                         <input
                           type="file"
@@ -208,85 +216,115 @@ const Pengaturan = () => {
                         />
                       </div>
                       <TextInput
-                        type={"text"}
-                        label={"Nama Lengkap"}
-                        id={"name"}
-                        placeholder={"Masukkan nama lengkap kamu"}
-                      />
-                      <TextInput
-                        type={"email"}
-                        label={"Email"}
-                        id={"email"}
-                        placeholder={"Masukkan alamat Email kamu"}
-                      />
-                      <TextInput
-                        type={"tel"}
-                        label={"Nomor Telepon"}
-                        id={"number"}
-                        placeholder={"Masukkan nomor telepon kamu"}
-                      />
-                      <div className="flex  w-full gap-4">
-                        <TextInput
-                          type={"text"}
-                          label={"Tempat"}
-                          id={"place"}
-                          placeholder={"Masukkan tempat tinggal kamu"}
-                        />
-                        <TextInput
-                          type={"date"}
-                          label={"Tanggal Lahir"}
-                          id={"dob"}
-                          placeholder={"Masukkan tanggal lahir kamu"}
-                        />
-                      </div>
-                      <TextInput
-                        type={"text"}
-                        label={"Kota/Kabupaten Domisili"}
-                        id={"city"}
-                        placeholder={"Masukkan kota/kabupaten domisili kamu"}
-                      />
-                      <TextInput
-                        type={"text"}
-                        label={"Pendidikan Terakhir"}
-                        id={"study"}
-                        placeholder={"Masukkan jenjang pendidikan terakhirmu"}
-                      />
-                      <TextInput
-                        type={"text"}
-                        label={"Pekerjaan/Kesibukan"}
-                        id={"work"}
-                        placeholder={
-                          "Masukkan pekerjaan atau kesibukanmu saat ini"
+                        type="text"
+                        label="Nama Lengkap"
+                        id="name"
+                        value={profileData.name || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            name: e.target.value,
+                          })
                         }
+                        placeholder="Masukkan nama lengkap kamu"
+                      />
+                      <TextInput
+                        type="email"
+                        label="Email"
+                        id="email"
+                        value={profileData.email || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            email: e.target.value,
+                          })
+                        }
+                        placeholder="Masukkan alamat Email kamu"
+                      />
+                      <TextInput
+                        type="text"
+                        label="Nomor Telepon"
+                        id="phone_number"
+                        value={profileData.phone_number || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            phone_number: e.target.value,
+                          })
+                        }
+                        placeholder="Masukkan nomor telepon kamu"
+                      />
+                      <TextInput
+                        type="text"
+                        label="Tempat Lahir"
+                        id="place_of_birth"
+                        value={profileData.place_of_birth || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            place_of_birth: e.target.value,
+                          })
+                        }
+                        placeholder="Masukkan tempat lahir kamu"
+                      />
+                      <TextInput
+                        type="date"
+                        label="Tanggal Lahir"
+                        id="date_of_birth"
+                        value={profileData.date_of_birth || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            date_of_birth: e.target.value,
+                          })
+                        }
+                        placeholder="Masukkan Tanggal Lahir kamu"
+                      />
+                      <TextInput
+                        type="text"
+                        label="Kota/Kabupaten Domisili"
+                        id="place_of_birth"
+                        value={profileData.address || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            address: e.target.value,
+                          })
+                        }
+                        placeholder="Masukkan kota/kabupaten domisili kamu"
+                      />
+                      <TextInput
+                        type="text"
+                        label="Pendidikan Terakhir"
+                        id="last_education"
+                        value={profileData.last_education || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            last_education: e.target.value,
+                          })
+                        }
+                        placeholder="Masukkan jenjang pendidikan terakhir kamu"
+                      />
+                      <TextInput
+                        type="text"
+                        label="Pekerjaan/Kesibukan"
+                        id="work"
+                        value={profileData.work || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            work: e.target.value,
+                          })
+                        }
+                        placeholder="Masukkan pekerjaan/kesibukan kamu"
                       />
                       <div className="flex justify-end">
-                        <Button label={"Simpan"} size="small" />
-                      </div>
-                    </>
-                  )}
-                  {activeTab === "ubahKataSandi" && (
-                    <>
-                      {/* Konten untuk Ubah Kata Sandi */}
-                      <TextInput
-                        type={"password"}
-                        label={"Kata Sandi Lama"}
-                        id={"oldPassword"}
-                        placeholder={"Masukkan kata sandi lama kamu"}
-                      />
-                      <TextInput
-                        type={"password"}
-                        label={"Kata Sandi Baru"}
-                        id={"newPassword"}
-                        placeholder={"Masukkan kata sandi baru kamu"}
-                      />
-                      <TextInput
-                        type={"password"}
-                        label={"Konfirmasi Kata Sandi Baru"}
-                        id={"confirmPassword"}
-                        placeholder={"Konfirmasi kata sandi baru kamu"}
-                      />
-                      <div className="flex justify-end">
-                        <Button label={"Simpan"} size="small" />
+                        <Button
+                          label="Simpan"
+                          size="small"
+                          onClick={handleUpdateProfile}
+                        />
                       </div>
                     </>
                   )}
@@ -299,5 +337,4 @@ const Pengaturan = () => {
     </section>
   );
 };
-
 export default Pengaturan;
