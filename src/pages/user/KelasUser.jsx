@@ -186,12 +186,12 @@ const Kelas = () => {
               </div>
 
               {isLoading ? (
-                <div className="w-full h-screen flex items-center justify-center">
+                <div className="w-full h-screen flex items-start mt-32 justify-center">
                   <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
                 </div>
               ) : classes.length === 0 ? (
-                <div className="flex flex-col min-h-screen  items-center mt-52 text-gray-500">
-                  <img src={EmptyClass} width={350} alt="empty class" />
+                <div className="flex flex-col min-h-screen  items-center mt-32 text-gray-500">
+                  <img src={EmptyClass} width={250} alt="empty class" />
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-4 mt-4">
