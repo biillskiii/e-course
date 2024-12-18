@@ -57,7 +57,8 @@ const Pengaturan = () => {
       navigate("/masuk");
     }
   }, [navigate]);
-  const fetchProfileData = async (userId, token) => {
+  const fetchProfileData = async () => {
+    const token = sessionStorage.getItem("accessToken")
     try {
       const response = await fetch(
         `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
@@ -165,9 +166,6 @@ const Pengaturan = () => {
     setPasswordData((prev) => ({ ...prev, [id]: value }));
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
@@ -236,7 +234,7 @@ const Pengaturan = () => {
       <div className="w-full pl-60">
         <NavbarDashboard
           avatar={profileImage}
-          username={profileData.name}
+          username={profileData?.name}
           isLoading={true}
         />
            
