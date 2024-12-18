@@ -178,9 +178,10 @@ const DetailTransaksi = () => {
           />
           <div className="w-full flex flex-col p-10">
             <div className="flex flex-col gap-8">
-              <h1 className="font-bold text-3xl">Daftar Transaksi</h1>
+              <h1 className="font-bold text-3xl">Detail Transaksi</h1>
               <TransactionDetailCard
                 img={course.course.path_photo}
+                transaction_id={course.transaction_id}
                 title={course.course.class_name}
                 price={course.course.price}
                 status={course.course.status}
