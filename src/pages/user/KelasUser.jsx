@@ -77,9 +77,11 @@ const Kelas = () => {
         {/* Sidebar */}
         <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
           <div className="space-y-6">
-            <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
-              PIXEL<span className="text-primary-500">CODE.</span>
-            </h1>
+            <a href="/">
+              <h1 className="mango  text-center text-secondary-500 text-[40px] mb-10">
+                PIXEL<span className="text-primary-500">CODE.</span>
+              </h1>
+            </a>
             <Button
               label="Dashboard"
               variant="side-primary"
@@ -142,22 +144,35 @@ const Kelas = () => {
                   <h1 className="text-2xl font-bold">Kelas yang Kamu Ikuti</h1>
                 </div>
                 <div className="w-[342px] flex justify-between">
-                  <Button
-                    label="Dalam Progress"
-                    variant={
-                      kelasStatus === "Dalam Progress"
-                        ? "submenu-active"
-                        : "submenu"
-                    }
-                    onClick={() => setKelasStatus("Dalam Progress")}
-                  />
-                  <Button
-                    label="Selesai"
-                    variant={
-                      kelasStatus === "Selesai" ? "submenu-active" : "submenu"
-                    }
-                    onClick={() => setKelasStatus("Selesai")}
-                  />
+                  {classes.length === 0 ? (
+                    <Button
+                      label="Beli Kelas"
+                      variant={"primary"}
+                      size="big"
+                      onClick={() => handleNavigation("/kelas")}
+                    />
+                  ) : (
+                    <div className="flex items-center w-full">
+                      <Button
+                        label="Dalam Progress"
+                        variant={
+                          kelasStatus === "Dalam Progress"
+                            ? "submenu-active"
+                            : "submenu"
+                        }
+                        onClick={() => setKelasStatus("Dalam Progress")}
+                      />
+                      <Button
+                        label="Selesai"
+                        variant={
+                          kelasStatus === "Selesai"
+                            ? "submenu-active"
+                            : "submenu"
+                        }
+                        onClick={() => setKelasStatus("Selesai")}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
