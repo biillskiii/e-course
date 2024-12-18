@@ -72,8 +72,9 @@ const CourseDetail = () => {
   return (
     <div>
       <NavbarDashboard
-        avatar={userProfile?.avatar} // Gunakan data avatar dari API
-        username={userProfile?.username} // Gunakan username dari API
+        avatar={userProfile?.avatar}
+        username={userProfile?.username}
+        isLoading={true}
       />
       <div className="flex justify-center px-32 my-20">
         {classDetail ? (

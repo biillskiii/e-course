@@ -177,6 +177,7 @@ const DetailTransaksi = () => {
           <NavbarDashboard
             avatar={userProfile.avatar}
             username={userProfile.username}
+            isLoading={true}
           />
           <div className="w-full flex flex-col p-10">
             <div className="flex flex-col gap-8">

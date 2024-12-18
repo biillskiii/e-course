@@ -10,17 +10,15 @@ import {
   Wallet,
 } from "iconsax-react";
 import NavbarDashboard from "../../components/NavbarDashboard";
-import { userData, userKelas, sertifKelas } from "../../data";
 import CardUser from "../../components/CardUser";
-import { NotificationCircle } from "iconsax-react";
-import { jwtDecode } from "jwt-decode";
 import EmptyClass from "../../assets/empt-class.png";
 const Kelas = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [kelasStatus, setKelasStatus] = useState("Dalam Progress");
   const [isLoading, setIsLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState("");
+  const [profileData, setProfileData] = useState("");
+  const [profileImage, setProfileImage] = useState("");
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -30,19 +28,29 @@ const Kelas = () => {
       navigate("/masuk");
       return;
     }
-    try {
-      const decodedToken = jwtDecode(token);
-      setUserProfile({
-        username: decodedToken.name || "",
-        avatar:
-          decodedToken.avatar ||
-          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-      });
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      navigate("/masuk");
-    }
   }, [navigate]);
+  const fetchProfileData = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      setProfileData(result.user);
+      setProfileImage(
+        result.user.path_photo ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+      );
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
   const fetchClasses = async () => {
     const token = sessionStorage.getItem("accessToken");
     try {
@@ -65,7 +73,7 @@ const Kelas = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchClasses();
-    // fetchWebinar();
+    fetchProfileData();
   }, []);
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
@@ -133,8 +141,9 @@ const Kelas = () => {
         {/* Main Content */}
         <div className="w-full pl-60">
           <NavbarDashboard
-            avatar={userProfile.avatar}
-            username={userProfile.username}
+            avatar={profileImage}
+            username={profileData.name}
+            isLoading={true}
           />
 
           <div className="w-full flex flex-col p-10">
@@ -143,7 +152,7 @@ const Kelas = () => {
                 <div>
                   <h1 className="text-2xl font-bold">Kelas yang Kamu Ikuti</h1>
                 </div>
-                <div className="w-[342px] flex justify-between">
+                <div className="w-[342px] flex justify-end">
                   {classes.length === 0 ? (
                     <Button
                       label="Beli Kelas"

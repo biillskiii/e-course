@@ -31,7 +31,7 @@ const CompleteProfileBanner = () => {
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right",
       }}
-      className="bg-[#FFF4DA] rounded-lg p-10 flex items-start justify-between relative"
+      className="bg-[#FFF4DA] z-5 mt-5 rounded-lg p-10 flex items-start justify-between relative"
     >
       <div className="space-y-5">
         <h2 className="text-4xl font-bold text-green-900 mb-2">
@@ -64,7 +64,8 @@ const Dashboard = () => {
   const [visibleClasses, setVisibleClasses] = useState([]);
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState("");
+  const [profileData, setProfileData] = useState("");
+  const [profileImage, setProfileImage] = useState("");
   const [hasNoData, setHasNoData] = useState(false);
   const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
 
@@ -78,21 +79,28 @@ const Dashboard = () => {
       navigate("/masuk");
       return;
     }
-
-    // Decode token to get user profile info
-    try {
-      const decodedToken = jwtDecode(token);
-      setUserProfile({
-        username: decodedToken.name || "",
-        avatar:
-          decodedToken.avatar ||
-          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-      });
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      navigate("/masuk");
-    }
-
+    const fetchProfileData = async () => {
+      const token = sessionStorage.getItem("accessToken");
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await response.json();
+        setProfileData(result.user);
+        setProfileImage(
+          result.user.path_photo ||
+            "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
     // Fetch user data to check if the profile is complete
     const fetchUserData = async () => {
       try {
@@ -129,6 +137,7 @@ const Dashboard = () => {
     };
 
     fetchUserData();
+    fetchProfileData();
   }, [navigate]);
 
   const fetchClasses = async () => {
@@ -229,16 +238,17 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="w-full justify-between pl-60">
           <NavbarDashboard
-            avatar={userProfile?.avatar} // Use avatar from decoded token
-            username={userProfile?.username} // Use username from decoded token
+            avatar={profileImage} 
+            username={profileData.name} 
+            isLoading={true}
           />
           <div className="px-10">
             {isProfileIncomplete && <CompleteProfileBanner />}
           </div>
-          <div className="flex justify-between p-10">
+          <div className="flex justify-between overflow-x-hidden p-10">
             <div className="flex flex-col">
               <div className="flex justify-between items-center">
-                <div className="flex w-[950px] justify-between mr-16 items-center">
+                <div className="flex w-[750px] justify-between mr-16 items-center">
                   <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
                   {visibleClasses.length === 0 ? (
                     <Button
