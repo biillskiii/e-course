@@ -16,14 +16,57 @@ import Sertifikat from "../../assets/Certificate.png";
 import { jwtDecode } from "jwt-decode";
 import Sertif from "../../assets/sertif-empty.png";
 import EmptyClass from "../../assets/empt-class.png";
+import BgUser from "../../assets/BgUser.png";
+
+const CompleteProfileBanner = () => {
+  const navigate = useNavigate();
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+  return (
+    <div
+      style={{
+        backgroundImage: `url(${BgUser})`,
+        backgroundSize: "500px",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "right",
+      }}
+      className="bg-[#FFF4DA] rounded-lg p-10 flex items-start justify-between relative"
+    >
+      <div className="space-y-5">
+        <h2 className="text-4xl font-bold text-green-900 mb-2">
+          Lengkapi Profilmu
+        </h2>
+        <p className="text-green-900 text-base">
+          Kamu belum melengkapi profilmu loh. Ayo, segera lengkapi profilmu!
+        </p>
+        <div>
+          <Button
+            label={"Edit Profil"}
+            size="small"
+            onClick={() => handleNavigation("/user/pengaturan")}
+          />
+        </div>
+      </div>
+      <div className="absolute bottom-0 right-0 opacity-20">
+        <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="100" fill="#F2E9C8" />
+          <circle cx="100" cy="100" r="70" fill="#D1E2D1" />
+        </svg>
+      </div>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [visibleClasses, setVisibleClasses] = useState([]);
-  const [userData, setUserData] = useState(null); // Tambahkan state untuk data pengguna
+  const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState("");
   const [hasNoData, setHasNoData] = useState(false);
+  const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -35,6 +78,8 @@ const Dashboard = () => {
       navigate("/masuk");
       return;
     }
+
+    // Decode token to get user profile info
     try {
       const decodedToken = jwtDecode(token);
       setUserProfile({
@@ -47,6 +92,43 @@ const Dashboard = () => {
       console.error("Error decoding token:", error);
       navigate("/masuk");
     }
+
+    // Fetch user data to check if the profile is complete
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setUserData(data.user);
+
+        // Check if any required fields are null or empty
+        const requiredFields = [
+          "phone_number",
+          "place_of_birth",
+          "date_of_birth",
+          "address",
+          "last_education",
+          "work",
+        ];
+
+        const incomplete = requiredFields.some(
+          (field) => data.user[field] === null || data.user[field] === ""
+        );
+
+        setIsProfileIncomplete(incomplete);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setIsProfileIncomplete(true);
+      }
+    };
+
+    fetchUserData();
   }, [navigate]);
 
   const fetchClasses = async () => {
@@ -68,7 +150,7 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
-      setHasNoData(true); // Jika gagal ambil data
+      setHasNoData(true); // If data fetching fails
       setIsLoading(false);
     }
   };
@@ -77,6 +159,7 @@ const Dashboard = () => {
     setIsLoading(true);
     fetchClasses();
   }, []);
+
   const handleCourses = () => {
     navigate("/user/kelas");
   };
@@ -91,9 +174,11 @@ const Dashboard = () => {
         {/* Sidebar */}
         <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
           <div className="space-y-6">
-            <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
-              PIXEL<span className="text-primary-500">CODE.</span>
-            </h1>
+            <a href="/">
+              <h1 className="mango  text-center text-secondary-500 text-[40px] mb-10">
+                PIXEL<span className="text-primary-500">CODE.</span>
+              </h1>
+            </a>
             <Button
               label="Dashboard"
               active={true}
@@ -144,9 +229,12 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="w-full justify-between pl-60">
           <NavbarDashboard
-            avatar={userProfile?.avatar} // Gunakan data avatar dari API
-            username={userProfile?.username} // Gunakan username dari API
+            avatar={userProfile?.avatar} // Use avatar from decoded token
+            username={userProfile?.username} // Use username from decoded token
           />
+          <div className="px-10">
+            {isProfileIncomplete && <CompleteProfileBanner />}
+          </div>
           <div className="flex justify-between p-10">
             <div className="flex flex-col">
               <div className="flex justify-between items-center">
@@ -244,15 +332,6 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-            {/* <div className="flex flex-col">
-              <div className="flex w-[425px] justify-between items-center">
-                <h1 className="font-bold text-2xl">Sertifikat Terbaru</h1>
-              </div>
-              <div className="mt-4 space-y-4">
-                <img src={Sertifikat} alt="Sertifikat 1" />
-                <img src={Sertifikat} alt="Sertifikat 2" />
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
