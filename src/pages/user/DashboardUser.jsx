@@ -14,7 +14,8 @@ import { userKelas, userWebinar } from "../../data";
 import CardUser from "../../components/CardUser";
 import Sertifikat from "../../assets/Certificate.png";
 import { jwtDecode } from "jwt-decode";
-
+import Sertif from "../../assets/sertif-empty.png";
+import EmptyClass from "../../assets/empt-class.png";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const [userData, setUserData] = useState(null); // Tambahkan state untuk data pengguna
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState("");
+  const [hasNoData, setHasNoData] = useState(false);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -58,11 +60,16 @@ const Dashboard = () => {
         }
       );
       setIsLoading(false);
-      const result = await response.json();
-      setClasses(result.data);
-      setVisibleClasses(result.data.slice(0, 4)); // Menampilkan hanya 6 card pertama
+      if (response.data.length === 0) {
+        setHasNoData(true);
+      } else {
+        setClasses(response.data);
+        setVisibleClasses(response.data.slice(0, 4));
+      }
     } catch (error) {
       console.error("Error fetching classes:", error);
+      setHasNoData(true); // Jika gagal ambil data
+      setIsLoading(false);
     }
   };
 
@@ -135,25 +142,40 @@ const Dashboard = () => {
           </div>
         </div>
         {/* Main Content */}
-        <div className="w-full pl-60">
+        <div className="w-full justify-between pl-60">
           <NavbarDashboard
             avatar={userProfile?.avatar} // Gunakan data avatar dari API
             username={userProfile?.username} // Gunakan username dari API
           />
-          <div className="flex p-10">
+          <div className="flex justify-between p-10">
             <div className="flex flex-col">
-              <div className="flex w-[728px] justify-between mr-16 items-center">
-                <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
-                <Button
-                  label={"Lihat Semua"}
-                  size="small"
-                  variant="submenu"
-                  onClick={handleCourses}
-                />
+              <div className="flex justify-between items-center">
+                <div className="flex w-[950px] justify-between mr-16 items-center">
+                  <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
+                  {visibleClasses.length === 0 ? (
+                    <Button
+                      label={"Beli Kelas"}
+                      size="small"
+                      variant="primary"
+                      onClick={() => navigate("/kelas")}
+                    />
+                  ) : (
+                    <Button
+                      label={"Lihat Semua"}
+                      size="small"
+                      variant="submenu"
+                      onClick={handleCourses}
+                    />
+                  )}
+                </div>
               </div>
               {isLoading ? (
                 <div className="w-full h-screen flex items-start mt-52 justify-center">
                   <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              ) : hasNoData ? (
+                <div className="flex flex-col items-center mt-20 text-gray-500">
+                  <img src={EmptyClass} width={200} alt="empty class" />
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
@@ -176,15 +198,61 @@ const Dashboard = () => {
               )}
             </div>
             <div className="flex flex-col">
+              <div className="flex justify-between items-center">
+                <div className="flex w-[400px] justify-between mr-5 items-center">
+                  <h1 className=" font-bold text-2xl">Sertifikat Terbaru</h1>
+                  {visibleClasses.length === 0 ? (
+                    <Button
+                      label={"Lihat Semua"}
+                      size="small"
+                      variant="submenu"
+                    />
+                  ) : (
+                    <Button
+                      label={"Lihat Semua"}
+                      size="small"
+                      variant="submenu"
+                    />
+                  )}
+                </div>
+              </div>
+              {isLoading ? (
+                <div className="w-full h-screen flex items-start mt-52 justify-center">
+                  <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              ) : hasNoData ? (
+                <div className="flex flex-col items-center mt-20 text-gray-500">
+                  <img src={Sertif} width={300} alt="empty class" />
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
+                  {visibleClasses.map((kelas) => (
+                    <CardUser
+                      key={kelas.id}
+                      img={kelas.path_photo}
+                      mentorImg={kelas.mentor.path_photo}
+                      title={kelas.class_name}
+                      name={kelas.mentor.name}
+                      job={kelas.mentor.specialist}
+                      price={kelas.price}
+                      level={kelas.level}
+                      onClick={() =>
+                        kelas?.id && navigate(`/user/detail-user/${kelas.id}`)
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* <div className="flex flex-col">
               <div className="flex w-[425px] justify-between items-center">
                 <h1 className="font-bold text-2xl">Sertifikat Terbaru</h1>
-                <Button label={"Lihat Semua"} size="small" variant="submenu" />
               </div>
               <div className="mt-4 space-y-4">
                 <img src={Sertifikat} alt="Sertifikat 1" />
                 <img src={Sertifikat} alt="Sertifikat 2" />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

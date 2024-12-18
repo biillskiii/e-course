@@ -14,6 +14,7 @@ import { userData, userKelas, sertifKelas } from "../../data";
 import CardUser from "../../components/CardUser";
 import { NotificationCircle } from "iconsax-react";
 import { jwtDecode } from "jwt-decode";
+import EmptyClass from "../../assets/empt-class.png";
 const Kelas = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
@@ -46,9 +47,11 @@ const Kelas = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchased-courses`,
         {
-          headers: { Authorization: { token } },
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
         }
       );
       setIsLoading(false);
@@ -157,9 +160,14 @@ const Kelas = () => {
                   />
                 </div>
               </div>
+
               {isLoading ? (
                 <div className="w-full h-screen flex items-center justify-center">
                   <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              ) : classes.length === 0 ? (
+                <div className="flex flex-col min-h-screen  items-center mt-52 text-gray-500">
+                  <img src={EmptyClass} width={350} alt="empty class" />
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-4 mt-4">
