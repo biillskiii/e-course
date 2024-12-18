@@ -21,8 +21,24 @@ const Pengaturan = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("editProfil");
   const [profileData, setProfileData] = useState(null);
+  const [editProfileData, setEditProfileData] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    address: "",
+    place_of_birth: "",
+    date_of_birth: "",
+    last_education: "",
+    work: "",
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
+  const [passwordData, setPasswordData] = useState({
+    old_password: "",
+    new_password: "",
+    new_password_confirmation: "",
+  });
+
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -42,24 +58,34 @@ const Pengaturan = () => {
     }
   }, [navigate]);
   const fetchProfileData = async (userId, token) => {
-    // Accept token as a parameter
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Use userId in the API endpoint
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
       const result = await response.json();
-      console.log(response);
-      setProfileData(result.user); // setProfileImage(data.path_photo || "default-avatar-url");
+      setProfileData(result.user);
+      setEditProfileData({
+        name: result.user.name || "",
+        email: result.user.email || "",
+        phone_number: result.user.phone_number || "",
+        address: result.user.address || "",
+        place_of_birth: result.user.place_of_birth || "",
+        date_of_birth: result.user.date_of_birth || "",
+        last_education: result.user.last_education || "",
+        work: result.user.work || "",
+      });
+      setProfileImage(result.user.path_photo || "default-avatar-url");
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching profile data:", error);
     }
   };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -70,7 +96,8 @@ const Pengaturan = () => {
       reader.readAsDataURL(file);
     }
   };
-  const handleUpdateProfile = async () => {
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
     try {
       const response = await fetch(
         `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`,
@@ -80,11 +107,12 @@ const Pengaturan = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
           },
-          body: JSON.stringify(profileData),
+          body: JSON.stringify(editProfileData),
         }
       );
       if (response.ok) {
         alert("Profil berhasil diperbarui!");
+        window.location.reload();
       } else {
         alert("Gagal memperbarui profil.");
       }
@@ -92,6 +120,48 @@ const Pengaturan = () => {
       console.error("Error updating profile:", error);
     }
   };
+
+  const handleChangePassword = async () => {
+    if (passwordData.new_password !== passwordData.new_password_confirmation) {
+      alert("Konfirmasi kata sandi tidak cocok!");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/updatePassword`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify(passwordData),
+        }
+      );
+
+      if (response.ok) {
+        alert("Kata sandi berhasil diperbarui!");
+        setPasswordData({
+          old_password: "",
+          new_password: "",
+          new_password_confirmation: "",
+        });
+      } else {
+        const result = await response.json();
+        alert(result.message || "Gagal memperbarui kata sandi.");
+      }
+    } catch (error) {
+      console.error("Error updating password:", error);
+      alert("Terjadi kesalahan saat memperbarui kata sandi.");
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const { id, value } = e.target;
+    setPasswordData((prev) => ({ ...prev, [id]: value }));
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -215,14 +285,15 @@ const Pengaturan = () => {
                           className="absolute bg-white rounded-full p-1 text-primary-500 mt-32 ml-28"
                         />
                       </div>
+
                       <TextInput
                         type="text"
                         label="Nama Lengkap"
                         id="name"
-                        value={profileData.name || ""}
+                        value={editProfileData.name || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             name: e.target.value,
                           })
                         }
@@ -232,10 +303,10 @@ const Pengaturan = () => {
                         type="email"
                         label="Email"
                         id="email"
-                        value={profileData.email || ""}
+                        value={editProfileData.email || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             email: e.target.value,
                           })
                         }
@@ -245,10 +316,10 @@ const Pengaturan = () => {
                         type="text"
                         label="Nomor Telepon"
                         id="phone_number"
-                        value={profileData.phone_number || ""}
+                        value={editProfileData.phone_number || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             phone_number: e.target.value,
                           })
                         }
@@ -258,10 +329,10 @@ const Pengaturan = () => {
                         type="text"
                         label="Tempat Lahir"
                         id="place_of_birth"
-                        value={profileData.place_of_birth || ""}
+                        value={editProfileData.place_of_birth || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             place_of_birth: e.target.value,
                           })
                         }
@@ -271,10 +342,10 @@ const Pengaturan = () => {
                         type="date"
                         label="Tanggal Lahir"
                         id="date_of_birth"
-                        value={profileData.date_of_birth || ""}
+                        value={editProfileData.date_of_birth || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             date_of_birth: e.target.value,
                           })
                         }
@@ -284,10 +355,10 @@ const Pengaturan = () => {
                         type="text"
                         label="Kota/Kabupaten Domisili"
                         id="place_of_birth"
-                        value={profileData.address || ""}
+                        value={editProfileData.address || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             address: e.target.value,
                           })
                         }
@@ -297,10 +368,10 @@ const Pengaturan = () => {
                         type="text"
                         label="Pendidikan Terakhir"
                         id="last_education"
-                        value={profileData.last_education || ""}
+                        value={editProfileData.last_education || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             last_education: e.target.value,
                           })
                         }
@@ -310,10 +381,10 @@ const Pengaturan = () => {
                         type="text"
                         label="Pekerjaan/Kesibukan"
                         id="work"
-                        value={profileData.work || ""}
+                        value={editProfileData.work || ""}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
+                          setEditProfileData({
+                            ...editProfileData,
                             work: e.target.value,
                           })
                         }
@@ -325,6 +396,43 @@ const Pengaturan = () => {
                           size="small"
                           onClick={handleUpdateProfile}
                         />
+                      </div>
+                    </>
+                  )}
+                  {activeTab === "ubahKataSandi" && (
+                    <>
+                      {/* Konten untuk Ubah Kata Sandi */}
+                      <TextInput
+                        type={"password"}
+                        label={"Kata Sandi Lama"}
+                        id={"old_password"}
+                        placeholder={"Masukkan kata sandi lama kamu"}
+                        value={passwordData.old_password}
+                        onChange={handlePasswordChange}
+                      />
+                      <TextInput
+                        type={"password"}
+                        label={"Kata Sandi Baru"}
+                        id={"new_password"}
+                        placeholder={"Masukkan kata sandi baru kamu"}
+                        value={passwordData.new_password}
+                        onChange={handlePasswordChange}
+                      />
+                      <TextInput
+                        type={"password"}
+                        label={"Konfirmasi Kata Sandi Baru"}
+                        id={"new_password_confirmation"}
+                        placeholder={"Konfirmasi kata sandi baru kamu"}
+                        value={passwordData.new_password_confirmation}
+                        onChange={handlePasswordChange}
+                      />
+                      <div className="flex justify-end">
+                        <Button
+                          label={"Simpan"}
+                          size="small"
+                          onClick={handleChangePassword}
+                        />
+                               
                       </div>
                     </>
                   )}
