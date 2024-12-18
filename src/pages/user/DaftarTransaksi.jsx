@@ -10,14 +10,7 @@ import {
   Wallet,
 } from "iconsax-react";
 import NavbarDashboard from "../../components/NavbarDashboard";
-import {
-  userData,
-  userKelas,
-  sertifKelas,
-  userWebinar,
-  courseData,
-} from "../../data";
-import Card from "../../components/Card";
+import Icon from "../../assets/money.png";
 import TransactionCard from "../../components/TransactionCard";
 import { jwtDecode } from "jwt-decode";
 
@@ -27,7 +20,8 @@ const DaftarTransaksi = () => {
   const [visibleClasses, setVisibleClasses] = useState([]);
   const [userData, setUserData] = useState(null); // Tambahkan state untuk data pengguna
   const [isLoading, setIsLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState("");
+  const [profileData, setProfileData] = useState("");
+  const [profileImage, setProfileImage] = useState("");
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -50,9 +44,31 @@ const DaftarTransaksi = () => {
       console.error("Error fetching classes:", error);
     }
   };
-
+  const fetchProfileData = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      setProfileData(result.user);
+      setProfileImage(
+        result.user.path_photo ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+      );
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
   useEffect(() => {
     setIsLoading(true);
+    fetchProfileData();
     fetchClasses();
   }, []);
 
@@ -62,23 +78,8 @@ const DaftarTransaksi = () => {
       navigate("/masuk");
       return;
     }
-    try {
-      const decodedToken = jwtDecode(token);
-      setUserProfile({
-        username: decodedToken.name || "",
-        avatar:
-          decodedToken.avatar ||
-          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-      });
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      navigate("/masuk");
-    }
   }, [navigate]);
 
-  const handleCourses = () => {
-    navigate("/user/kelas");
-  };
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
     navigate("/masuk");
@@ -144,23 +145,35 @@ const DaftarTransaksi = () => {
         </div>
         <div className="w-full pl-60">
           <NavbarDashboard
-            avatar={userProfile?.avatar}
-            username={userProfile?.username}
+            avatar={profileImage}
+            username={profileData.name}
+            isLoading={true}
           />
 
           <div className="w-full flex flex-col p-10">
             <div className="flex flex-col gap-8">
               <h1 className="font-bold text-3xl">Daftar Transaksi</h1>
-              {transaction.map((user) => (
-                <TransactionCard
-                  img={user.course.path_photo}
-                  title={user.course.class_name}
-                  price={user.course.price}
-                  status={user.course.status}
-                  date={user.course.updated_at}
-                  transaction_id={user.transaction_id}
-                />
-              ))}
+              {isLoading ? (
+                <div className="w-full h-screen flex items-start mt-52 justify-center">
+                  <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              ) : transaction.length === 0 ? (
+                <div className="flex flex-col mt-32 justify-center items-center">
+                  <img src={Icon} alt="money" width={250} />
+                  <p className="text-gray-500">Belum ada transaksi</p>
+                </div>
+              ) : (
+                transaction.map((user) => (
+                  <TransactionCard
+                    img={user.course.path_photo}
+                    title={user.course.class_name}
+                    price={user.course.price}
+                    status={user.course.status}
+                    date={user.course.updated_at}
+                    transaction_id={user.transaction_id}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>
