@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LogoutCurve } from "iconsax-react";
 import { jwtDecode } from "jwt-decode";
@@ -8,6 +8,8 @@ const DefaultNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState({});
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,8 +23,7 @@ const DefaultNavbar = () => {
         const decodedToken = jwtDecode(accessToken);
         setIsLoggedIn(true);
         setUserData({
-          name: decodedToken.username || "User", // Adjust key based on your token structure
-          // email: decodedToken.email || "",
+          name: decodedToken.name || "User", // Adjust key based on your token structure
         });
       } catch (error) {
         console.error("Invalid token", error);
@@ -34,17 +35,30 @@ const DefaultNavbar = () => {
       setUserData({});
     }
   }, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
   const handleLogout = () => {
-    // Remove all user-related items from sessionStorage
     sessionStorage.removeItem("accessToken");
-
-    // Update state
-    setIsLoggedIn(false);
-    setUserData({});
-
-    // Redirect to home or login page
-    navigate("/");
+    navigate("/masuk");
+  };
+  const getNavLinkClass = (path) => {
+    return location.pathname === path
+      ? "font-bold text-primary-500 transition-colors duration-200"
+      : "font-bold text-gray-900 hover:text-primary-800 transition-colors duration-200";
   };
 
   return (
@@ -76,57 +90,92 @@ const DefaultNavbar = () => {
           </svg>
         </button>
 
-        <div className="flex items-center gap-x-5">
-          <nav>
-            <ul
-              className={`absolute md:relative top-24 md:top-0 left-0 right-0
+        <nav>
+          <ul
+            className={`absolute md:relative top-24 md:top-0 left-0 right-0
                 flex flex-col md:flex-row
                 md:space-x-12 p-4 md:p-0 space-y-4 md:space-y-0
                 bg-white md:bg-transparent
                 shadow-md md:shadow-none
                 transition-all duration-200 ease-in-out
-                ${isMenuOpen ? "flex" : "hidden md:flex"}
-              `}
-            >
-              <li>
-                <a
-                  href="/user/dashboard"
-                  className={`font-bold transition-colors duration-200
-                    hover:text-primary-800 text-primary-500`}
-                >
-                  Dashboard
-                </a>
-              </li>
-            </ul>
-          </nav>
+                ${isMenuOpen ? "flex" : "hidden md:flex"}`}
+          >
+            <li>
+              <a href="/" className={getNavLinkClass("/")}>
+                Beranda
+              </a>
+            </li>
+            <li>
+              <a href="/kelas" className={getNavLinkClass("/kelas")}>
+                Kelas
+              </a>
+            </li>
+            <li>
+              <a
+                href="/hubungi-kami"
+                className={getNavLinkClass("/hubungi-kami")}
+              >
+                Hubungi Kami
+              </a>
+            </li>
+            <li>
+              <a
+                href="/user/dashboard"
+                className={getNavLinkClass("/user/dashboard")}
+              >
+                Dashboard
+              </a>
+            </li>
+          </ul>
+        </nav>
 
-          {/* {!isLoggedIn ? (
-            <div className="hidden md:block">
-              <Button
-                label="Masuk"
-                variant="primary"
-                size="small"
-                onClick={() => navigate("/login")}
-              />
-            </div>
-          ) : (
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="flex flex-col items-end">
-                <span className="font-semibold text-gray-800">
-                  {userData.name}
-                </span>
-                <span className="text-sm text-gray-500">{userData.email}</span>
+        {!isLoggedIn ? (
+          <div className="hidden md:block">
+            <Button
+              label="Masuk"
+              variant="primary"
+              size="small"
+              onClick={() => navigate("/login")}
+            />
+          </div>
+        ) : (
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={toggleDropdown}
+              className="flex flex-col items-end"
+            >
+              <span className="font-bold text-gray-800">
+                Hello {userData.name}!
+              </span>
+              <span className="text-sm text-gray-500">{userData.email}</span>
+            </button>
+            {isDropdownOpen && (
+              <div className="absolute top-20 right-[78px] w-60 bg-white rounded-lg shadow-lg py-2 z-50">
+                <nav className="mt-2">
+                  {/* <a
+                  href="/settings"
+                  className="block px-4 py-2 text-sm hover:bg-gray-50"
+                >
+                  Pengaturan
+                </a> */}
+                  <a
+                    onClick={handleLogout}
+                    className="block cursor-pointer px-4 py-2 text-sm text-red-500 hover:bg-gray-50"
+                  >
+                    Keluar
+                  </a>
+                </nav>
               </div>
-              <button
+            )}
+            {/* <button
                 onClick={handleLogout}
                 className="text-gray-600 hover:text-red-500 transition-colors"
                 aria-label="Logout"
               >
                 <LogoutCurve size={24} />
-              </button>
-            </div>
-          )} */}
-        </div>
+              </button> */}
+          </div>
+        )}
       </div>
     </header>
   );
