@@ -16,7 +16,7 @@ import {
   Key,
   Edit,
 } from "iconsax-react";
-
+import { ToastContainer, toast } from "react-toastify";
 const Pengaturan = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("editProfil");
@@ -79,7 +79,10 @@ const Pengaturan = () => {
         last_education: result.user.last_education || "",
         work: result.user.work || "",
       });
-      setProfileImage(result.user.path_photo || "default-avatar-url");
+      setProfileImage(
+        result.user.path_photo ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+      );
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching profile data:", error);
@@ -111,10 +114,10 @@ const Pengaturan = () => {
         }
       );
       if (response.ok) {
-        alert("Profil berhasil diperbarui!");
+        toast.success("Profil berhasil diperbarui!");
         window.location.reload();
       } else {
-        alert("Gagal memperbarui profil.");
+        toast.error("Gagal memperbarui profil.");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -123,7 +126,7 @@ const Pengaturan = () => {
 
   const handleChangePassword = async () => {
     if (passwordData.new_password !== passwordData.new_password_confirmation) {
-      alert("Konfirmasi kata sandi tidak cocok!");
+      toast.error("Konfirmasi kata sandi tidak cocok!");
       return;
     }
 
@@ -141,7 +144,7 @@ const Pengaturan = () => {
       );
 
       if (response.ok) {
-        alert("Kata sandi berhasil diperbarui!");
+        toast.success("Kata sandi berhasil diperbarui!");
         setPasswordData({
           old_password: "",
           new_password: "",
@@ -149,11 +152,11 @@ const Pengaturan = () => {
         });
       } else {
         const result = await response.json();
-        alert(result.message || "Gagal memperbarui kata sandi.");
+        toast.error(result.message || "Gagal memperbarui kata sandi.");
       }
     } catch (error) {
       console.error("Error updating password:", error);
-      alert("Terjadi kesalahan saat memperbarui kata sandi.");
+      toast.error("Terjadi kesalahan saat memperbarui kata sandi.");
     }
   };
 
@@ -174,6 +177,7 @@ const Pengaturan = () => {
   return (
     <section>
       <div>
+        <ToastContainer />
         {/* Sidebar */}       
         <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
           <div className="space-y-6">
@@ -230,7 +234,12 @@ const Pengaturan = () => {
       </div>
       {/* Main Content */}
       <div className="w-full pl-60">
-        <NavbarDashboard avatar={profileImage} username={profileData.name} />   
+        <NavbarDashboard
+          avatar={profileImage}
+          username={profileData.name}
+          isLoading={true}
+        />
+           
         <div className="w-full flex flex-col p-10">
           <div>
             <div className="mb-8">
