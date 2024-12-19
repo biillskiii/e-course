@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Wave from "../assets/login.png";
 import TextInput from "../components/InputForm";
 import Button from "../components/Button";
@@ -50,7 +52,7 @@ function App() {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/register`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/register`,
         {
           name,
           email,
@@ -61,22 +63,28 @@ function App() {
       );
 
       console.log("Respons API:", response.data);
-      alert("Registrasi berhasil! Silakan login.");
+      toast.success("Registrasi berhasil! Silakan login.");
       navigate("/masuk");
     } catch (err) {
       if (err.response) {
-        console.error("Error Response:", err.response.data);
         const errorMessage =
-          err.response.data.message || "Registrasi gagal. Silakan coba lagi.";
-        setError(errorMessage);
+          err.response.data.message ||
+          "Email sudah terdaftar. Gunakan email lain.";
+        toast.error(errorMessage);
+
+        // Periksa jika error karena email sudah terdaftar
       } else if (err.request) {
         console.error("No Response:", err.request);
         setError(
           "Tidak ada respon dari server. Periksa koneksi internet Anda."
         );
+        toast.error(
+          "Tidak ada respon dari server. Periksa koneksi internet Anda."
+        );
       } else {
         console.error("Error:", err.message);
         setError("Terjadi kesalahan. Silakan coba lagi.");
+        toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
     } finally {
       setIsLoading(false);
@@ -84,11 +92,12 @@ function App() {
   };
 
   const handleGoogleSignUp = () => {
-    alert("Fitur Google Sign-Up akan segera hadir");
+    toast.info("Fitur Google Sign-Up akan segera hadir");
   };
 
   return (
     <div className="bg-white flex justify-center items-center max-h-screen overflow-hidden gap-x-10">
+      <ToastContainer />
       <div className="w-full">
         <img
           src={Wave}
