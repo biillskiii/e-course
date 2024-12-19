@@ -10,10 +10,8 @@ import {
   Wallet,
 } from "iconsax-react";
 import NavbarDashboard from "../../components/NavbarDashboard";
-import Icon from "../../assets/money.png";
 import TransactionCard from "../../components/TransactionCard";
-import { jwtDecode } from "jwt-decode";
-
+import NotTransaction from "../../assets/pana.png";
 const DaftarTransaksi = () => {
   const navigate = useNavigate();
   const [transaction, setTransaction] = useState([]);
@@ -30,7 +28,7 @@ const DaftarTransaksi = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/usertransactions`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/usertransactions`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -48,7 +46,7 @@ const DaftarTransaksi = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -159,8 +157,8 @@ const DaftarTransaksi = () => {
                 </div>
               ) : transaction.length === 0 ? (
                 <div className="flex flex-col mt-32 justify-center items-center">
-                  <img src={Icon} alt="money" width={250} />
-                  <p className="text-gray-500">Belum ada transaksi</p>
+                  <img src={NotTransaction} alt="money" width={350} />
+                  <p className="text-gray-500 mt-5">Belum ada transaksi</p>
                 </div>
               ) : (
                 transaction.map((user) => (
