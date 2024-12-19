@@ -83,9 +83,10 @@ const Dashboard = () => {
       const token = sessionStorage.getItem("accessToken");
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
           {
             headers: {
+              application: "application/json",
               Authorization: `Bearer ${token}`,
             },
           }
@@ -105,7 +106,7 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`,
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -143,19 +144,21 @@ const Dashboard = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchased-courses`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchased-courses`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
           },
         }
       );
+      const result = await response.json();
+      console.log(result.data);
       setIsLoading(false);
-      if (response.data.length === 0) {
+      if (result.data.length === 0) {
         setHasNoData(true);
       } else {
-        setClasses(response.data);
-        setVisibleClasses(response.data.slice(0, 4));
+        setClasses(result.data);
+        setVisibleClasses(result.data.slice(0, 4));
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
@@ -238,8 +241,8 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="w-full justify-between pl-60">
           <NavbarDashboard
-            avatar={profileImage} 
-            username={profileData.name} 
+            avatar={profileImage}
+            username={profileData.name}
             isLoading={true}
           />
           <div className="px-10">
@@ -314,7 +317,7 @@ const Dashboard = () => {
                   )}
                 </div>
               </div>
-              {isLoading ? (
+              {/* {isLoading ? (
                 <div className="w-full h-screen flex items-start mt-52 justify-center">
                   <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
                 </div>
@@ -340,7 +343,7 @@ const Dashboard = () => {
                     />
                   ))}
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         </div>
