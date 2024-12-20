@@ -5,6 +5,7 @@ import Sertifikat from "../assets/sertif.png";
 import Pita from "../assets/pita.png";
 import { QRCodeSVG } from "qrcode.react";
 import Button from "./Button";
+import { DocumentDownload } from "iconsax-react";
 
 const CertificateGenerator = ({ name, course, code, date, onClick }) => {
   const certificateRef = useRef(null);
@@ -54,8 +55,8 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
     >
       {/* Dark overlay on hover */}
       {isHovered && (
-        <div 
-          className="absolute inset-0 bg-black bg-opacity-75 z-20"
+        <div
+          className="absolute inset-0 bg-black bg-opacity-40 z-20"
           style={{ width: "320px", height: "224px" }}
         />
       )}
@@ -63,7 +64,12 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
       {/* Button appears on hover */}
       {isHovered && (
         <div className="absolute inset-0 flex items-center justify-center z-30">
-          <Button label="Unduh Sertifikat" size="big" onClick={generatePDF} />
+          <Button
+            label="Unduh Sertifikat"
+            rightIcon={<DocumentDownload />}
+            size="big"
+            onClick={generatePDF}
+          />
         </div>
       )}
 
@@ -73,7 +79,7 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
           width: "320px",
           height: "224px",
           position: "relative",
-          zIndex: "10"
+          zIndex: "10",
         }}
       >
         <img
