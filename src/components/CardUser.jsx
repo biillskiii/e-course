@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { Level, DiscountCircle, Calendar, Clock } from "iconsax-react";
 import { Icon } from "@iconify/react";
 import ProgressBar from "./ProgressBar";
-
+import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 // Fetch token and initiate Snap payment
 const fetchOrder = async (order_code, user_id, course_id) => {
   try {
@@ -132,37 +133,27 @@ const Card = ({
   onClick,
 }) => {
   useMidtransScript(); // Load Midtrans script
-
+  const navigate = useNavigate();
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
   const variantContent = {
     default: (
       <>
-        {/* <div className="flex items-center gap-x-5 mt-4">
-          <div className="flex items-center">
-            {[...Array(5)].map((_, index) => (
-              <Icon
-                icon="material-symbols:star"
-                key={index}
-                width={24}
-                color={index < rating ? "#F1C644" : "#e4e5e9"}
-              />
-            ))}
-            <p className="ml-2">{ratingNum}</p>
-          </div>
-          <p className="flex font-bold capitalize items-center gap-x-2">
-            <Level size={24} color="#0A181F" />
-            {level}
-          </p>
-        </div> */}
         <div className="flex-grow flex items-end mt-4">
           <div className="w-full">
-            {/* <p className="text-xl font-bold text-primary-500 mb-4">
-              <PriceDisplay price={price} hasDiscount={hasDiscount} />
-            </p> */}
-            <ProgressBar
-              progress={progress}
-              variant="below"
-              color="bg-primary-500"
-            />
+            {progress === 100 ? (
+              <Button
+                label={"Unduh Sertifikat"}
+                onClick={() => handleNavigation("")} // Ganti dengan logika unduh sertifikat
+              />
+            ) : (
+              <ProgressBar
+                progress={progress}
+                variant="below"
+                color="bg-primary-500"
+              />
+            )}
           </div>
         </div>
       </>
