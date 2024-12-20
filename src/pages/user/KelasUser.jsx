@@ -197,33 +197,41 @@ const Kelas = () => {
                 <div className="grid grid-cols-3 gap-4 mt-4">
                   {kelasStatus === "Dalam Progress" ? (
                     <>
-                      {classes.map((kelas) => (
-                        <CardUser
-                          img={kelas.path_photo}
-                          mentorImg={kelas.mentor.path_photo}
-                          title={kelas.class_name}
-                          name={kelas.mentor.name}
-                          job={kelas.mentor.specialist}
-                          price={kelas.price}
-                          level={kelas.level}
-                          onClick={() =>
-                            kelas?.id &&
-                            navigate(`/user/detail-user/${kelas.id}`)
-                          }
-                        />
-                      ))}
+                      {classes
+                        .filter((kelas) => kelas.completion_percentage < 100)
+                        .map((kelas) => (
+                          <CardUser
+                            img={kelas.path_photo}
+                            mentorImg={kelas.mentor.path_photo}
+                            title={kelas.class_name}
+                            name={kelas.mentor.name}
+                            job={kelas.mentor.specialist}
+                            price={kelas.price}
+                            level={kelas.level}
+                            progress={kelas.completion_percentage}
+                            onClick={() =>
+                              kelas?.id &&
+                              navigate(`/user/detail-user/${kelas.id}`)
+                            }
+                          />
+                        ))}
                     </>
                   ) : (
                     <>
-                      {sertifKelas.map((kelas) => (
-                        <Card
-                          img={kelas.img}
-                          title={kelas.title}
-                          name={kelas.name}
-                          job={kelas.job}
-                          variant={kelas.variant}
-                        />
-                      ))}
+                      {classes
+                        .filter((kelas) => kelas.completion_percentage === 100)
+                        .map((kelas) => (
+                          <CardUser
+                            img={kelas.path_photo}
+                            mentorImg={kelas.mentor.path_photo}
+                            title={kelas.class_name}
+                            name={kelas.mentor.name}
+                            job={kelas.mentor.specialist}
+                            price={kelas.price}
+                            level={kelas.level}
+                            progress={kelas.completion_percentage}
+                          />
+                        ))}
                     </>
                   )}
                 </div>
