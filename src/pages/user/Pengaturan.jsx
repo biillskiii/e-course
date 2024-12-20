@@ -15,6 +15,7 @@ import {
   UserEdit,
   Key,
   Edit,
+  Cup,
 } from "iconsax-react";
 import { ToastContainer, toast } from "react-toastify";
 const Pengaturan = () => {
@@ -58,7 +59,7 @@ const Pengaturan = () => {
     }
   }, [navigate]);
   const fetchProfileData = async () => {
-    const token = sessionStorage.getItem("accessToken")
+    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
@@ -166,7 +167,6 @@ const Pengaturan = () => {
     setPasswordData((prev) => ({ ...prev, [id]: value }));
   };
 
-
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
     navigate("/masuk");
@@ -216,7 +216,14 @@ const Pengaturan = () => {
               variant="side-primary"
               leftIcon={<Category />}
               size="very-big"
-              onClick={handleLogout}
+              onClick={() => handleNavigation("/user/pengaturan")}
+            />
+            <Button
+              label="Sertifikat"
+              variant="side-primary"
+              leftIcon={<Cup />}
+              size="very-big"
+              onClick={() => handleNavigation("/user/sertifikat")}
             />
           </div>
           <div className="mt-20">
@@ -225,7 +232,7 @@ const Pengaturan = () => {
               variant="side-danger"
               leftIcon={<LogoutCurve />}
               size="very-big"
-              onClick={() => handleNavigation("/masuk")}
+              onClick={handleLogout}
             />
           </div>
         </div>

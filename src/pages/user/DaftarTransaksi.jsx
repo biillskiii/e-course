@@ -8,6 +8,7 @@ import {
   Monitor,
   Ticket,
   Wallet,
+  Cup,
 } from "iconsax-react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import TransactionCard from "../../components/TransactionCard";
@@ -28,7 +29,7 @@ const DaftarTransaksi = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/usertransactions`,
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/usertransactions`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -46,7 +47,7 @@ const DaftarTransaksi = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
+        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`, // Endpoint API
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -129,6 +130,13 @@ const DaftarTransaksi = () => {
               leftIcon={<Category />}
               size="very-big"
               onClick={() => handleNavigation("/user/pengaturan")}
+            />{" "}
+            <Button
+              label="Sertifikat"
+              variant="side-primary"
+              leftIcon={<Cup />}
+              size="very-big"
+              onClick={() => handleNavigation("/user/sertifikat")}
             />
           </div>
           <div className="mt-20">
@@ -137,7 +145,7 @@ const DaftarTransaksi = () => {
               variant="side-danger"
               leftIcon={<LogoutCurve />}
               size="very-big"
-              onClick={() => handleLogout("/masuk")}
+              onClick={handleLogout}
             />
           </div>
         </div>
@@ -166,7 +174,7 @@ const DaftarTransaksi = () => {
                     img={user.course.path_photo}
                     title={user.course.class_name}
                     price={user.course.price}
-                    status={user.course.status}
+                    status={user.status}
                     date={user.course.updated_at}
                     transaction_id={user.transaction_id}
                   />

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import {
   Category,
+  Cup,
   Home,
   LogoutCurve,
   Monitor,
@@ -124,7 +125,14 @@ const Kelas = () => {
               variant="side-primary"
               leftIcon={<Category />}
               size="very-big"
-              onClick={handleLogout}
+              onClick={() => handleNavigation("/user/pengaturan")}
+            />
+            <Button
+              label="Sertifikat"
+              variant="side-primary"
+              leftIcon={<Cup />}
+              size="very-big"
+              onClick={() => handleNavigation("/user/sertifikat")}
             />
           </div>
           <div className="mt-20">

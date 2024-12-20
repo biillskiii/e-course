@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Category,
+  Cup,
   Home,
   LogoutCurve,
   Monitor,
@@ -247,7 +248,14 @@ const Dashboard = () => {
               variant="side-primary"
               leftIcon={<Category />}
               size="very-big"
-              onClick={handleLogout}
+              onClick={() => handleNavigation("/user/pengaturan")}
+            />
+            <Button
+              label="Sertifikat"
+              variant="side-primary"
+              leftIcon={<Cup />}
+              size="very-big"
+              onClick={() => handleNavigation("/user/sertifikat")}
             />
           </div>
           <div className="mt-20">
@@ -256,7 +264,7 @@ const Dashboard = () => {
               variant="side-danger"
               leftIcon={<LogoutCurve />}
               size="very-big"
-              onClick={() => handleNavigation("/masuk")}
+              onClick={handleLogout}
             />
           </div>
         </div>
@@ -352,7 +360,6 @@ const Dashboard = () => {
                         code={certificate.certificate_code}
                         course={certificate.course.class_name}
                         date={certificate.created_at}
-                     
                       />
                     </div>
                   ))}
