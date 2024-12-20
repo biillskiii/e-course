@@ -145,7 +145,7 @@ const Card = ({
             {progress === 100 ? (
               <Button
                 label={"Unduh Sertifikat"}
-                onClick={() => handleNavigation("")} // Ganti dengan logika unduh sertifikat
+                onClick={() => handleNavigation("/user/sertifikat")} // Ganti dengan logika unduh sertifikat
               />
             ) : (
               <ProgressBar
