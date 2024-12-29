@@ -10,6 +10,7 @@ const InputBase = ({
   placeholder,
   value,
   onChange,
+  name,
   className,
   error,
   disabled = false,
