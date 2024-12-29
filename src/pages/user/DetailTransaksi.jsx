@@ -187,7 +187,7 @@ const DetailTransaksi = () => {
                 transaction_id={course.transaction_id}
                 title={course.course.class_name}
                 price={course.course.price}
-                status={course.course.status}
+                status={course.status}
                 date={course.updated_at}
                 payment_method={
                   course.payment_method === "bank_transfer"
