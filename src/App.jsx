@@ -13,11 +13,20 @@ import Dashboard from "./pages/admin/Dashboard";
 import Kelas from "./pages/admin/Kelas";
 import Webinar from "./pages/admin/Webinar";
 import TambahKelas from "./pages/admin/TambahKelas";
+import Mentee from "./pages/admin/Mentee";
+import Mentor from "./pages/admin/Mentor";
+import Transaksi from "./pages/admin/Transaksi";
 import DashboardUser from "./pages/user/DashboardUser";
 import KelasUser from "./pages/user/KelasUser";
 import WebinarUser from "./pages/user/WebinarUser";
 import DaftarTransaksi from "./pages/user/DaftarTransaksi";
-// import DashboardUser from "./pages/username/dashboard/Dashboard";
+import DetailTransaksi from "./pages/user/DetailTransaksi";
+import Pengaturan from "./pages/user/Pengaturan";
+import DetailClass from "./components/CourseDetail";
+import SiswaList from "./pages/admin/SiswaList";
+import DetailClassUser from "./pages/user/DetailClass";
+import SertifikatUser from "./pages/user/SertifikatUser";
+
 function App() {
   return (
     <Router>
@@ -36,11 +45,23 @@ function App() {
         <Route path="/admin/kelas" element={<Kelas />} />
         <Route path="/admin/kelas/tambah-kelas" element={<TambahKelas />} />
         <Route path="/admin/webinar" element={<Webinar />} />
+        <Route path="/admin/mentee" element={<Mentee />} />
+
+        <Route path="/admin/mentor" element={<Mentor />} />
+        <Route path="/admin/daftar-transaksi" element={<Transaksi />} />
+        <Route path="/admin/kelas/:id" element={<SiswaList />} />
         <Route path="/user/dashboard" element={<DashboardUser />} />
         <Route path="/user/kelas" element={<KelasUser />} />
         <Route path="/user/webinar" element={<WebinarUser />} />
         <Route path="/user/daftar-transaksi" element={<DaftarTransaksi />} />
-        {/* <Route path={`/${username}/dashboard`} element={<DashboardUser />} /> */}
+        <Route
+          path="/transaction/:transactionId"
+          element={<DetailTransaksi />}
+        />
+        <Route path="/user/pengaturan" element={<Pengaturan />} />
+        <Route path="/user/detail/:id" element={<DetailClass />} />
+        <Route path="/user/detail-user/:id" element={<DetailClassUser />} />
+        <Route path="user/sertifikat" element={<SertifikatUser />} />
       </Routes>
     </Router>
   );

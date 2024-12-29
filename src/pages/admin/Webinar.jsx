@@ -89,18 +89,21 @@ const Kelas = () => {
             variant="side-primary"
             leftIcon={<People />}
             size="very-big"
+            onClick={() => handleNavigation("/admin/mentee")}
           />
           <Button
             label="Mentor"
             variant="side-primary"
             leftIcon={<Teacher />}
             size="very-big"
+            onClick={() => handleNavigation("/admin/mentor")}
           />
           <Button
             label="Daftar Transaksi"
             variant="side-primary"
             leftIcon={<Wallet />}
             size="very-big"
+            onClick={() => handleNavigation("/admin/daftar-transaksi")}
           />
           <Button
             label="Pengaturan"
@@ -114,7 +117,7 @@ const Kelas = () => {
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
-          onClick={() => handleNavigation("/login")}
+          onClick={() => handleNavigation("/masuk")}
         />
       </div>
 

@@ -43,12 +43,11 @@ export default function Button({
     danger: `bg-transparent rounded-lg hover:text-alert-danger ${
       active ? "bg-alert-danger text-basic-white" : ""
     }`,
-    disable: "bg-gray-100 rounded-lg cursor-not-allowed text-gray-200",
-    submenu: `cursor-pointer border-b-2 border-transparent hover:text-primary-500 ${
+    disable: "bg-gray-100 rounded-lg text-gray-200 cursor-not-allowed",
+    submenu: `cursor-pointer  border-transparent hover:text-primary-500 ${
       active ? "text-primary-500" : ""
     }`,
-    "submenu-active":
-      "cursor-pointer border-b-2 border-primary-500 text-primary-500",
+    "submenu-active": "cursor-pointer  border-primary-500 text-primary-500",
     "submenu-disable":
       "cursor-not-allowed border-b-2 border-gray-medium-light text-gray-200",
     "side-primary": `hover:text-primary-500 rounded-2xl active:bg-primary-500 active:font-bold active:text-white text-base ${
@@ -64,13 +63,14 @@ export default function Button({
 
   const alignmentStyles = {
     side:
-      (variant === "side-primary" ||
+      variant === "disable" ||
+      ((variant === "side-primary" ||
         variant === "side-primary-active" ||
         variant === "side-danger") &&
-      (variant === "side-primary" ||
-        variant === "side-primary-active" ||
-        variant === "side-danger") &&
-      (leftIcon || rightIcon)
+        (variant === "side-primary" ||
+          variant === "side-primary-active" ||
+          variant === "side-danger") &&
+        (leftIcon || rightIcon))
         ? "justify-start pl-4"
         : "justify-center",
   };

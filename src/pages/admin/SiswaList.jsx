@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { NotificationCircle } from "iconsax-react";
 import {
   Home,
@@ -16,13 +16,12 @@ import {
   Filter,
   Edit2,
   Trash,
-  Eye,
 } from "iconsax-react";
 import { jwtDecode } from "jwt-decode";
 
 const Kelas = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [kelasData, setKelasData] = useState([]);
+  const [listMentee, setListMentee] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -35,8 +34,10 @@ const Kelas = () => {
     username: "",
     avatar: "",
   });
+  const location = useLocation();
   const navigate = useNavigate();
-
+  const { id } = useParams();
+  const { class_name } = location.state || {};
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -44,7 +45,7 @@ const Kelas = () => {
       try {
         const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/course-admin`,
+          `${import.meta.env.VITE_LOCAL_API_KEY}/api/mentee-list/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -59,12 +60,13 @@ const Kelas = () => {
         const result = await response.json();
 
         // Updated data validation for the new API structure
-        if (!Array.isArray(result.data)) {
+        if (!Array.isArray(result.data.purchases)) {
           throw new Error("Unexpected data format from API");
         }
 
-        setKelasData(result.data);
-        setFilteredData(result.data);
+        setListMentee(result.data.purchases);
+        console.log(listMentee);
+        setFilteredData(result.data.purchases);
 
         // Update pagination-related state
         setTotalItems(result.total || result.data.length);
@@ -110,8 +112,8 @@ const Kelas = () => {
   }, [navigate]);
 
   // Navigation handler
-  const handleNavigation = (path, state = null) => {
-    navigate(path, { state });
+  const handleNavigation = (path) => {
+    navigate(path);
   };
 
   // Search handler
@@ -120,9 +122,9 @@ const Kelas = () => {
     setSearchTerm(value);
 
     if (value.trim() === "") {
-      setFilteredData(kelasData);
+      setFilteredData(listMentee);
     } else {
-      const filtered = kelasData.filter((kelas) =>
+      const filtered = listMentee.filter((kelas) =>
         kelas.class_name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredData(filtered);
@@ -149,7 +151,7 @@ const Kelas = () => {
 
       const result = await response.json();
 
-      setKelasData(result.data);
+      setlistMentee(result.data);
       setFilteredData(result.data);
       setCurrentPage(result.current_page || pageNumber);
       setTotalItems(result.total || result.data.length);
@@ -234,7 +236,7 @@ const Kelas = () => {
 
         {/* Header Section */}
         <div className="flex justify-between items-center p-6">
-          <h1 className="text-2xl font-semibold">Daftar Kelas</h1>
+          <h1 className="text-2xl font-semibold">Daftar Mentee {class_name}</h1>
           <div className="flex gap-4 items-center">
             {/* Animated Search Bar */}
             <div
@@ -264,19 +266,6 @@ const Kelas = () => {
             <button className="p-2 border border-gray-200 rounded-lg">
               <Filter />
             </button>
-
-            {/* Mentee Text */}
-            <div className="flex items-center text-primary-500">
-              <span className="mr-2">Mentee</span>
-            </div>
-
-            {/* Add Class Button */}
-            <Button
-              label="Tambah Kelas"
-              size="small"
-              variant="primary"
-              onClick={() => handleNavigation("/admin/kelas/tambah-kelas")}
-            />
           </div>
         </div>
 
@@ -285,11 +274,9 @@ const Kelas = () => {
           <table className="w-full">
             <thead className="bg-primary-50/75">
               <tr className="text-left">
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">KODE KELAS</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">KATEGORI</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">NAMA KELAS</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">MENTEE</th>
-                <th className="px-6 py-4 text-sm text-[#20B1A8]">AKSI</th>
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">ID</th>
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">NAMA</th>
+                <th className="px-6 py-4 text-sm text-[#20B1A8]">EMAIL</th>
               </tr>
             </thead>
             <tbody>
@@ -308,42 +295,16 @@ const Kelas = () => {
                   </td>
                 </tr>
               ) : (
-                filteredData.map((kelas) => (
-                  <tr key={kelas.id} className="border-t border-gray-100">
-                    <td className="px-6 py-4">{kelas.course_code}</td>
-                    <td className="capitalize px-6 py-4">{kelas.category}</td>
-                    <td className="capitalize px-6 py-4">{kelas.class_name}</td>
-                    <td className="px-6 py-4">{kelas.user_count}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
-                          onClick={() =>
-                            handleNavigation(`/admin/kelas/${kelas.id}`)
-                          }
-                        >
-                          <Eye />
-                        </button>
-                        <button
-                          className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
-                          onClick={() =>
-                            handleNavigation(`/admin/kelas/edit/${kelas.id}`)
-                          }
-                        >
-                          <Edit2 />
-                        </button>
-                        <button
-                          className="p-2 text-danger-500 hover:bg-danger-50 rounded-lg"
-                          onClick={() => {
-                            /* Tambahkan logika hapus kelas */
-                          }}
-                        >
-                          <Trash color="red" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                // Filter data dengan id > 1
+                filteredData
+                  .filter((kelas) => kelas.user.id > 1)
+                  .map((kelas) => (
+                    <tr key={kelas.id} className="border-t border-gray-100">
+                      <td className="px-6 py-4">{kelas.user.id}</td>
+                      <td className="px-6 py-4">{kelas.user.name}</td>
+                      <td className="px-6 py-4">{kelas.user.email}</td>
+                    </tr>
+                  ))
               )}
             </tbody>
           </table>

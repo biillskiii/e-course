@@ -20,7 +20,10 @@ const Kelas = () => {
   const handleNavigation = (path) => {
     navigate(path);
   };
-
+  const handleLogout = () => {
+    sessionStorage.removeItem("accessToken");
+    navigate("/masuk");
+  };
   return (
     <section>
       <div>
@@ -73,7 +76,7 @@ const Kelas = () => {
               variant="side-danger"
               leftIcon={<LogoutCurve />}
               size="very-big"
-              onClick={() => handleNavigation("/masuk")}
+              onClick={handleLogout}
             />
           </div>
         </div>

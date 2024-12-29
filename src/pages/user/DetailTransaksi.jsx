@@ -1,83 +1,114 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Button from "../../components/Button";
+import { useParams, useNavigate } from "react-router-dom";
+import { courseData, userData } from "../../data";
+import Label from "../../components/Label";
 import {
-  Category,
+  Copy,
   Home,
-  LogoutCurve,
   Monitor,
   Ticket,
   Wallet,
-  Cup,
+  Category,
+  LogoutCurve,
 } from "iconsax-react";
+import Button from "../../components/Button";
 import NavbarDashboard from "../../components/NavbarDashboard";
-import TransactionCard from "../../components/TransactionCard";
-import NotTransaction from "../../assets/pana.png";
-const DaftarTransaksi = () => {
-  const navigate = useNavigate();
-  const [transaction, setTransaction] = useState([]);
-  const [visibleClasses, setVisibleClasses] = useState([]);
-  const [userData, setUserData] = useState(null); // Tambahkan state untuk data pengguna
-  const [isLoading, setIsLoading] = useState(true);
-  const [profileData, setProfileData] = useState("");
-  const [profileImage, setProfileImage] = useState("");
+import Mandiri from "../../assets/mandiri.png";
+import Qris from "../../assets/qris.png";
+import QrisQRCode from "../../assets/QRCode.png";
+import TransactionDetailCard from "../../components/TransactionDetailCard";
+import { jwtDecode } from "jwt-decode";
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text);
+  // Optionally add a toast/notification here
+};
 
+const DetailTransaksi = () => {
+  const { transactionId } = useParams();
+  const [transaction, setTransaction] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const [userProfile, setUserProfile] = useState("");
   const handleNavigation = (path) => {
     navigate(path);
   };
-
-  const fetchClasses = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/usertransactions`,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-      setIsLoading(false);
-      const result = await response.json();
-      setTransaction(result);
-    } catch (error) {
-      console.error("Error fetching classes:", error);
-    }
-  };
-  const fetchProfileData = async () => {
-    const token = sessionStorage.getItem("accessToken");
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`, // Endpoint API
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const result = await response.json();
-      setProfileData(result.user);
-      setProfileImage(
-        result.user.path_photo ||
-          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
-      );
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-    }
-  };
-  useEffect(() => {
-    setIsLoading(true);
-    fetchProfileData();
-    fetchClasses();
-  }, []);
-
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
     }
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserProfile({
+        username: decodedToken.name || "",
+        avatar:
+          decodedToken.avatar ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+      });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/masuk");
+    }
   }, [navigate]);
+
+  const fetchClasses = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      console.error("No token found.");
+      navigate("/masuk");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_LOCAL_API_KEY
+        }/api/usertransactions/${transactionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setTransaction(result);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching classes:", error.message);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchClasses();
+  }, [transactionId]);
+
+  // Handle single object or array response
+  const course = Array.isArray(transaction)
+    ? transaction.find((item) => item.transactionId === transactionId)
+    : transaction; // Use directly if it's an object
+
+  if (!course) {
+    return (
+      <tr className="w-full h-screen flex justify-center items-center">
+        <td colSpan="4" className="py-10 text-center">
+          <div className="flex justify-center items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  const isPending = course.status === "Menunggu Pembayaran";
+  const isSuccessful = course.status === "Pembayaran Berhasil";
 
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
@@ -130,13 +161,6 @@ const DaftarTransaksi = () => {
               leftIcon={<Category />}
               size="very-big"
               onClick={() => handleNavigation("/user/pengaturan")}
-            />{" "}
-            <Button
-              label="Sertifikat"
-              variant="side-primary"
-              leftIcon={<Cup />}
-              size="very-big"
-              onClick={() => handleNavigation("/user/sertifikat")}
             />
           </div>
           <div className="mt-20">
@@ -151,35 +175,22 @@ const DaftarTransaksi = () => {
         </div>
         <div className="w-full pl-60">
           <NavbarDashboard
-            avatar={profileImage}
-            username={profileData.name}
+            avatar={userProfile.avatar}
+            username={userProfile.username}
             isLoading={true}
           />
-
           <div className="w-full flex flex-col p-10">
             <div className="flex flex-col gap-8">
-              <h1 className="font-bold text-3xl">Daftar Transaksi</h1>
-              {isLoading ? (
-                <div className="w-full h-screen flex items-start mt-52 justify-center">
-                  <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
-                </div>
-              ) : transaction.length === 0 ? (
-                <div className="flex flex-col mt-32 justify-center items-center">
-                  <img src={NotTransaction} alt="money" width={350} />
-                  <p className="text-gray-500 mt-5">Belum ada transaksi</p>
-                </div>
-              ) : (
-                transaction.map((user) => (
-                  <TransactionCard
-                    img={user.course.path_photo}
-                    title={user.course.class_name}
-                    price={user.course.price}
-                    status={user.status}
-                    date={user.course.updated_at}
-                    transaction_id={user.transaction_id}
-                  />
-                ))
-              )}
+              <h1 className="font-bold text-3xl">Detail Transaksi</h1>
+              <TransactionDetailCard
+                img={course.course.path_photo}
+                transaction_id={course.transaction_id}
+                title={course.course.class_name}
+                price={course.course.price}
+                status={course.status}
+                date={course.updated_at}
+                payment_method={course.payment_method}
+              />
             </div>
           </div>
         </div>
@@ -188,4 +199,4 @@ const DaftarTransaksi = () => {
   );
 };
 
-export default DaftarTransaksi;
+export default DetailTransaksi;

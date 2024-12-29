@@ -217,7 +217,6 @@ const Dashboard = () => {
             <Button
               label="Dashboard"
               variant="side-primary"
-              active={true}
               leftIcon={<Home />}
               size="very-big"
               onClick={() => handleNavigation("/user/dashboard")}
@@ -253,6 +252,7 @@ const Dashboard = () => {
             <Button
               label="Sertifikat"
               variant="side-primary"
+              active={true}
               leftIcon={<Cup />}
               size="very-big"
               onClick={() => handleNavigation("/user/sertifikat")}
@@ -268,93 +268,35 @@ const Dashboard = () => {
             />
           </div>
         </div>
-        <div className="w-full justify-between pl-60">
+        <div className="w-full pl-60">
           <NavbarDashboard
             avatar={profileImage}
             username={profileData.name}
             isLoading={isLoading}
           />
-          <div className="px-10">
-            {isProfileIncomplete && <CompleteProfileBanner />}
-          </div>
-          <div className="flex justify-between overflow-x-hidden p-10">
-            {/* Classes Section */}
-            <div className="flex flex-col">
-              <div className="flex justify-between items-center">
-                <div className="flex w-[750px] justify-between mr-16 items-center">
-                  <h1 className="font-bold text-2xl">Kelas yang Kamu Ikuti</h1>
-                  {hasNoData ? (
-                    <Button
-                      label={"Beli Kelas"}
-                      size="small"
-                      variant="primary"
-                      onClick={() => navigate("/kelas")}
-                    />
-                  ) : (
-                    <Button
-                      label={"Lihat Semua"}
-                      size="small"
-                      variant="submenu"
-                      onClick={() => navigate("/user/kelas")}
-                    />
-                  )}
-                </div>
+          {/* Certificates Section */}
+          <div className="flex flex-col w-full  p-10">
+            <div className="flex justify-between items-center">
+              <div className="flex w-[400px] justify-between mr-5 items-center">
+                <h1 className="font-bold text-2xl">Daftar Sertifikat</h1>
               </div>
-              {isLoading ? (
-                <div className="w-full h-screen flex items-start mt-52 justify-center">
-                  <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
-                </div>
-              ) : hasNoData ? (
-                <div className="flex flex-col items-center mt-20 text-gray-500">
-                  <img src={EmptyClass} width={200} alt="empty class" />
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-y-10 mt-4 mb-8">
-                  {visibleClasses.map((kelas) => (
-                    <CardUser
-                      key={kelas.id}
-                      img={kelas.path_photo}
-                      mentorImg={kelas.mentor.path_photo}
-                      title={kelas.class_name}
-                      name={kelas.mentor.name}
-                      job={kelas.mentor.specialist}
-                      price={kelas.price}
-                      level={kelas.level}
-                      progress={kelas.completion_percentage}
-                      onClick={() =>
-                        kelas?.id && navigate(`/user/detail-user/${kelas.id}`)
-                      }
-                    />
-                  ))}
-                </div>
-              )}
             </div>
-
-            {/* Certificates Section */}
-            <div className="flex flex-col">
-              <div className="flex justify-between items-center">
-                <div className="flex w-[400px] justify-between mr-5 items-center">
-                  <h1 className="font-bold text-2xl">Sertifikat Terbaru</h1>
-                  <Button
-                    label={"Lihat Semua"}
-                    size="small"
-                    variant="submenu"
-                    onClick={() => navigate("/user/sertifikat")}
-                  />
-                </div>
+            {isLoading ? (
+              <div className="w-full h-screen flex items-start mt-52 justify-center">
+                <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
               </div>
-              {isLoading ? (
-                <div className="w-full h-screen flex items-start mt-52 justify-center">
-                  <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-primary-500"></div>
-                </div>
-              ) : hasNoCertificates ? (
-                <div className="flex flex-col items-center mt-20 text-gray-500">
-                  <img src={Sertif} width={300} alt="empty certificates" />
-                </div>
-              ) : (
-                <div className="space-y-10 mt-4 mb-8">
-                  {certificates.map((certificate) => (
-                    <div className="flex flex-wrap " key={certificate.id}>
+            ) : hasNoCertificates ? (
+              <div className="flex flex-col items-center mt-20 text-gray-500">
+                <img src={Sertif} width={300} alt="empty certificates" />
+              </div>
+            ) : (
+              <div className="w-full flex flex-wrap items-center gap-10 mt-4 mb-8">
+                {certificates.map((certificate) => (
+                  <div
+                    className="rounded-xl border border-[#E9EBED]  p-5 bg-white "
+                    key={certificate.id}
+                  >
+                    <div className="rounded-xl">
                       <Certificate
                         name={certificate.user.name}
                         code={certificate.certificate_code}
@@ -362,10 +304,13 @@ const Dashboard = () => {
                         date={certificate.created_at}
                       />
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <h1 className="text-xl capitalize font-bold mt-4">
+                      {certificate.course.class_name}
+                    </h1>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
