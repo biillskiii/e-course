@@ -2,28 +2,90 @@ import React, { useState, useEffect } from "react";
 import ClassHeader from "./ClassHeader";
 import Chapter from "./Chapter";
 import Accordion from "./Accordion";
-import { TickCircle } from "iconsax-react";
 import NavbarDashboard from "./Navbar";
 import { useParams } from "react-router-dom";
+import useSnap from "../hooks/useSnap";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const CourseDetail = () => {
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPurchased, setIsPurchased] = useState(false); // State untuk status pembelian
+  const navigate = useNavigate();
+  const { snapEmbed } = useSnap();
 
-  // Placeholder benefits list (you might want to fetch this from API or define elsewhere)
-  const benefitsList = [
-    "Materi berkualitas dari mentor berpengalaman",
-    "Akses seumur hidup",
-    "Sertifikat kelulusan",
-    "Konsultasi dengan mentor",
-  ];
+  const handleCheckout = async () => {
+    const token = sessionStorage.getItem("accessToken");
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchase-course/${id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to initiate checkout");
+      }
+
+      const data = await response.json();
+
+      if (data.snap_token) {
+        // Check if Snap is already in view
+        const snapContainer = document.getElementById("snap-container");
+        if (!snapContainer || snapContainer.childElementCount === 0) {
+          document.body.style.overflow = "hidden"; // Disable background scrolling
+          document.getElementById("snap-overlay").style.display = "flex"; // Show overlay
+          snapEmbed(data.snap_token, "snap-container");
+          if (data.snap_token) {
+            const snapContainer = document.getElementById("snap-container");
+            if (!snapContainer || snapContainer.childElementCount === 0) {
+              document.body.style.overflow = "hidden"; // Disable background scrolling
+              document.getElementById("snap-overlay").style.display = "flex"; // Show overlay
+              snapEmbed(data.snap_token, "snap-container", {
+                onSuccess: function (result) {
+                  console.log("Payment success:", result);
+                  // Navigasi ke halaman sukses
+                  navigate(`/user/detail-transaksi/${id}`); // Ganti "/success/${id}" sesuai kebutuhan
+                },
+                onPending: function (result) {
+                  console.log("Payment pending:", result);
+                  navigate(`/pending/${id}`);
+                },
+                onError: function (result) {
+                  console.error("Payment error:", result);
+                  navigate(`/error`);
+                },
+                onClose: function () {
+                  console.warn("Payment popup closed");
+                  closePopup();
+                },
+              });
+            } else {
+              console.warn("Snap instance is already active.");
+            }
+          }
+        } else {
+          console.warn("Snap instance is already active.");
+        }
+      } else {
+        console.error("No snap_token found in response:", data);
+      }
+    } catch (error) {
+      console.error("Error during checkout:", error);
+    }
+  };
 
   const fetchClassDetail = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses/${id}`
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${id}`
       );
 
       if (!response.ok) {
@@ -31,11 +93,6 @@ const CourseDetail = () => {
       }
 
       const result = await response.json();
-
-      // Logging tambahan untuk debugging
-      console.log("Full API Response:", result);
-      console.log("Data yang akan diset:", result.data);
-
       setClassDetail(result.data);
     } catch (error) {
       console.error("Error fetching class detail:", error);
@@ -45,15 +102,43 @@ const CourseDetail = () => {
     }
   };
 
-  // Placeholder fetchOrder function (implement actual implementation)
-  const fetchOrder = (order_code, user_id, course_id) => {
-    // Implement order processing logic
-    console.log("Processing order", { order_code, user_id, course_id });
+  const checkPurchaseStatus = async () => {
+    try {
+      const token = sessionStorage.getItem("accessToken");
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/usertransactions`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const transactions = await response.json();
+      const hasPurchased = transactions.some(
+        (transaction) => transaction.course.id === parseInt(id)
+      );
+
+      setIsPurchased(hasPurchased);
+    } catch (error) {
+      console.error("Error checking purchase status:", error);
+    }
   };
 
   useEffect(() => {
     fetchClassDetail();
+    checkPurchaseStatus();
   }, [id]);
+
+  const closePopup = () => {
+    document.body.style.overflow = "auto"; // Enable background scrolling
+    document.getElementById("snap-overlay").style.display = "none"; // Hide overlay
+  };
 
   if (isLoading) {
     return (
@@ -80,7 +165,7 @@ const CourseDetail = () => {
   return (
     <div>
       <NavbarDashboard />
-      <div className="flex justify-between px-32 my-20 gap-x-20">
+      <div className="flex justify-between px-32 my-20 gap-x-32">
         {classDetail ? (
           <>
             <ClassHeader
@@ -95,41 +180,19 @@ const CourseDetail = () => {
               name={classDetail.mentor?.name || "Nama Mentor Tidak Tersedia"}
               job={classDetail.mentor?.specialist || "Spesialis Tidak Tersedia"}
             />
-
             <div className="w-full">
               <Chapter
-                price={classDetail.price || "Harga Tidak Tersedia"}
-                onClick={() =>
-                  fetchOrder(
-                    classDetail.order_code || "",
-                    classDetail.user_id || "",
-                    classDetail.id || ""
-                  )
-                }
+                price={classDetail.price}
+                hasDiscount={classDetail.price_discount}
+                onClick={() => handleCheckout()}
+                isDisabled={isPurchased}
+                // Pass status to Chapter
               />
-
               {classDetail.chapters && classDetail.chapters.length > 0 ? (
                 <Accordion items={classDetail.chapters} />
               ) : (
                 <p className="text-gray-500">Tidak ada chapter tersedia</p>
               )}
-
-              <div className="flex flex-col mt-10">
-                <h1 className="text-2xl font-bold mb-4">
-                  Yang akan kamu dapatkan
-                </h1>
-                <ul className="list-disc list-inside">
-                  {benefitsList.map((benefit, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center mb-4 text-base"
-                    >
-                      <TickCircle size="24" className="mr-2 text-primary-500" />
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
           </>
         ) : (
@@ -137,6 +200,19 @@ const CourseDetail = () => {
             Tidak ada detail kelas tersedia
           </div>
         )}
+      </div>
+
+      {/* Overlay */}
+      <div
+        id="snap-overlay"
+        className="fixed inset-0 w-full z-50 bg-white bg-opacity-90 hidden justify-center items-center"
+        onClick={closePopup}
+      >
+        <div
+          id="snap-container"
+          className=" h-[70%] bg-white rounded-lg shadow-lg p-4 overflow-hidden"
+          onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+        ></div>
       </div>
     </div>
   );
