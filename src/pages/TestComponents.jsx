@@ -15,7 +15,7 @@ import ClassHeader from "../components/ClassHeader";
 import { VideoSquare } from "iconsax-react";
 import Rating from "../components/RatingReview";
 import Popup from "../components/PopUp";
-
+import Certificate from "../components/Certificate";
 const sampleData = {
   price: 700000,
   buttonText: "Beli Kelas",
@@ -172,7 +172,7 @@ function App() {
     setCurrentPage(page);
   };
   return (
-    <div className="space-y-5 px-10">
+    <div className="space-y-5 bg-gray-400  min-h-screen px-10 pb-10">
       {/* Button */}
       <p>Regular button</p>
       <Button label="Button" variant="primary" />
@@ -415,6 +415,7 @@ function App() {
       <Footer />
       <p>Filter Sidebar</p>
       <FilterSidebar />
+      <Certificate />
     </div>
   );
 }

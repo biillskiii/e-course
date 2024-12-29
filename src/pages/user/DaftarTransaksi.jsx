@@ -29,7 +29,7 @@ const DaftarTransaksi = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/usertransactions`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/usertransactions`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -47,7 +47,7 @@ const DaftarTransaksi = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`, // Endpoint API
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
         {
           headers: {
             Authorization: `Bearer ${token}`,

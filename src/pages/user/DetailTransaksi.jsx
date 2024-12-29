@@ -63,7 +63,7 @@ const DetailTransaksi = () => {
     try {
       const response = await fetch(
         `${
-          import.meta.env.VITE_LOCAL_API_KEY
+          import.meta.env.VITE_SERVER_API_KEY
         }/api/usertransactions/${transactionId}`,
         {
           headers: {
@@ -189,7 +189,11 @@ const DetailTransaksi = () => {
                 price={course.course.price}
                 status={course.course.status}
                 date={course.updated_at}
-                payment_method={course.payment_method}
+                payment_method={
+                  course.payment_method === "bank_transfer"
+                    ? "VA"
+                    : course.payment_method
+                }
               />
             </div>
           </div>

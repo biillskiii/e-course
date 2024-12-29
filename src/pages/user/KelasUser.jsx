@@ -34,7 +34,7 @@ const Kelas = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ const Kelas = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchased-courses`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchased-courses`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,

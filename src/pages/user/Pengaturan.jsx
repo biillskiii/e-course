@@ -62,7 +62,7 @@ const Pengaturan = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`, // Endpoint API
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user/`, // Endpoint API
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -105,7 +105,7 @@ const Pengaturan = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/user/`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user/`,
         {
           method: "PUT",
           headers: {
@@ -134,7 +134,7 @@ const Pengaturan = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/updatePassword`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/updatePassword`,
         {
           method: "POST",
           headers: {
