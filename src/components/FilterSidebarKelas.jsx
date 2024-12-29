@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 
@@ -16,6 +17,26 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
   ];
 
   const levels = ["Semua Level", "Pemula", "Menengah", "Ahli"];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          "https://be-course.serpihantech.com/api/categories"
+        );
+        const result = await response.json();
+
+        // Assuming the API returns an array of category names
+        if (result.data && Array.isArray(result.data)) {
+          setCategories(["Semua Kategori", ...result.data]);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleCategoryChange = (category) => {
     const updatedCategories = selectedCategories.includes(category)
@@ -46,15 +67,18 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
     } else {
       setSelectedLevelsState(updatedLevels);
     }
+
     setFilteredLevels(updatedLevels);
   };
 
   const resetFilters = () => {
+
     setSelectedCategoriesState(["Semua Kategori"]);
     setFilteredCategories(["Semua Kategori"]);
 
     setSelectedLevelsState(["Semua Level"]);
     setFilteredLevels(["Semua Level"]);
+
   };
 
   return (
@@ -66,13 +90,7 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
         selectedOptions={selectedCategories}
         onOptionChange={handleCategoryChange}
       />
-      {/* Level Filter */}
-      <FilterSection
-        title="Level"
-        options={levels}
-        selectedOptions={selectedLevels}
-        onOptionChange={handleLevelChange}
-      />
+
       <button
         onClick={resetFilters}
         className="text-alert-danger text-base font-bold"

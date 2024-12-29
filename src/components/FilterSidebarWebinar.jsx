@@ -1,18 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InputBase from "./InputForm";
+
 const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
   const [selectedCategories, setSelectedCategoriesState] = useState([]);
   const [selectedLevels, setSelectedLevelsState] = useState([]);
-
-  const categories = [
-    "Semua Kategori",
-    "UI/UX Research & Design",
-    "Frontend Development",
-    "Backend Development",
-    "Data Science",
-  ];
+  const [categories, setCategories] = useState(["Semua Kategori"]);
 
   const levels = ["Semua Level", "Pemula", "Menengah", "Ahli"];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          "https://be-course.serpihantech.com/api/categories"
+        );
+        const result = await response.json();
+
+        // Assuming the API returns an array of category names
+        if (result.data && Array.isArray(result.data)) {
+          setCategories(["Semua Kategori", ...result.data]);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleCategoryChange = (category) => {
     const updatedCategories = selectedCategories.includes(category)

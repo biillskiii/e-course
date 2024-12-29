@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LogoutCurve } from "iconsax-react";
@@ -41,6 +42,7 @@ const DefaultNavbar = () => {
         setIsDropdownOpen(false);
       }
     };
+
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
