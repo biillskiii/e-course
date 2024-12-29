@@ -26,6 +26,7 @@ import DetailClass from "./components/CourseDetail";
 import SiswaList from "./pages/admin/SiswaList";
 import DetailClassUser from "./pages/user/DetailClass";
 import SertifikatUser from "./pages/user/SertifikatUser";
+import DetailSertifikat from "./pages/user/DetailSertif";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
         <Route path="/user/detail/:id" element={<DetailClass />} />
         <Route path="/user/detail-user/:id" element={<DetailClassUser />} />
         <Route path="user/sertifikat" element={<SertifikatUser />} />
+        <Route path="user/detail-sertifikat/:certificate_code" element={<DetailSertifikat />} />
       </Routes>
     </Router>
   );

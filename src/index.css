@@ -19,3 +19,6 @@ html {
 .mango {
     font-family: 'Mango';
 }
+.toastify-container {
+    z-index: 9999;
+  }
