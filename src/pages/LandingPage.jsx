@@ -109,6 +109,7 @@ const Home = () => {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const slidesPerView = 2;
   const [openIndex, setOpenIndex] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const navigate = useNavigate();
 
   const settings = {
@@ -119,7 +120,28 @@ const Home = () => {
     slidesToShow: 3,
     slidesToScroll: 3,
   };
-
+  const fetchProfileData = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      // setProfileData(result.user);
+      setProfileImage(
+        result.user.path_photo ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+      );
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
   const checkAuth = () => {
     const token = localStorage.getItem("token");
     return !!token;
@@ -144,7 +166,7 @@ const Home = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`
       );
       const result = await response.json();
       setClasses(result.data);
@@ -185,13 +207,14 @@ const Home = () => {
   }, [isAutoPlay, current]);
 
   useEffect(() => {
+    fetchProfileData();
     fetchClasses();
   }, []);
 
   return (
     <div className="w-full min-h-screen">
       <div className="container px-10 mx-auto">
-        <Navbar />
+        <Navbar avatar={profileImage}/>
       </div>
       <div className="">
         {/* Hero Section */}

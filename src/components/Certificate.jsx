@@ -6,11 +6,15 @@ import Pita from "../assets/pita.png";
 import { QRCodeSVG } from "qrcode.react";
 import Button from "./Button";
 import { DocumentDownload } from "iconsax-react";
+import { useNavigate } from "react-router-dom";
 
 const CertificateGenerator = ({ name, course, code, date, onClick }) => {
   const certificateRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
-
+  const navigate = useNavigate();
+  const handleNavigation = (path) => {
+    navigate(path);
+  }
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     const formattedDate = date.toLocaleDateString("id-ID", {
@@ -21,6 +25,7 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
     return `${formattedDate}`;
   };
 
+  
   const generatePDF = async () => {
     try {
       const certificate = certificateRef.current;
@@ -45,7 +50,6 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
       alert("Failed to generate PDF. Please try again.");
     }
   };
-
   return (
     <div
       className="relative flex flex-col items-center gap-4"
@@ -65,7 +69,7 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
       {isHovered && (
         <div className="absolute inset-0 flex items-center justify-center z-30">
           <Button
-            label="Unduh Sertifikat"
+            label="Lihat Sertifikat"
             rightIcon={<DocumentDownload />}
             size="big"
             onClick={generatePDF}

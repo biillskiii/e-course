@@ -47,7 +47,7 @@ function LoginPage() {
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/login`, // Using the environment variable
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/login`, // Using the environment variable
           {
             method: "POST",
             headers: {

@@ -8,7 +8,7 @@ import ProgressBar from "./ProgressBar";
 const fetchOrder = async (order_code, user_id, course_id) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_LOCAL_API_KEY}/api/order`,
+      `${import.meta.env.VITE_SERVER_API_KEY}/api/order`,
       {
         method: "POST",
         headers: {
@@ -87,18 +87,21 @@ const PriceDisplay = ({ price, hasDiscount }) => {
   }
 
   if (hasDiscount) {
+    const discountValue = Number(hasDiscount);
+    const priceValue = Number(price);
+    const formattedDiscount = Math.round(discountValue * 10) / 10;
     const discountPrice = price * (1 - hasDiscount / 100);
     return (
       <div className="flex items-center gap-x-2">
         <span className="w-16 h-6 rounded-lg text-sm bg-primary-100 text-primary-500 flex justify-center items-center gap-x-1">
           <DiscountCircle size="16" color="#00a589" />
-          {hasDiscount}%
+          {formattedDiscount}%
         </span>
         <span className="line-through font-bold text-sm">
-          Rp. {price?.toLocaleString() || "Rp.0"}
+          Rp. {priceValue.toLocaleString("id-ID")}
         </span>
         <span className="text-primary-500 font-bold text-xl">
-          Rp. {discountPrice.toLocaleString()}
+          Rp. {discountPrice.toLocaleString("id-ID")}
         </span>
       </div>
     );
