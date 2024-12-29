@@ -74,7 +74,7 @@ const Mentor = () => {
       setError(null);
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/mentors`,
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -137,7 +137,7 @@ const Mentor = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/mentors/${
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors/${
           selectedMentor.id
         }`,
         {
@@ -169,7 +169,7 @@ const Mentor = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/mentors/${
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors/${
           selectedMentor.id
         }`,
         {

@@ -84,7 +84,7 @@ const Dashboard = () => {
       const token = sessionStorage.getItem("accessToken");
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`, // Endpoint API
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
           {
             headers: {
               application: "application/json",
@@ -107,7 +107,7 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`,
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -144,7 +144,7 @@ const Dashboard = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchased-courses`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchased-courses`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -170,7 +170,7 @@ const Dashboard = () => {
   const fetchCertificates = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/userCertificate`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/userCertificate`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,

@@ -5,7 +5,7 @@ import { LogoutCurve } from "iconsax-react";
 import { jwtDecode } from "jwt-decode";
 import Button from "./Button";
 
-const DefaultNavbar = () => {
+const DefaultNavbar = ({avatar}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState({});
@@ -137,19 +137,20 @@ const DefaultNavbar = () => {
               label="Masuk"
               variant="primary"
               size="small"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/masuk")}
             />
           </div>
         ) : (
           <div className="hidden md:flex items-center space-x-4">
             <button
               onClick={toggleDropdown}
-              className="flex flex-col items-end"
+              className="flex  items-center gap-x-5"
             >
-              <span className="font-bold text-gray-800">
-                Hello {userData.name}!
-              </span>
-              <span className="text-sm text-gray-500">{userData.email}</span>
+              <img
+                src={avatar}
+                className="w-10 h-10 rounded-full font-bold text-gray-800"
+              ></img>
+              {/* <span className="text-sm text-gray-500">{userData.email}</span> */}
             </button>
             {isDropdownOpen && (
               <div className="absolute top-20 right-[78px] w-60 bg-white rounded-lg shadow-lg py-2 z-50">

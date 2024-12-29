@@ -78,7 +78,7 @@ const Dashboard = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/courses`
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
@@ -96,7 +96,7 @@ const Dashboard = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/mentors`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -117,7 +117,7 @@ const Dashboard = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchases`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchases`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -139,7 +139,7 @@ const Dashboard = () => {
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/course-admin`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/course-admin`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -170,7 +170,7 @@ const Dashboard = () => {
     const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/transactions`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/transactions`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -400,7 +400,7 @@ const Dashboard = () => {
                             </span>
                           </td>
                           <td className="uppercase  py-3">
-                            {transaction.payment_method === "echannel"
+                            {transaction.payment_method === "bank_transfer"
                               ? "VA"
                               : transaction.payment_method === null
                               ? "-"

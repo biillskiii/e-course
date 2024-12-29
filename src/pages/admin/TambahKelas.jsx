@@ -8,27 +8,29 @@ import {
   Setting3,
   LogoutCurve,
   Teacher,
+  Trash,
+  Add,
 } from "iconsax-react";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import { userData } from "../../data";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import axios from "axios";
-import InputBase from "../../components/InputForm";
+import TextInput from "../../components/InputForm";
+
 const EditKelas = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [mentors, setMentors] = useState([]); // New state for mentor options
+  const [mentors, setMentors] = useState([]);
   const [formData, setFormData] = useState({
-    course_code: "",
+    // course_code: "",
     name: "",
     level: "pemula",
     description: "",
     premium: 1,
-    price: "", // Add this
+    price: "",
     final_price: "",
     price_discount: "",
     course_photo: null,
@@ -37,13 +39,26 @@ const EditKelas = () => {
   });
 
   const [finalPrice, setFinalPrice] = useState("");
-  // New useEffect to fetch mentors
+  const [courses, setCourses] = useState([]);
+  const [chapters, setChapters] = useState([
+    { chapter_name: "", course_id: "" },
+  ]);
+  const [videos, setVideos] = useState([
+    {
+      video_number: "",
+      video_title: "",
+      video_url: "",
+      video_description: "",
+      chapter_id: "",
+    },
+  ]);
+  const [availableChapters, setAvailableChapters] = useState([]);
   useEffect(() => {
     const fetchMentors = async () => {
       const token = sessionStorage.getItem("accessToken");
       try {
         const response = await axios.get(
-          "`${import.meta.env.VITE_LOCAL_API_KEY}api/mentors",
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -52,7 +67,6 @@ const EditKelas = () => {
         );
         if (response.data.data) {
           setMentors(response.data.data);
-          // Set default mentor_id if mentors are available
           if (response.data.data.length > 0) {
             setFormData((prev) => ({
               ...prev,
@@ -74,37 +88,41 @@ const EditKelas = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { id, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [id]: value,
     }));
 
-    if (name === "price" || name === "price_discount") {
-      const price = name === "price" ? Number(value) : Number(formData.price);
-      const discount =
-        name === "price_discount"
-          ? Number(value)
-          : Number(formData.price_discount);
+    if (id === "price" || id === "final_price") {
+      const originalPrice =
+        id === "price" ? Number(value) : Number(formData.price);
+      const discountedPrice =
+        id === "final_price" ? Number(value) : Number(formData.final_price);
 
-      if (!isNaN(price) && price > 0) {
-        const discountedPrice = price * (1 - discount / 100);
-        const finalPriceValue = discountedPrice > 0 ? discountedPrice : 0;
-        setFinalPrice(finalPriceValue);
-        // Update final_price in formData
+      if (
+        !isNaN(originalPrice) &&
+        !isNaN(discountedPrice) &&
+        originalPrice > 0 &&
+        discountedPrice > 0
+      ) {
+        // Hitung persentase diskon
+        const discountPercentage =
+          ((originalPrice - discountedPrice) / originalPrice) * 100;
+
         setFormData((prevData) => ({
           ...prevData,
-          final_price: finalPriceValue,
+          price_discount: discountPercentage.toFixed(0),
         }));
       } else {
-        setFinalPrice("");
         setFormData((prevData) => ({
           ...prevData,
-          final_price: "",
+          price_discount: "",
         }));
       }
     }
   };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file && file.size > 5 * 1024 * 1024) {
@@ -120,7 +138,7 @@ const EditKelas = () => {
 
   const validateForm = () => {
     const requiredFields = [
-      "course_code",
+      // "course_code",
       "name",
       "description",
       "price",
@@ -143,9 +161,9 @@ const EditKelas = () => {
     if (
       formData.price_discount &&
       (isNaN(Number(formData.price_discount)) ||
-        Number(formData.price_discount) >= Number(formData.price))
+        Number(formData.price_discount) > 100)
     ) {
-      setError("Discount price must be less than regular price");
+      setError("Discount percentage must be between 0 and 100");
       return false;
     }
 
@@ -165,18 +183,19 @@ const EditKelas = () => {
       const formDataToSend = new FormData();
 
       const mapData = {
-        course_code: formData.course_code,
-        name: formData.name,
+        // course_code: formData.course_code,
+        class_name: formData.name,
         level: formData.level,
         description: formData.description,
-        price: formData.final_price, // Use final_price here
+        price: formData.price,
         price_discount: formData.price_discount || null,
+        final_price: formData.final_price,
         premium: formData.premium,
         mentor_id: formData.mentor_id,
         category_id: formData.category_id,
         course_photo: formData.course_photo,
       };
-
+      const token = sessionStorage.getItem("accessToken");
       Object.keys(mapData).forEach((key) => {
         if (mapData[key] !== null) {
           formDataToSend.append(key, mapData[key]);
@@ -184,11 +203,12 @@ const EditKelas = () => {
       });
 
       const response = await axios.post(
-        "`${import.meta.env.VITE_LOCAL_API_KEY}api/courses",
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`,
         formDataToSend,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
           timeout: 10000,
         }
@@ -196,23 +216,128 @@ const EditKelas = () => {
 
       if (response.data.success) {
         setSuccess(true);
-        setTimeout(() => {
-          navigate("/admin/kelas");
-        }, 2000);
+        // setTimeout(() => {
+        //   navigate("/admin/kelas0");
+        // }, 2000);
       }
     } catch (error) {
-      // Error handling remains the same
+      setError(error.response?.data?.message || "Failed to save course");
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
     navigate("/masuk");
   };
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const token = sessionStorage.getItem("accessToken");
+      try {
+        const response = await axios.get(
+          "https://be-course.serpihantech.com/api/courses",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.data.data) {
+          setCourses(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const handleChapterChange = (index, field, value) => {
+    const newChapters = [...chapters];
+    newChapters[index][field] = value;
+    setChapters(newChapters);
+  };
+
+  const handleVideoChange = (index, field, value) => {
+    const newVideos = [...videos];
+    newVideos[index][field] = value;
+    setVideos(newVideos);
+  };
+
+  const addChapter = () => {
+    setChapters([...chapters, { chapter_name: "", course_id: "" }]);
+  };
+
+  const addVideo = () => {
+    setVideos([
+      ...videos,
+      {
+        video_number: "",
+        video_title: "",
+        video_url: "",
+        video_description: "",
+        chapter_id: "",
+      },
+    ]);
+  };
+
+  const removeChapter = (index) => {
+    const newChapters = chapters.filter((_, i) => i !== index);
+    setChapters(newChapters);
+  };
+
+  const removeVideo = (index) => {
+    const newVideos = videos.filter((_, i) => i !== index);
+    setVideos(newVideos);
+  };
+
+  const handleSubmitChapters = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      const promises = chapters.map((chapter) =>
+        axios.post("https://be-course.serpihantech.com/api/chapters", chapter, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      );
+      await Promise.all(promises);
+      // Fetch updated chapters for video section
+      const response = await axios.get(
+        "https://be-course.serpihantech.com/api/chapters",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setAvailableChapters(response.data.data);
+      setSuccess(true);
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to save chapters");
+    }
+  };
+
+  const handleSubmitVideos = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      const promises = videos.map((video) =>
+        axios.post("https://be-course.serpihantech.com/api/videos", video, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      );
+      await Promise.all(promises);
+      setSuccess(true);
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to save videos");
+    }
+  };
   return (
     <div className="min-h-screen flex">
-      {/* Sidebar code remains the same... */}
       <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
         <div className="space-y-6">
           <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
@@ -259,7 +384,7 @@ const EditKelas = () => {
             variant="side-primary"
             leftIcon={<Wallet />}
             size="very-big"
-            onClick={handleLogout}
+            onClick={() => handleNavigation("/admin/transaksi")}
           />
         </div>
         <Button
@@ -267,9 +392,10 @@ const EditKelas = () => {
           variant="side-danger"
           leftIcon={<LogoutCurve />}
           size="very-big"
+          onClick={handleLogout}
         />
       </div>
-      {/* Main Content */}
+
       <div className="w-full ml-60 flex-1">
         <NavbarDashboard
           avatar={userData.avatar}
@@ -278,19 +404,24 @@ const EditKelas = () => {
 
         <div className="container mx-auto px-4 py-6">
           <div className="bg-white rounded-lg p-6">
-            {error && alert(error)}
-            {success && alert("sukses")}
+            {error && (
+              <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                Course saved successfully!
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
-              {/* Existing form fields... */}
-
-              {/* New Mentor dropdown */}
               <div>
                 <label className="block mb-2">
                   Mentor <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="mentor_id"
+                  id="mentor_id"
                   value={formData.mentor_id}
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -305,21 +436,11 @@ const EditKelas = () => {
                 </select>
               </div>
 
-              {/* Rest of your existing form fields... */}
               <div>
-                <InputBase
-                  label={"Course Code"}
-                  type={"text"}
-                  value={formData.course_code}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div>
-                <InputBase
-                  label={"Name"}
-                  type={"text"}
+                <TextInput
+                  label="Name"
+                  id="name"
+                  type="text"
                   value={formData.name}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -329,7 +450,7 @@ const EditKelas = () => {
               <div>
                 <label className="block mb-2">Level</label>
                 <select
-                  name="level"
+                  id="level"
                   value={formData.level}
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -342,42 +463,38 @@ const EditKelas = () => {
               </div>
 
               <div>
-                <label className="block mb-2">
-                  Price <span className="text-red-500">*</span>
-                </label>
-                <input
+                <TextInput
+                  label="Original Price"
+                  id="price"
                   type="number"
-                  name="price"
                   value={formData.price}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   disabled={isLoading}
                 />
               </div>
 
               <div>
-                <label className="block mb-2">Price Discount</label>
-                <input
+                <TextInput
+                  label="Discounted Price"
+                  id="final_price"
                   type="number"
-                  name="price_discount"
-                  value={formData.price_discount}
+                  value={formData.final_price}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   disabled={isLoading}
                 />
               </div>
+
               <div>
-                <label className="block mb-2">Final Price</label>
+                <label className="block mb-2">Discount Percentage</label>
                 <input
                   type="text"
-                  name="final_price"
+                  id="price_discount"
                   value={
-                    formData.final_price === ""
-                      ? `Rp ${finalPrice}`
-                      : `Rp ${formData.final_price}`
+                    formData.price_discount ? `${formData.price_discount}%` : ""
                   }
                   className="w-full p-2 border rounded bg-gray-100"
                   readOnly
+                  disabled
                 />
               </div>
 
@@ -401,7 +518,7 @@ const EditKelas = () => {
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
-                name="description"
+                id="description"
                 value={formData.description}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -428,6 +545,164 @@ const EditKelas = () => {
                 }`}
               >
                 {isLoading ? "Saving..." : "Save Course"}
+              </button>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4">Add Chapters</h2>
+            {chapters.map((chapter, index) => (
+              <div key={index} className="mb-4 p-4 border rounded">
+                <div className="flex justify-between mb-4">
+                  <h3 className="text-lg font-medium">Chapter {index + 1}</h3>
+                  <button
+                    onClick={() => removeChapter(index)}
+                    className="text-red-500"
+                  >
+                    <Trash size={20} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <TextInput
+                      label="Chapter Name"
+                      value={chapter.chapter_name}
+                      onChange={(e) =>
+                        handleChapterChange(
+                          index,
+                          "chapter_name",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2">Course</label>
+                    <select
+                      value={chapter.course_id}
+                      onChange={(e) =>
+                        handleChapterChange(index, "course_id", e.target.value)
+                      }
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="">Select Course</option>
+                      {courses.map((course) => (
+                        <option key={course.id} value={course.id}>
+                          {course.class_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={addChapter}
+                className="flex items-center text-primary-500"
+              >
+                <Add size={20} className="mr-2" />
+                Add Chapter
+              </button>
+              <button
+                onClick={handleSubmitChapters}
+                className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
+              >
+                Save Chapters
+              </button>
+            </div>
+          </div>
+
+          {/* Videos Section */}
+          <div className="bg-white rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">Add Videos</h2>
+            {videos.map((video, index) => (
+              <div key={index} className="mb-4 p-4 border rounded">
+                <div className="flex justify-between mb-4">
+                  <h3 className="text-lg font-medium">Video {index + 1}</h3>
+                  <button
+                    onClick={() => removeVideo(index)}
+                    className="text-red-500"
+                  >
+                    <Trash size={20} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <TextInput
+                      label="Video Number"
+                      type="number"
+                      value={video.video_number}
+                      onChange={(e) =>
+                        handleVideoChange(index, "video_number", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <TextInput
+                      label="Video Title"
+                      value={video.video_title}
+                      onChange={(e) =>
+                        handleVideoChange(index, "video_title", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <TextInput
+                      label="Video URL"
+                      value={video.video_url}
+                      onChange={(e) =>
+                        handleVideoChange(index, "video_url", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2">Chapter</label>
+                    <select
+                      value={video.chapter_id}
+                      onChange={(e) =>
+                        handleVideoChange(index, "chapter_id", e.target.value)
+                      }
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="">Select Chapter</option>
+                      {availableChapters.map((chapter) => (
+                        <option key={chapter.id} value={chapter.id}>
+                          {chapter.chapter_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block mb-2">Video Description</label>
+                    <textarea
+                      value={video.video_description}
+                      onChange={(e) =>
+                        handleVideoChange(
+                          index,
+                          "video_description",
+                          e.target.value
+                        )
+                      }
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={addVideo}
+                className="flex items-center text-primary-500"
+              >
+                <Add size={20} className="mr-2" />
+                Add Video
+              </button>
+              <button
+                onClick={handleSubmitVideos}
+                className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
+              >
+                Save Videos
               </button>
             </div>
           </div>

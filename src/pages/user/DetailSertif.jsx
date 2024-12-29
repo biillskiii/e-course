@@ -1,36 +1,56 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import Sertifikat from "../assets/sertif.png";
-import Pita from "../assets/pita.png";
+import Sertifikat from "../../assets/sertif.png";
+import Pita from "../../assets/pita.png";
 import { QRCodeSVG } from "qrcode.react";
-import Button from "./Button";
-import { DocumentDownload } from "iconsax-react";
-import { useNavigate } from "react-router-dom";
 
-const CertificateGenerator = ({ name, course, code, date, onClick }) => {
+const CertificateDetail = () => {
+  const { certificate_code } = useParams(); // Get the certificate ID from the URL params
+  const [certificate, setCertificate] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const certificateRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
-  const handleNavigation = (path) => {
-    navigate(path);
-  }
+
+  useEffect(() => {
+    const fetchCertificate = async () => {
+      try {
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_LOCAL_API_KEY
+          }/api/certificate/${certificate_code}`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        const result = await response.json();
+        setCertificate(result);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching certificate details:", error);
+      }
+    };
+
+    fetchCertificate();
+  }, [certificate_code]);
+
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    const formattedDate = date.toLocaleDateString("id-ID", {
+    return date.toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
       year: "numeric",
     });
-    return `${formattedDate}`;
   };
 
-  
   const generatePDF = async () => {
     try {
-      const certificate = certificateRef.current;
+      const certificateElem = certificateRef.current;
 
-      const canvas = await html2canvas(certificate, {
+      const canvas = await html2canvas(certificateElem, {
         scale: 5,
         useCORS: true,
         allowTaint: true,
@@ -38,54 +58,38 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
         backgroundColor: "#ffffff",
       });
 
+      // Convert to PDF
       const imgData = canvas.toDataURL("image/jpeg", 1.0);
+
       const pdf = new jsPDF("l", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
       pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`certificate-${name.replace(/\s+/g, "-").toLowerCase()}.pdf`);
+      pdf.save(
+        `certificate-${certificate.user.name
+          .replace(/\s+/g, "-")
+          .toLowerCase()}.pdf`
+      );
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Failed to generate PDF. Please try again.");
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!certificate) {
+    return <div>Certificate not found.</div>;
+  }
+
   return (
-    <div
-      className="relative flex flex-col items-center gap-4"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{ width: "320px", height: "224px" }}
-    >
-      {/* Dark overlay on hover */}
-      {isHovered && (
-        <div
-          className="absolute inset-0 bg-black bg-opacity-40 z-20"
-          style={{ width: "320px", height: "224px" }}
-        />
-      )}
+    <div className="certificate-detail">
+      <h1 className="text-2xl font-bold">Certificate Detail</h1>
 
-      {/* Button appears on hover */}
-      {isHovered && (
-        <div className="absolute inset-0 flex items-center justify-center z-30">
-          <Button
-            label="Lihat Sertifikat"
-            rightIcon={<DocumentDownload />}
-            size="big"
-            onClick={generatePDF}
-          />
-        </div>
-      )}
-
-      <div
-        ref={certificateRef}
-        style={{
-          width: "320px",
-          height: "224px",
-          position: "relative",
-          zIndex: "10",
-        }}
-      >
+      <div ref={certificateRef} style={{ width: "320px", height: "224px" }}>
         <img
           src={Sertifikat}
           alt="Certificate Background"
@@ -94,18 +98,15 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
             width: "320px",
             height: "224px",
             objectFit: "cover",
-            transition: "all 0.3s ease",
           }}
         />
         <div className="flex flex-col items-center justify-start pt-2">
           <h1 className="mango text-center text-primary-500 text-[16px]">
             PIXEL<span className="text-secondary-500">CODE.</span>
           </h1>
-
           <p className="text-center font-bold text-[5px] text-primary-500">
-            No: {code}
+            No: {certificate.certificate_code}
           </p>
-
           <p className="text-center font-bold text-sm">
             CERTIFICATE OF COMPLETION
           </p>
@@ -113,16 +114,16 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
             This certificate is proudly presented to
           </p>
           <h1 className="text-primary-500 text-base mt-1 font-semibold">
-            {name}
+            {certificate.user.name}
           </h1>
           <p className="text-center text-[5px] mt-1">
             Has successfully completed
           </p>
           <p className="text-center font-semibold text-[8px] capitalize">
-            {course}
+            {certificate.course.class_name}
           </p>
           <p className="text-center font-semibold text-[4px] mt-1">
-            {formatTimestamp(date)}
+            {formatTimestamp(certificate.created_at)}
           </p>
         </div>
         <div className="flex items-center justify-center w-[320px] gap-x-5 px-5 mt-2">
@@ -134,12 +135,26 @@ const CertificateGenerator = ({ name, course, code, date, onClick }) => {
           </div>
           <img src={Pita} alt="pita" width={31.48} />
           <div className="flex flex-col items-center">
-            <QRCodeSVG value={`https://localhost:5173/${code}`} size={32} />
+            <QRCodeSVG
+              value={`https://localhost:51567/${certificate.certificate_code}`}
+              size={32}
+            />
           </div>
         </div>
       </div>
+
+      <button
+        onClick={generatePDF}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Download Certificate as PDF
+      </button>
+
+      <button onClick={() => navigate(-1)} className="mt-4 text-blue-500">
+        Go Back
+      </button>
     </div>
   );
 };
 
-export default CertificateGenerator;
+export default CertificateDetail;

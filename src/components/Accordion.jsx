@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ArrowDown2, ArrowUp2, VideoSquare } from "iconsax-react";
 
-const Accordion = ({ items = [] }) => {
+const Accordion = ({ items = [], onVideoClick }) => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleAccordion = (index) => {
@@ -28,7 +28,8 @@ const Accordion = ({ items = [] }) => {
                 chapter.videos.map((video) => (
                   <div
                     key={video.id}
-                    className="flex justify-between items-center text-sm"
+                    className="flex justify-between items-center text-sm cursor-pointer"
+                    onClick={() => onVideoClick(video.video_url)}
                   >
                     <div className="flex gap-x-3 items-center">
                       <VideoSquare size="24" color="#111" />
@@ -38,9 +39,6 @@ const Accordion = ({ items = [] }) => {
                           {video.video_description || "Tidak ada deskripsi"}
                         </p>
                       </div>
-                    </div>
-                    <div className="text-primary-600">
-                      {video.is_premium ? "Premium" : "Video"}
                     </div>
                   </div>
                 ))
