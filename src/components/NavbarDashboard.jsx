@@ -67,19 +67,19 @@ const NavbarDashboard = ({ username, avatar }) => {
             disabled={isLoading}
           >
             <img
-              src={isLoading ? "/api/placeholder/14/14" : avatar}
+              src={isLoading ? "/api/placeholder/10/10" : avatar}
               alt="profile"
-              className={`w-14 h-14 rounded-full ${
+              className={`w-10 h-10 mr-2 rounded-full ${
                 isLoading ? pulseClass : ""
               }`}
               onError={(e) => {
-                e.target.src = "/api/placeholder/14/14";
+                e.target.src = "/api/placeholder/10/10";
               }}
             />
 
-            <p className={`-ml-3 font-bold ${isLoading ?`ml-2 h-4 w-32 ${pulseClass} rounded ` : ""}`}>
+            {/* <p className={`-ml-3 font-bold ${isLoading ?`ml-2 h-4 w-32 ${pulseClass} rounded ` : ""}`}>
               {username}
-            </p>
+            </p> */}
           </button>
 
           {/* Dropdown Menu */}
