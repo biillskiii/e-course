@@ -151,36 +151,30 @@ const Pengaturan = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
 
-    // Validasi input
+
     if (!validateForm()) {
       return;
     }
 
     try {
-      // Create FormData object to handle file upload
       const formData = new FormData();
-
-      // Add all profile data to FormData
       Object.keys(editProfileData).forEach((key) => {
         formData.append(key, editProfileData[key]);
       });
 
-      // Add the profile image if it exists and has changed
       const imageInput = document.getElementById("profileImageUpload");
       if (imageInput && imageInput.files[0]) {
         formData.append("user_photo", imageInput.files[0]);
       }
 
-      // Add _method parameter for PUT request
       formData.append("_method", "put");
 
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
         {
-          method: "POST", // Changed to POST since we're using _method: put
+          method: "POST", 
           headers: {
             Authorization: `Bearer ${token}`,
-            // Remove Content-Type header to let the browser set it with the boundary
           },
           body: formData,
         }
