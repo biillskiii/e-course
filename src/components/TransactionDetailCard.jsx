@@ -38,27 +38,13 @@ const TransactionDetailCard = ({
   const navigate = useNavigate();
   const [tooltipMessage, setTooltipMessage] = useState(null);
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        setTooltipMessage("Teks berhasil disalin!");
-        setTimeout(() => setTooltipMessage(null), 2000);
-      })
-      .catch((error) => {
-        console.error("Gagal menyalin teks:", error);
-        setTooltipMessage("Gagal menyalin teks.");
-        setTimeout(() => setTooltipMessage(null), 2000);
-      });
-  };
-
   // Fungsi untuk navigasi ke detail transaksi
   const handleNavigation = (transactionId) => {
     navigate(`/transaction/${transactionId}`);
   };
 
   return (
-    <div className="flex justify-between p-10 space-y-8">
+    <div className="flex justify-between space-y-8">
       {/* Transaction Info */}
       <div className="flex items-center space-x-4">
         {/* Course Image */}
@@ -77,6 +63,7 @@ const TransactionDetailCard = ({
           <div className="flex flex-col justify-between">
             <h1 className="capitalize text-2xl font-bold"> {title} </h1>
             <p className="text-[28px] font-bold">Rp. {price}</p>
+            {/* <Button size="small" label={"Beli ulang"} onClick={onClick} /> */}
           </div>
         </div>
       </div>
