@@ -13,6 +13,7 @@ const ClassHeader = ({
   img,
   description,
   imgMentor,
+  variant,
 }) => {
   // Periksa apakah token ada di sessionStorage
   const hasToken = !!sessionStorage.getItem("accessToken");
@@ -42,7 +43,7 @@ const ClassHeader = ({
       </div>
 
       {/* Tombol Selanjutnya dan Sebelumnya */}
-      {hasToken && (
+      {variant === true && (
         <div className="flex justify-end mt-10 gap-x-5">
           <Button
             label="Sebelumnya"
