@@ -1,20 +1,11 @@
-
-import React, { useState } from "react";
-import { Icon } from "@iconify/react";
+import React, { useState, useEffect } from "react";
 
 const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
+  const [categories, setCategories] = useState(["Semua Kategori"]);
   const [selectedCategories, setSelectedCategoriesState] = useState([
     "Semua Kategori",
   ]);
   const [selectedLevels, setSelectedLevelsState] = useState(["Semua Level"]);
-
-  const categories = [
-    "Semua Kategori",
-    "UI/UX Research & Design",
-    "Frontend Development",
-    "Backend Development",
-    "Data Science",
-  ];
 
   const levels = ["Semua Level", "Pemula", "Menengah", "Ahli"];
 
@@ -26,12 +17,18 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
         );
         const result = await response.json();
 
-        // Assuming the API returns an array of category names
         if (result.data && Array.isArray(result.data)) {
-          setCategories(["Semua Kategori", ...result.data]);
+          // Extract category_name from each category object and add "Semua Kategori"
+          const categoryNames = [
+            "Semua Kategori",
+            ...result.data.map((cat) => cat.category_name),
+          ];
+          setCategories(categoryNames);
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
+        // Keep default categories in case of error
+        setCategories([result.data.category_name]);
       }
     };
 
@@ -60,6 +57,7 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
     const updatedLevels = selectedLevels.includes(level)
       ? selectedLevels.filter((item) => item !== level)
       : [...selectedLevels, level];
+
     if (updatedLevels.includes("Semua Level") && updatedLevels.length > 1) {
       setSelectedLevelsState(
         updatedLevels.filter((item) => item !== "Semua Level")
@@ -72,13 +70,11 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
   };
 
   const resetFilters = () => {
-
     setSelectedCategoriesState(["Semua Kategori"]);
     setFilteredCategories(["Semua Kategori"]);
 
     setSelectedLevelsState(["Semua Level"]);
     setFilteredLevels(["Semua Level"]);
-
   };
 
   return (
@@ -89,6 +85,14 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
         options={categories}
         selectedOptions={selectedCategories}
         onOptionChange={handleCategoryChange}
+      />
+
+      {/* Level Filter */}
+      <FilterSection
+        title="Level"
+        options={levels}
+        selectedOptions={selectedLevels}
+        onOptionChange={handleLevelChange}
       />
 
       <button
@@ -103,7 +107,7 @@ const FilterSidebar = ({ setFilteredCategories, setFilteredLevels }) => {
 
 const FilterSection = ({ title, options, selectedOptions, onOptionChange }) => {
   return (
-    <div>
+    <div className="mb-6">
       <h3 className="font-bold text-lg mb-2">{title}</h3>
       <div>
         {options.map((option, index) => (
@@ -115,12 +119,6 @@ const FilterSection = ({ title, options, selectedOptions, onOptionChange }) => {
               onChange={() => onOptionChange(option)}
               className="form-checkbox h-5 w-5 rounded-lg border-2 border-green-500 text-green-500 focus:ring-green-500"
             />
-            {/* {selectedOptions.includes(option) && (
-              <Icon
-                icon="mingcute:check-fill"
-                className="text-green-500 absolute ml-1"
-              />
-            )} */}
             <label htmlFor={option} className="ml-2 text-gray-700">
               {option}
             </label>
