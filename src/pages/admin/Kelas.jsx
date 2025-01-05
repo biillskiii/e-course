@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
-import { NotificationCircle } from "iconsax-react";
+import Cookies from "js-cookie";
 import {
   Home,
   People,
@@ -37,12 +37,12 @@ const Kelas = () => {
   });
   const navigate = useNavigate();
 
+  const token = Cookies.get("accessToken");
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
           `${import.meta.env.VITE_SERVER_API_KEY}/api/course-admin`,
           {
@@ -82,7 +82,6 @@ const Kelas = () => {
 
   // Authentication and token validation
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
@@ -133,7 +132,6 @@ const Kelas = () => {
   const handlePageChange = async (pageNumber) => {
     setIsLoading(true);
     try {
-      const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/courses?page=${pageNumber}`,
         {
@@ -161,7 +159,7 @@ const Kelas = () => {
     }
   };
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
   return (

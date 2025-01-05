@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import axios from "axios";
 import TextInput from "../../components/InputForm";
+import Cookies from "js-cookie";
 
 const EditKelas = () => {
   const navigate = useNavigate();
@@ -24,8 +25,8 @@ const EditKelas = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [mentors, setMentors] = useState([]);
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    // course_code: "",
     name: "",
     level: "pemula",
     description: "",
@@ -38,7 +39,6 @@ const EditKelas = () => {
     category_id: 1,
   });
 
-  const [finalPrice, setFinalPrice] = useState("");
   const [courses, setCourses] = useState([]);
   const [chapters, setChapters] = useState([
     { chapter_name: "", course_id: "" },
@@ -53,9 +53,10 @@ const EditKelas = () => {
     },
   ]);
   const [availableChapters, setAvailableChapters] = useState([]);
+  const token = Cookies.get("accessToken");
+  const [categories, setCategories] = useState([]);
   useEffect(() => {
     const fetchMentors = async () => {
-      const token = sessionStorage.getItem("accessToken");
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors`,
@@ -79,8 +80,32 @@ const EditKelas = () => {
         setError("Failed to load mentors data");
       }
     };
-
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "https://be-course.serpihantech.com/api/categories",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.data.data) {
+          setCategories(response.data.data);
+          if (response.data.data.length > 0) {
+            setFormData((prev) => ({
+              ...prev,
+              category_id: response.data.data[0].id,
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setError("Failed to load categories data");
+      }
+    };
     fetchMentors();
+    fetchCategories();
   }, []);
 
   const handleNavigation = (path) => {
@@ -136,14 +161,8 @@ const EditKelas = () => {
     setError(null);
   };
 
-  const validateForm = () => {
-    const requiredFields = [
-      // "course_code",
-      "name",
-      "description",
-      "price",
-      "mentor_id",
-    ];
+  const validateCourseForm = () => {
+    const requiredFields = ["name", "description", "price", "mentor_id"];
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -170,8 +189,8 @@ const EditKelas = () => {
     return true;
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
+  const handleSubmitCourse = async () => {
+    if (!validateCourseForm()) {
       return;
     }
 
@@ -183,7 +202,6 @@ const EditKelas = () => {
       const formDataToSend = new FormData();
 
       const mapData = {
-        // course_code: formData.course_code,
         class_name: formData.name,
         level: formData.level,
         description: formData.description,
@@ -195,7 +213,6 @@ const EditKelas = () => {
         category_id: formData.category_id,
         course_photo: formData.course_photo,
       };
-      const token = sessionStorage.getItem("accessToken");
       Object.keys(mapData).forEach((key) => {
         if (mapData[key] !== null) {
           formDataToSend.append(key, mapData[key]);
@@ -216,9 +233,7 @@ const EditKelas = () => {
 
       if (response.data.success) {
         setSuccess(true);
-        // setTimeout(() => {
-        //   navigate("/admin/kelas0");
-        // }, 2000);
+        setCurrentStep(2);
       }
     } catch (error) {
       setError(error.response?.data?.message || "Failed to save course");
@@ -228,12 +243,12 @@ const EditKelas = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
+
   useEffect(() => {
     const fetchCourses = async () => {
-      const token = sessionStorage.getItem("accessToken");
       try {
         const response = await axios.get(
           "https://be-course.serpihantech.com/api/courses",
@@ -294,7 +309,6 @@ const EditKelas = () => {
   };
 
   const handleSubmitChapters = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const promises = chapters.map((chapter) =>
         axios.post("https://be-course.serpihantech.com/api/chapters", chapter, {
@@ -313,8 +327,9 @@ const EditKelas = () => {
           },
         }
       );
-      setAvailableChapters(response.data.data);
+      setAvailableChapters(response.data.chapters);
       setSuccess(true);
+      setCurrentStep(3);
     } catch (error) {
       setError(error.response?.data?.message || "Failed to save chapters");
     }
@@ -332,10 +347,20 @@ const EditKelas = () => {
       );
       await Promise.all(promises);
       setSuccess(true);
+      navigate("/admin/kelas");
     } catch (error) {
       setError(error.response?.data?.message || "Failed to save videos");
     }
   };
+
+  const handlePrevStep = () => {
+    setCurrentStep(currentStep - 1);
+  };
+
+  const handleNextStep = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
   return (
     <div className="min-h-screen flex">
       <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
@@ -352,7 +377,6 @@ const EditKelas = () => {
           />
           <Button
             label="Kelas"
-            active={true}
             variant="side-primary"
             leftIcon={<Monitor />}
             size="very-big"
@@ -367,6 +391,7 @@ const EditKelas = () => {
           />
           <Button
             label="Mentee"
+            active={true}
             variant="side-primary"
             leftIcon={<People />}
             size="very-big"
@@ -384,7 +409,7 @@ const EditKelas = () => {
             variant="side-primary"
             leftIcon={<Wallet />}
             size="very-big"
-            onClick={() => handleNavigation("/admin/transaksi")}
+            onClick={() => handleNavigation("/admin/daftar-transaksi")}
           />
         </div>
         <Button
@@ -403,309 +428,359 @@ const EditKelas = () => {
         />
 
         <div className="container mx-auto px-4 py-6">
-          <div className="bg-white rounded-lg p-6">
-            {error && (
-              <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                Course saved successfully!
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block mb-2">
-                  Mentor <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="mentor_id"
-                  value={formData.mentor_id}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          {currentStep === 1 && (
+            <div className="bg-white rounded-lg p-6">
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={() => navigate("/admin/kelas")}
+                  className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
                   disabled={isLoading}
                 >
-                  <option value="">Select Mentor</option>
-                  {mentors.map((mentor) => (
-                    <option key={mentor.id} value={mentor.id}>
-                      {mentor.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <TextInput
-                  label="Name"
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleInputChange}
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitCourse}
                   disabled={isLoading}
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2">Level</label>
-                <select
-                  id="level"
-                  value={formData.level}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  disabled={isLoading}
+                  className={`bg-primary-500 text-white px-6 py-2 rounded ${
+                    isLoading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-primary-600"
+                  }`}
                 >
-                  <option value="pemula">Pemula</option>
-                  <option value="menengah">Menengah</option>
-                  <option value="ahli">Ahli</option>
-                </select>
+                  {isLoading ? "Saving..." : "Next"}
+                </button>
               </div>
-
-              <div>
-                <TextInput
-                  label="Original Price"
-                  id="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div>
-                <TextInput
-                  label="Discounted Price"
-                  id="final_price"
-                  type="number"
-                  value={formData.final_price}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2">Discount Percentage</label>
-                <input
-                  type="text"
-                  id="price_discount"
-                  value={
-                    formData.price_discount ? `${formData.price_discount}%` : ""
-                  }
-                  className="w-full p-2 border rounded bg-gray-100"
-                  readOnly
-                  disabled
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2">
-                  Course Image{" "}
-                  <span className="text-xs text-gray-500">(Max 5MB)</span>
-                </label>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  accept="image/*"
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <label className="block mb-2">
-                Description <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                id="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                rows="4"
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="mt-6 flex justify-end gap-4">
-              <button
-                onClick={() => navigate("/admin/kelas")}
-                className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className={`bg-primary-500 text-white px-6 py-2 rounded ${
-                  isLoading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-primary-600"
-                }`}
-              >
-                {isLoading ? "Saving..." : "Save Course"}
-              </button>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Add Chapters</h2>
-            {chapters.map((chapter, index) => (
-              <div key={index} className="mb-4 p-4 border rounded">
-                <div className="flex justify-between mb-4">
-                  <h3 className="text-lg font-medium">Chapter {index + 1}</h3>
-                  <button
-                    onClick={() => removeChapter(index)}
-                    className="text-red-500"
-                  >
-                    <Trash size={20} />
-                  </button>
+              {/* Course form */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                  {error}
                 </div>
+              )}
+              {success && (
+                <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                  Course saved successfully!
+                </div>
+              )}
+
+              <div className="bg-white rounded-lg p-6">
+                {error && (
+                  <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                    {error}
+                  </div>
+                )}
+                {success && (
+                  <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                    Course saved successfully!
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <TextInput
-                      label="Chapter Name"
-                      value={chapter.chapter_name}
-                      onChange={(e) =>
-                        handleChapterChange(
-                          index,
-                          "chapter_name",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2">Course</label>
+                    <label className="block mb-2">
+                      Mentor <span className="text-red-500">*</span>
+                    </label>
                     <select
-                      value={chapter.course_id}
-                      onChange={(e) =>
-                        handleChapterChange(index, "course_id", e.target.value)
-                      }
-                      className="w-full p-2 border rounded"
+                      id="mentor_id"
+                      value={formData.mentor_id}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      disabled={isLoading}
                     >
-                      <option value="">Select Course</option>
-                      {courses.map((course) => (
-                        <option key={course.id} value={course.id}>
-                          {course.class_name}
+                      <option value="">Select Mentor</option>
+                      {mentors.map((mentor) => (
+                        <option key={mentor.id} value={mentor.id}>
+                          {mentor.name}
                         </option>
                       ))}
                     </select>
                   </div>
-                </div>
-              </div>
-            ))}
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={addChapter}
-                className="flex items-center text-primary-500"
-              >
-                <Add size={20} className="mr-2" />
-                Add Chapter
-              </button>
-              <button
-                onClick={handleSubmitChapters}
-                className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
-              >
-                Save Chapters
-              </button>
-            </div>
-          </div>
-
-          {/* Videos Section */}
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Add Videos</h2>
-            {videos.map((video, index) => (
-              <div key={index} className="mb-4 p-4 border rounded">
-                <div className="flex justify-between mb-4">
-                  <h3 className="text-lg font-medium">Video {index + 1}</h3>
-                  <button
-                    onClick={() => removeVideo(index)}
-                    className="text-red-500"
-                  >
-                    <Trash size={20} />
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2">
+                      Category <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      id="category_id"
+                      value={formData.category_id}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      disabled={isLoading}
+                    >
+                      <option value="">Select Category</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.category_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div>
                     <TextInput
-                      label="Video Number"
+                      label="Name"
+                      id="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      disabled={isLoading}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2">Level</label>
+                    <select
+                      id="level"
+                      value={formData.level}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      disabled={isLoading}
+                    >
+                      <option value="pemula">Pemula</option>
+                      <option value="menengah">Menengah</option>
+                      <option value="ahli">Ahli</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <TextInput
+                      label="Original Price"
+                      id="price"
                       type="number"
-                      value={video.video_number}
-                      onChange={(e) =>
-                        handleVideoChange(index, "video_number", e.target.value)
-                      }
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      disabled={isLoading}
                     />
                   </div>
+
                   <div>
                     <TextInput
-                      label="Video Title"
-                      value={video.video_title}
-                      onChange={(e) =>
-                        handleVideoChange(index, "video_title", e.target.value)
-                      }
+                      label="Discounted Price"
+                      id="final_price"
+                      type="number"
+                      value={formData.final_price}
+                      onChange={handleInputChange}
+                      disabled={isLoading}
                     />
                   </div>
+
                   <div>
-                    <TextInput
-                      label="Video URL"
-                      value={video.video_url}
-                      onChange={(e) =>
-                        handleVideoChange(index, "video_url", e.target.value)
+                    <label className="block mb-2">Discount Percentage</label>
+                    <input
+                      type="text"
+                      id="price_discount"
+                      value={
+                        formData.price_discount
+                          ? `${formData.price_discount}%`
+                          : ""
                       }
+                      className="w-full p-2 border rounded bg-gray-100"
+                      readOnly
+                      disabled
                     />
                   </div>
+
                   <div>
-                    <label className="block mb-2">Chapter</label>
-                    <select
-                      value={video.chapter_id}
-                      onChange={(e) =>
-                        handleVideoChange(index, "chapter_id", e.target.value)
-                      }
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="">Select Chapter</option>
-                      {availableChapters.map((chapter) => (
-                        <option key={chapter.id} value={chapter.id}>
-                          {chapter.chapter_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="block mb-2">Video Description</label>
-                    <textarea
-                      value={video.video_description}
-                      onChange={(e) =>
-                        handleVideoChange(
-                          index,
-                          "video_description",
-                          e.target.value
-                        )
-                      }
-                      className="w-full p-2 border rounded"
-                      rows="3"
+                    <label className="block mb-2">
+                      Course Image{" "}
+                      <span className="text-xs text-gray-500">(Max 5MB)</span>
+                    </label>
+                    <input
+                      type="file"
+                      onChange={handleFileChange}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      accept="image/*"
+                      disabled={isLoading}
                     />
                   </div>
                 </div>
+
+                <div className="mt-4">
+                  <label className="block mb-2">
+                    Description <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    rows="4"
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="mt-6 flex justify-end gap-4">
+                  <button
+                    onClick={() => navigate("/admin/kelas")}
+                    className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
+                    disabled={isLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmitCourse}
+                    disabled={isLoading}
+                    className={`bg-primary-500 text-white px-6 py-2 rounded ${
+                      isLoading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-primary-600"
+                    }`}
+                  >
+                    {isLoading ? "Saving..." : "Save Course"}
+                  </button>
+                </div>
               </div>
-            ))}
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={addVideo}
-                className="flex items-center text-primary-500"
-              >
-                <Add size={20} className="mr-2" />
-                Add Video
-              </button>
-              <button
-                onClick={handleSubmitVideos}
-                className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
-              >
-                Save Videos
-              </button>
             </div>
-          </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="bg-white rounded-lg p-6 mb-6">
+              {/* Chapters form */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                  Chapters saved successfully!
+                </div>
+              )}
+
+              <div className="bg-white rounded-lg p-6 mb-6">
+                <h2 className="text-xl font-semibold mb-4">Add Chapters</h2>
+                {chapters.map((chapter, index) => (
+                  <div key={index} className="mb-4 p-4 border rounded">
+                    <div className="flex justify-between mb-4">
+                      <h3 className="text-lg font-medium">
+                        Chapter {index + 1}
+                      </h3>
+                      <button
+                        onClick={() => removeChapter(index)}
+                        className="text-red-500"
+                      >
+                        <Trash size={20} />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <TextInput
+                          label="Chapter Name"
+                          value={chapter.chapter_name}
+                          onChange={(e) =>
+                            handleChapterChange(
+                              index,
+                              "chapter_name",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2">Course</label>
+                        <select
+                          value={chapter.course_id}
+                          onChange={(e) =>
+                            handleChapterChange(
+                              index,
+                              "course_id",
+                              e.target.value
+                            )
+                          }
+                          className="w-full p-2 border rounded"
+                        >
+                          <option value="">Select Course</option>
+                          {courses.map((course) => (
+                            <option key={course.id} value={course.id}>
+                              {course.class_name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex justify-between mt-4">
+                  <button
+                    onClick={addChapter}
+                    className="flex items-center text-primary-500"
+                  >
+                    <Add size={20} className="mr-2" />
+                    Add Chapter
+                  </button>
+                  <button
+                    onClick={handleSubmitChapters}
+                    className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
+                  >
+                    Save Chapters
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={handlePrevStep}
+                  className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <div className="flex gap-4">
+                  <button
+                    onClick={addChapter}
+                    className="flex items-center text-primary-500"
+                  >
+                    <Add size={20} className="mr-2" />
+                    Add Chapter
+                  </button>
+                  <button
+                    onClick={handleSubmitChapters}
+                    className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="bg-white rounded-lg p-6">
+              {/* Videos form */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                  Videos saved successfully!
+                </div>
+              )}
+
+              {/* Videos form fields */}
+
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={handlePrevStep}
+                  className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <div className="flex gap-4">
+                  <button
+                    onClick={addVideo}
+                    className="flex items-center text-primary-500"
+                  >
+                    <Add size={20} className="mr-2" />
+                    Add Video
+                  </button>
+                  <button
+                    onClick={handleSubmitVideos}
+                    className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

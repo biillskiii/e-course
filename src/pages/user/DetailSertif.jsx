@@ -22,7 +22,7 @@ const CertificateDetail = () => {
           }/api/certificate/${certificate_code}`,
           {
             headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Notification } from "iconsax-react";
 import { useNavigate } from "react-router-dom";
-
+import Cookies from "js-cookie";
 const NavbarDashboard = ({ username, avatar }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -34,7 +34,7 @@ const NavbarDashboard = ({ username, avatar }) => {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
 

@@ -21,7 +21,7 @@ const Kelas = () => {
     navigate(path);
   };
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
   return (

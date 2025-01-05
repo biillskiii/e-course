@@ -13,6 +13,7 @@ import {
 import NavbarDashboard from "../../components/NavbarDashboard";
 import TransactionCard from "../../components/TransactionCard";
 import NotTransaction from "../../assets/pana.png";
+import Cookies from "js-cookie";
 const DaftarTransaksi = () => {
   const navigate = useNavigate();
   const [transaction, setTransaction] = useState([]);
@@ -25,14 +26,14 @@ const DaftarTransaksi = () => {
   const handleNavigation = (path) => {
     navigate(path);
   };
-
+  const token = Cookies.get('accessToken');
   const fetchClasses = async () => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/usertransactions`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -44,7 +45,6 @@ const DaftarTransaksi = () => {
     }
   };
   const fetchProfileData = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
@@ -72,7 +72,6 @@ const DaftarTransaksi = () => {
   }, []);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
@@ -80,7 +79,7 @@ const DaftarTransaksi = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
 

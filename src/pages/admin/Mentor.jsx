@@ -17,7 +17,7 @@ import {
   Trash,
 } from "iconsax-react";
 import { jwtDecode } from "jwt-decode";
-
+import Cookies from "js-cookie";
 const Mentor = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [mentorData, setMentorData] = useState([]);
@@ -41,8 +41,8 @@ const Mentor = () => {
     path_photo: "",
   });
 
+  const token = Cookies.get("accessToken");
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
@@ -69,8 +69,7 @@ const Mentor = () => {
   }, [navigate]);
   useEffect(() => {
     const fetchData = async () => {
-      const token = sessionStorage.getItem("accessToken");
-      setIsLoading(true);
+          setIsLoading(true);
       setError(null);
       try {
         const response = await fetch(
@@ -134,8 +133,7 @@ const Mentor = () => {
   };
 
   const confirmDelete = async () => {
-    const token = sessionStorage.getItem("accessToken");
-    try {
+      try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors/${
           selectedMentor.id
@@ -166,8 +164,7 @@ const Mentor = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    const token = sessionStorage.getItem("accessToken");
-    try {
+      try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors/${
           selectedMentor.id
@@ -208,7 +205,7 @@ const Mentor = () => {
     setCurrentPage(pageNumber);
   };
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
   return (

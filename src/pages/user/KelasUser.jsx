@@ -13,6 +13,7 @@ import {
 import NavbarDashboard from "../../components/NavbarDashboard";
 import CardUser from "../../components/CardUser";
 import EmptyClass from "../../assets/empt-class.png";
+import Cookies from "js-cookie";
 const Kelas = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
@@ -23,15 +24,14 @@ const Kelas = () => {
   const handleNavigation = (path) => {
     navigate(path);
   };
+  const token = Cookies.get("accessToken");
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
     }
   }, [navigate]);
   const fetchProfileData = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
@@ -53,13 +53,12 @@ const Kelas = () => {
     }
   };
   const fetchClasses = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/purchased-courses`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -77,7 +76,7 @@ const Kelas = () => {
     fetchProfileData();
   }, []);
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
   return (
