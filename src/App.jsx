@@ -27,6 +27,7 @@ import SiswaList from "./pages/admin/SiswaList";
 import DetailClassUser from "./pages/user/DetailClass";
 import SertifikatUser from "./pages/user/SertifikatUser";
 import DetailSertifikat from "./pages/user/DetailSertif";
+import TambahMentor from "./pages/admin/TambahMentor";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/admin/mentee" element={<Mentee />} />
 
         <Route path="/admin/mentor" element={<Mentor />} />
+        <Route path="/admin/tambah-mentor" element={<TambahMentor />} />
         <Route path="/admin/daftar-transaksi" element={<Transaksi />} />
         <Route path="/admin/kelas/:id" element={<SiswaList />} />
         <Route path="/user/dashboard" element={<DashboardUser />} />
