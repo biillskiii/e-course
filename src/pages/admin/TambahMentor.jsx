@@ -1,241 +1,293 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import Button from "../../components/Button";
+import NavbarDashboard from "../../components/NavbarDashboard";
+import TextInput from "../../components/InputForm";
 import {
   Home,
   People,
   Monitor,
   MonitorRecorder,
   Wallet,
-  Setting3,
+  Edit,
   LogoutCurve,
   Teacher,
-  Filter,
-  SearchNormal1,
-  Edit2,
-  Edit,
-  Trash,
 } from "iconsax-react";
-import NavbarDashboard from "../../components/NavbarDashboard";
-import TextInput from "../../components/InputForm";
 
-const TambahMentor = () => {
-  const [userProfile, setUserProfile] = useState({
-    username: "",
-    avatar: "",
-  });
-  const [editProfileData, setEditProfileData] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+import { ToastContainer, toast } from "react-toastify";
+import Cookies from "js-cookie";
+const Pengaturan = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("editProfil");
+  const [profileData, setProfileData] = useState(null);
+  const [editProfileData, setEditProfileData] = useState([]);
   const [profileImage, setProfileImage] = useState(null);
-  //   useEffect(() => {
-  //     if (!token) {
-  //       navigate("/masuk");
-  //       return;
-  //     }
+  const [profileMentor, setProfileMentor] = useState(null);
+  const [userData, setUserData] = useState(null);
 
-  //     try {
-  //       const decodedToken = jwtDecode(token);
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
 
-  //       if (decodedToken.role_id != 1) {
-  //         navigate("/masuk");
-  //         return;
-  //       }
+  const token = Cookies.get("accessToken");
+  const requiredFields = [
+    { key: "name", label: "Nama Lengkap" },
+    { key: "specialist", label: "Pekerjaan" },
+  ];
+  const validateForm = () => {
+    const requiredFields = [
+      { key: "name", label: "Nama Lengkap" },
+      { key: "specialist", label: "Pekerjaan" },
+    ];
 
-  //       setUserProfile({
-  //         username: decodedToken.name || "Admin",
-  //         avatar:
-  //           decodedToken.avatar ||
-  //           "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-  //       });
-  //     } catch (error) {
-  //       console.error("Error decoding token:", error);
-  //       navigate("/masuk");
-  //     }
-  //   }, [navigate]);
+    for (const field of requiredFields) {
+      if (
+        !editProfileData[field.key] ||
+        editProfileData[field.key].trim() === ""
+      ) {
+        toast.error(`${field.label} tidak boleh kosong!`);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setUserData(data.user);
+        setProfileImage(
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+        );
+        setProfileMentor(
+          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+        );
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate, token]);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setProfileImage(reader.result);
+        setProfileMentor(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
-  const handleNavigation = (path) => {
-    navigate(path);
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+
+    // Validate form before proceeding
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      // Create FormData object
+      const formData = new FormData();
+
+      // Add the fields exactly as shown in the image
+      formData.append("name", editProfileData.name || "");
+      formData.append("specialist", editProfileData.specialist || "");
+
+      // Add profile photo if selected
+      const imageInput = document.getElementById("profileImageUpload");
+      if (imageInput && imageInput.files[0]) {
+        formData.append("mentor_photo", imageInput.files[0]);
+      }
+
+      // Send request to the correct endpoint without _method
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors`,
+        {
+          method: "POST", // Changed to POST as shown in the image
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Remove Content-Type header to let browser set it with boundary for FormData
+          },
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Profil berhasil diperbarui!");
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Gagal memperbarui profil.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Terjadi kesalahan saat memperbarui profil.");
+    }
   };
+
   const handleLogout = () => {
     Cookies.remove("accessToken");
     navigate("/masuk");
   };
-  const EditProfile = () => {
-    const [editProfileData, setEditProfileData] = useState({
-      name: "",
-      work: "",
-      company: "",
-    });
-
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      // Lakukan sesuatu dengan `editProfileData` dan `profileImage`
-      console.log(editProfileData, profileImage);
-    };
-
-    return true;
-  };
 
   return (
-    <div className="flex">
-      {/* Sidebar */}
-      <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
-        <div className="space-y-6">
-          <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
-            PIXEL<span className="text-primary-500">CODE.</span>
-          </h1>
+    <section>
+      <div>
+        <ToastContainer />
+        {/* Sidebar */}       
+        <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
+          <div className="space-y-6">
+            <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
+              PIXEL<span className="text-primary-500">CODE.</span>
+            </h1>
+            <Button
+              label="Dashboard"
+              variant="side-primary"
+              leftIcon={<Home />}
+              size="very-big"
+              onClick={() => handleNavigation("/admin/dashboard")}
+            />
+            <Button
+              label="Kelas"
+              variant="side-primary"
+              leftIcon={<Monitor />}
+              size="very-big"
+              onClick={() => handleNavigation("/admin/kelas")}
+            />
+            <Button
+              label="Webinar"
+              variant="disable"
+              leftIcon={<MonitorRecorder />}
+              size="very-big"
+              onClick={() => handleNavigation("/admin/webinar")}
+            />
+            <Button
+              label="Mentee"
+              variant="side-primary"
+              leftIcon={<People />}
+              size="very-big"
+              onClick={() => handleNavigation("/admin/mentee")}
+            />
+            <Button
+              label="Mentor"
+              active={true}
+              variant="side-primary"
+              leftIcon={<Teacher />}
+              size="very-big"
+              onClick={() => handleNavigation("/admin/mentor")}
+            />
+            <Button
+              label="Daftar Transaksi"
+              variant="side-primary"
+              leftIcon={<Wallet />}
+              size="very-big"
+              onClick={() => handleNavigation("/admin/daftar-transaksi")}
+            />
+          </div>
           <Button
-            label="Dashboard"
-            variant="side-primary"
-            leftIcon={<Home />}
+            label="Keluar"
+            variant="side-danger"
+            leftIcon={<LogoutCurve />}
             size="very-big"
-            onClick={() => handleNavigation("/admin/dashboard")}
-          />
-          <Button
-            label="Kelas"
-            variant="side-primary"
-            leftIcon={<Monitor />}
-            size="very-big"
-            onClick={() => handleNavigation("/admin/kelas")}
-          />
-          <Button
-            label="Webinar"
-            variant="disable"
-            leftIcon={<MonitorRecorder />}
-            size="very-big"
-            onClick={() => handleNavigation("/admin/webinar")}
-          />
-          <Button
-            label="Mentee"
-            variant="side-primary"
-            leftIcon={<People />}
-            size="very-big"
-            onClick={() => handleNavigation("/admin/mentee")}
-          />
-          <Button
-            label="Mentor"
-            active={true}
-            variant="side-primary"
-            leftIcon={<Teacher />}
-            size="very-big"
-            onClick={() => handleNavigation("/admin/mentor")}
-          />
-          <Button
-            label="Daftar Transaksi"
-            variant="side-primary"
-            leftIcon={<Wallet />}
-            size="very-big"
-            onClick={() => handleNavigation("/admin/daftar-transaksi")}
+            onClick={handleLogout}
           />
         </div>
-        <Button
-          label="Keluar"
-          variant="side-danger"
-          leftIcon={<LogoutCurve />}
-          size="very-big"
-          onClick={handleLogout}
-        />
       </div>
-
       {/* Main Content */}
-      <div className="flex-1 pl-60">
+      <div className="w-full pl-60">
         <NavbarDashboard
-          avatar={userProfile.avatar}
-          username={userProfile.username}
+          avatar={profileImage}
+          username={userData?.name}
+          isLoading={true}
         />
+           
+        <div className="w-full flex flex-col p-10">
+          <div>
+            <div className="flex w-full">
+              <div className="flex w-full">
+                <div className="flex flex-col w-full border-2 p-6 rounded-2xl border-primary-500 border-opacity-20 space-y-6">
+                  <div className="flex items-center justify-center">
+                    <img
+                      src={profileMentor}
+                      alt="User Profile"
+                      className="w-40 h-40 rounded-full object-cover"
+                    />
+                    <input
+                      type="file"
+                      id="profileImageUpload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                    <Edit
+                      size={33}
+                      onClick={() =>
+                        document.getElementById("profileImageUpload").click()
+                      }
+                      className="absolute bg-white rounded-full p-1 text-primary-500 mt-32 ml-28"
+                    />
+                  </div>
 
-        {/* Header Section */}
-        <div className="flex flex-col p-6">
-          <h1 className="text-2xl font-semibold"> Tambah Mentor</h1>
-          <div className="flex">
-            <div className="flex p-6 ">
-              <img
-                src={profileImage}
-                alt="User Profile"
-                className="w-[312px] h-[312px] rounded-full object-cover"
-              />
-              <input
-                type="file"
-                id="profileImageUpload"
-                className="hidden"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-              <Edit
-                size={33}
-                onClick={() =>
-                  document.getElementById("profileImageUpload").click()
-                }
-                className="absolute bg-white rounded-full p-1 text-primary-500 mt-60 ml-60"
-              />
-            </div>
-            <div className="w-full p-6 space-y-6">
-              <TextInput
-                label="ID"
-                value={editProfileData.id}
-                onChange={(e) =>
-                  setEditProfileData({
-                    ...editProfileData,
-                    name: e.target.value,
-                  })
-                }
-                placeholder={"ID Mentor"}
-              />
-              <TextInput
-                label="Nama Lengkap"
-                value={editProfileData.name}
-                onChange={(e) =>
-                  setEditProfileData({
-                    ...editProfileData,
-                    name: e.target.value,
-                  })
-                }
-                placeholder={"Masukkan Nama Lengkap"}
-              />
-              <TextInput
-                label="Pekerjaan"
-                value={editProfileData.work}
-                onChange={(e) =>
-                  setEditProfileData({
-                    ...editProfileData,
-                    name: e.target.value,
-                  })
-                }
-                placeholder={"Masukkan Pekerjaan"}
-              />
-              <TextInput
-                label="Perusahaan"
-                value={editProfileData.company}
-                onChange={(e) =>
-                  setEditProfileData({
-                    ...editProfileData,
-                    name: e.target.value,
-                  })
-                }
-                placeholder={"Masukkan Perusahaan"}
-              />
-              <div className="flex justify-end">
-                <Button label="Simpan" size="small" />
+                  <TextInput
+                    type="text"
+                    label="Nama Lengkap"
+                    id="name"
+                    value={editProfileData.name || ""}
+                    onChange={(e) =>
+                      setEditProfileData({
+                        ...editProfileData,
+                        name: e.target.value,
+                      })
+                    }
+                    placeholder="Masukkan Nama Mentor"
+                  />
+
+                  <TextInput
+                    type="text"
+                    label="Pekerjeaan"
+                    id="specialist"
+                    value={editProfileData.specialist || ""}
+                    onChange={(e) =>
+                      setEditProfileData({
+                        ...editProfileData,
+                        specialist: e.target.value,
+                      })
+                    }
+                    placeholder="Masukkan Pekerjaanmu"
+                  />
+
+                  <div className="flex justify-end">
+                    <Button
+                      label="Simpan"
+                      size="small"
+                      onClick={handleUpdateProfile}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          <div></div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
-
-export default TambahMentor;
+export default Pengaturan;
