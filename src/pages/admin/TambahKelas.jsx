@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Button from "../../components/Button";
 import {
   Home,
   People,
@@ -8,361 +11,183 @@ import {
   Setting3,
   LogoutCurve,
   Teacher,
+  Edit,
   Trash,
-  Add,
 } from "iconsax-react";
 import NavbarDashboard from "../../components/NavbarDashboard";
-import { userData } from "../../data";
-import { useNavigate } from "react-router-dom";
-import Button from "../../components/Button";
-import axios from "axios";
 import TextInput from "../../components/InputForm";
-import Cookies from "js-cookie";
 
-const EditKelas = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [mentors, setMentors] = useState([]);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    name: "",
-    level: "pemula",
-    description: "",
-    premium: 1,
-    price: "",
-    final_price: "",
-    price_discount: "",
-    course_photo: null,
-    mentor_id: "",
-    category_id: 1,
+const TambahKelas = () => {
+  const [accordions, setAccordions] = useState([]);
+  const [openAccordionId, setOpenAccordionId] = useState(null);
+  const [userProfile, setUserProfile] = useState({
+    username: "",
+    avatar: "",
   });
+  const [profileImage, setProfileImage] = useState(null);
+  const [formData, setFormData] = useState({
+    category: "",
+    className: "",
+    description: "",
+    modulCount: 1,
+    duration: "",
+    level: "",
+    normalPrice: "",
+    discountPrice: "",
+    mentor: "",
+  });
+  const navigate = useNavigate();
 
-  const [courses, setCourses] = useState([]);
-  const [chapters, setChapters] = useState([
-    { chapter_name: "", course_id: "" },
-  ]);
-  const [videos, setVideos] = useState([
-    {
-      video_number: "",
-      video_title: "",
-      video_url: "",
-      video_description: "",
-      chapter_id: "",
-    },
-  ]);
-  const [availableChapters, setAvailableChapters] = useState([]);
-  const token = Cookies.get("accessToken");
-  const [categories, setCategories] = useState([]);
-  useEffect(() => {
-    const fetchMentors = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.data.data) {
-          setMentors(response.data.data);
-          if (response.data.data.length > 0) {
-            setFormData((prev) => ({
-              ...prev,
-              mentor_id: response.data.data[0].id,
-            }));
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching mentors:", error);
-        setError("Failed to load mentors data");
-      }
-    };
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(
-          "https://be-course.serpihantech.com/api/categories",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.data.data) {
-          setCategories(response.data.data);
-          if (response.data.data.length > 0) {
-            setFormData((prev) => ({
-              ...prev,
-              category_id: response.data.data[0].id,
-            }));
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        setError("Failed to load categories data");
-      }
-    };
-    fetchMentors();
-    fetchCategories();
-  }, []);
+  const addAccordion = () => {
+    setAccordions([
+      ...accordions,
+      {
+        id: accordions.length + 1,
+        title: "",
+        subMateri: [{ sub: "", media: "" }],
+      },
+    ]);
+  };
+
+  const handleTitleChange = (id, value) => {
+    setAccordions(
+      accordions.map((accordion) =>
+        accordion.id === id ? { ...accordion, title: value } : accordion
+      )
+    );
+  };
+
+  const handleSubMateriChange = (accordionId, index, field, value) => {
+    setAccordions(
+      accordions.map((accordion) =>
+        accordion.id === accordionId
+          ? {
+              ...accordion,
+              subMateri: accordion.subMateri.map((item, idx) =>
+                idx === index ? { ...item, [field]: value } : item
+              ),
+            }
+          : accordion
+      )
+    );
+  };
+
+  const addSubMateri = (id) => {
+    setAccordions(
+      accordions.map((accordion) =>
+        accordion.id === id
+          ? {
+              ...accordion,
+              subMateri: [...accordion.subMateri, { sub: "", media: "" }],
+            }
+          : accordion
+      )
+    );
+  };
+
+  const removeSubMateri = (accordionId, index) => {
+    setAccordions(
+      accordions.map((accordion) =>
+        accordion.id === accordionId
+          ? {
+              ...accordion,
+              subMateri: accordion.subMateri.filter((_, idx) => idx !== index),
+            }
+          : accordion
+      )
+    );
+  };
+
+  const removeAccordion = (id) => {
+    setAccordions(accordions.filter((accordion) => accordion.id !== id));
+  };
+
+  const toggleAccordion = (id) => {
+    setOpenAccordionId(openAccordionId === id ? null : id);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfileImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleNavigation = (path) => {
     navigate(path);
   };
 
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-
-    if (id === "price" || id === "final_price") {
-      const originalPrice =
-        id === "price" ? Number(value) : Number(formData.price);
-      const discountedPrice =
-        id === "final_price" ? Number(value) : Number(formData.final_price);
-
-      if (
-        !isNaN(originalPrice) &&
-        !isNaN(discountedPrice) &&
-        originalPrice > 0 &&
-        discountedPrice > 0
-      ) {
-        // Hitung persentase diskon
-        const discountPercentage =
-          ((originalPrice - discountedPrice) / originalPrice) * 100;
-
-        setFormData((prevData) => ({
-          ...prevData,
-          price_discount: discountPercentage.toFixed(0),
-        }));
-      } else {
-        setFormData((prevData) => ({
-          ...prevData,
-          price_discount: "",
-        }));
-      }
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.size > 5 * 1024 * 1024) {
-      setError("File size must be less than 5MB");
-      return;
-    }
-    setFormData((prevData) => ({
-      ...prevData,
-      course_photo: file,
-    }));
-    setError(null);
-  };
-
-  const validateCourseForm = () => {
-    const requiredFields = ["name", "description", "price", "mentor_id"];
-    const missingFields = requiredFields.filter((field) => !formData[field]);
-
-    if (missingFields.length > 0) {
-      setError(
-        `Please fill in all required fields: ${missingFields.join(", ")}`
-      );
-      return false;
-    }
-
-    if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
-      setError("Please enter a valid price");
-      return false;
-    }
-
-    if (
-      formData.price_discount &&
-      (isNaN(Number(formData.price_discount)) ||
-        Number(formData.price_discount) > 100)
-    ) {
-      setError("Discount percentage must be between 0 and 100");
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmitCourse = async () => {
-    if (!validateCourseForm()) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    setSuccess(false);
-
-    try {
-      const formDataToSend = new FormData();
-
-      const mapData = {
-        class_name: formData.name,
-        level: formData.level,
-        description: formData.description,
-        price: formData.price,
-        price_discount: formData.price_discount || null,
-        final_price: formData.final_price,
-        premium: formData.premium,
-        mentor_id: formData.mentor_id,
-        category_id: formData.category_id,
-        course_photo: formData.course_photo,
-      };
-      Object.keys(mapData).forEach((key) => {
-        if (mapData[key] !== null) {
-          formDataToSend.append(key, mapData[key]);
-        }
-      });
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses`,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 10000,
-        }
-      );
-
-      if (response.data.success) {
-        setSuccess(true);
-        setCurrentStep(2);
-      }
-    } catch (error) {
-      setError(error.response?.data?.message || "Failed to save course");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleLogout = () => {
+    // Assuming you're using a library like js-cookie to manage cookies
     Cookies.remove("accessToken");
     navigate("/masuk");
   };
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get(
-          "https://be-course.serpihantech.com/api/courses",
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Submit course
+      const courseResponse = await axios.post(
+        "https://be-course.serpihantech.com/api/courses",
+        {
+          name: formData.className,
+          description: formData.description,
+          category: formData.category,
+          duration: formData.duration,
+          level: formData.level,
+          normal_price: formData.normalPrice,
+          discount_price: formData.discountPrice,
+          mentor_id: formData.mentor,
+          image: profileImage, // Assuming the API accepts base64 image data
+        }
+      );
+
+      const courseId = courseResponse.data.id;
+
+      // Submit chapters and videos
+      for (const accordion of accordions) {
+        const chapterResponse = await axios.post(
+          "https://be-course.serpihantech.com/api/chapters",
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            course_id: courseId,
+            name: accordion.title,
           }
         );
-        if (response.data.data) {
-          setCourses(response.data.data);
+
+        const chapterId = chapterResponse.data.id;
+
+        for (const subMateri of accordion.subMateri) {
+          await axios.post("https://be-course.serpihantech.com/api/videos", {
+            chapter_id: chapterId,
+            title: subMateri.sub,
+            url: subMateri.media,
+          });
         }
-      } catch (error) {
-        console.error("Error fetching courses:", error);
       }
-    };
 
-    fetchCourses();
-  }, []);
-
-  const handleChapterChange = (index, field, value) => {
-    const newChapters = [...chapters];
-    newChapters[index][field] = value;
-    setChapters(newChapters);
-  };
-
-  const handleVideoChange = (index, field, value) => {
-    const newVideos = [...videos];
-    newVideos[index][field] = value;
-    setVideos(newVideos);
-  };
-
-  const addChapter = () => {
-    setChapters([...chapters, { chapter_name: "", course_id: "" }]);
-  };
-
-  const addVideo = () => {
-    setVideos([
-      ...videos,
-      {
-        video_number: "",
-        video_title: "",
-        video_url: "",
-        video_description: "",
-        chapter_id: "",
-      },
-    ]);
-  };
-
-  const removeChapter = (index) => {
-    const newChapters = chapters.filter((_, i) => i !== index);
-    setChapters(newChapters);
-  };
-
-  const removeVideo = (index) => {
-    const newVideos = videos.filter((_, i) => i !== index);
-    setVideos(newVideos);
-  };
-
-  const handleSubmitChapters = async () => {
-    try {
-      const promises = chapters.map((chapter) =>
-        axios.post("https://be-course.serpihantech.com/api/chapters", chapter, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-      );
-      await Promise.all(promises);
-      // Fetch updated chapters for video section
-      const response = await axios.get(
-        "https://be-course.serpihantech.com/api/chapters",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setAvailableChapters(response.data.chapters);
-      setSuccess(true);
-      setCurrentStep(3);
-    } catch (error) {
-      setError(error.response?.data?.message || "Failed to save chapters");
-    }
-  };
-
-  const handleSubmitVideos = async () => {
-    const token = sessionStorage.getItem("accessToken");
-    try {
-      const promises = videos.map((video) =>
-        axios.post("https://be-course.serpihantech.com/api/videos", video, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-      );
-      await Promise.all(promises);
-      setSuccess(true);
+      // Redirect or show success message
       navigate("/admin/kelas");
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to save videos");
+      console.error("Error submitting data:", error);
+      // Handle error (e.g., show error message)
     }
-  };
-
-  const handlePrevStep = () => {
-    setCurrentStep(currentStep - 1);
-  };
-
-  const handleNextStep = () => {
-    setCurrentStep(currentStep + 1);
   };
 
   return (
-    <div className="min-h-screen flex">
+    <section>
+      {/* Sidebar */}
       <div className="w-60 fixed min-h-screen bg-white shadow-lg flex flex-col justify-between items-center p-5">
         <div className="space-y-6">
           <h1 className="mango text-center text-secondary-500 text-[40px] mb-10">
@@ -377,6 +202,7 @@ const EditKelas = () => {
           />
           <Button
             label="Kelas"
+            active={true}
             variant="side-primary"
             leftIcon={<Monitor />}
             size="very-big"
@@ -391,7 +217,6 @@ const EditKelas = () => {
           />
           <Button
             label="Mentee"
-            active={true}
             variant="side-primary"
             leftIcon={<People />}
             size="very-big"
@@ -420,371 +245,228 @@ const EditKelas = () => {
           onClick={handleLogout}
         />
       </div>
-
-      <div className="w-full ml-60 flex-1">
+      {/* Main Content */}
+      <div className="flex-1 pl-60">
         <NavbarDashboard
-          avatar={userData.avatar}
-          username={userData.username}
+          avatar={userProfile.avatar}
+          username={userProfile.username}
         />
 
-        <div className="container mx-auto px-4 py-6">
-          {currentStep === 1 && (
-            <div className="bg-white rounded-lg p-6">
-              <div className="flex justify-end gap-4">
-                <button
-                  onClick={() => navigate("/admin/kelas")}
-                  className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
-                  disabled={isLoading}
+        {/* Header Section */}
+        <div className="flex-flex-col space-y-4 p-6">
+          <h1 className="text-2xl font-semibold"> Tambah Kelas</h1>
+          <p className="text-lg font-semibold">Sampul Kelas</p>
+          <div className="flex items-center justify-center">
+            <img
+              src={profileImage}
+              alt="User Profile"
+              className="w-[320px] h-[180px] item rounded-lg object-cover bg-violet-200"
+            />
+            <input
+              type="file"
+              id="profileImageUpload"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            <Edit
+              size={33}
+              onClick={() =>
+                document.getElementById("profileImageUpload").click()
+              }
+              className="absolute bg-white rounded-full p-1 text-primary-500 mt-28 ml-64 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex">
+            <div className="w-full p-6 space-y-4">
+              <p className="text-lg font-semibold">Informasi Kelas</p>
+              <div>
+                <label className="block mb-2">Kategori</label>
+                <select
+                  id="category"
+                  className="w-full p-2 border rounded-full focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitCourse}
-                  disabled={isLoading}
-                  className={`bg-primary-500 text-white px-6 py-2 rounded ${
-                    isLoading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-primary-600"
-                  }`}
-                >
-                  {isLoading ? "Saving..." : "Next"}
-                </button>
+                  <option value="UI/UX">UI/UX</option>
+                  <option value="Frontend">Frontend</option>
+                  <option value="Backend">Backend</option>
+                </select>
               </div>
-              {/* Course form */}
-              {error && (
-                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                  Course saved successfully!
-                </div>
-              )}
-
-              <div className="bg-white rounded-lg p-6">
-                {error && (
-                  <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                    {error}
-                  </div>
-                )}
-                {success && (
-                  <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                    Course saved successfully!
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-2">
-                      Mentor <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="mentor_id"
-                      value={formData.mentor_id}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      disabled={isLoading}
-                    >
-                      <option value="">Select Mentor</option>
-                      {mentors.map((mentor) => (
-                        <option key={mentor.id} value={mentor.id}>
-                          {mentor.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block mb-2">
-                      Category <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="category_id"
-                      value={formData.category_id}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      disabled={isLoading}
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.category_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <TextInput
-                      label="Name"
-                      id="name"
-                      type="text"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-2">Level</label>
-                    <select
-                      id="level"
-                      value={formData.level}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      disabled={isLoading}
-                    >
-                      <option value="pemula">Pemula</option>
-                      <option value="menengah">Menengah</option>
-                      <option value="ahli">Ahli</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <TextInput
-                      label="Original Price"
-                      id="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  <div>
-                    <TextInput
-                      label="Discounted Price"
-                      id="final_price"
-                      type="number"
-                      value={formData.final_price}
-                      onChange={handleInputChange}
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-2">Discount Percentage</label>
-                    <input
-                      type="text"
-                      id="price_discount"
-                      value={
-                        formData.price_discount
-                          ? `${formData.price_discount}%`
-                          : ""
-                      }
-                      className="w-full p-2 border rounded bg-gray-100"
-                      readOnly
-                      disabled
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-2">
-                      Course Image{" "}
-                      <span className="text-xs text-gray-500">(Max 5MB)</span>
-                    </label>
-                    <input
-                      type="file"
-                      onChange={handleFileChange}
-                      className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      accept="image/*"
-                      disabled={isLoading}
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <label className="block mb-2">
-                    Description <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    rows="4"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div className="mt-6 flex justify-end gap-4">
-                  <button
-                    onClick={() => navigate("/admin/kelas")}
-                    className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
-                    disabled={isLoading}
+              <TextInput label="Nama Kelas" placeholder="Masukkan Nama Kelas" />
+              <div className="mt-4">
+                <label className="block mb-2">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  rows="4"
+                />
+              </div>
+              <div className="flex w-full gap-4">
+                <div className="w-full">
+                  <label className="w-full block mb-4">Jumlah Modul</label>
+                  <select
+                    id="modul"
+                    className="w-full p-2 border rounded-full focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSubmitCourse}
-                    disabled={isLoading}
-                    className={`bg-primary-500 text-white px-6 py-2 rounded ${
-                      isLoading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-primary-600"
-                    }`}
-                  >
-                    {isLoading ? "Saving..." : "Save Course"}
-                  </button>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
                 </div>
+                <TextInput label={"Durasi Kelas"} placeholder={"Durasi"} />
+                <div className="w-full">
+                  <label className="w-full block mb-4">Kategori</label>
+                  <select
+                    id="category"
+                    className="w-full p-2 items-center border rounded-full focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  >
+                    <option value="pemula">Pemula</option>
+                    <option value="menengah">Menengah</option>
+                    <option value="ahli">Ahli</option>
+                  </select>
+                </div>
+              </div>
+              <TextInput label={"Harga Normal"} placeholder={"Harga Normal"} />
+              <TextInput label={"Harga Diskon"} placeholder={"Harga Diskon"} />
+              <div className="w-full">
+                <label className="w-full block mb-4">Mentor</label>
+                <select
+                  id="mentor"
+                  className="w-full p-2 border rounded-full focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="1">Sutejo</option>
+                  <option value="2">Tejo</option>
+                  <option value="3">Joko</option>
+                </select>
               </div>
             </div>
-          )}
-
-          {currentStep === 2 && (
-            <div className="bg-white rounded-lg p-6 mb-6">
-              {/* Chapters form */}
-              {error && (
-                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                  Chapters saved successfully!
-                </div>
-              )}
-
-              <div className="bg-white rounded-lg p-6 mb-6">
-                <h2 className="text-xl font-semibold mb-4">Add Chapters</h2>
-                {chapters.map((chapter, index) => (
-                  <div key={index} className="mb-4 p-4 border rounded">
-                    <div className="flex justify-between mb-4">
-                      <h3 className="text-lg font-medium">
-                        Chapter {index + 1}
-                      </h3>
-                      <button
-                        onClick={() => removeChapter(index)}
-                        className="text-red-500"
+            <div className="w-full p-6 space-y-4">
+              <p className="text-lg font-semibold">Detail Kelas</p>
+              <div className="w-full flex flex-col items-center py-5">
+                <div className="w-full max-w-2xl space-y-4 mb-6">
+                  {accordions.map((accordion) => (
+                    <div
+                      key={accordion.id}
+                      className="border border-primary-100 rounded-3xl overflow-hidden"
+                    >
+                      {/* Header Accordion */}
+                      <div
+                        className="w-full flex justify-between items-center p-4 gap-2 cursor-pointer"
+                        onClick={() => toggleAccordion(accordion.id)}
                       >
-                        <Trash size={20} />
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <TextInput
-                          label="Chapter Name"
-                          value={chapter.chapter_name}
+                        <input
+                          type="text"
+                          className="w-full border border-1 p-2 rounded-full focus:outline-none"
+                          placeholder="Judul Materi"
+                          value={accordion.title}
                           onChange={(e) =>
-                            handleChapterChange(
-                              index,
-                              "chapter_name",
-                              e.target.value
-                            )
+                            handleTitleChange(accordion.id, e.target.value)
                           }
                         />
-                      </div>
-                      <div>
-                        <label className="block mb-2">Course</label>
-                        <select
-                          value={chapter.course_id}
-                          onChange={(e) =>
-                            handleChapterChange(
-                              index,
-                              "course_id",
-                              e.target.value
-                            )
-                          }
-                          className="w-full p-2 border rounded"
+                        <Trash
+                          color="red"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeAccordion(accordion.id);
+                          }}
+                        />
+                        <span
+                          className={`ml-4 transform transition-transform duration-300 ${
+                            openAccordionId === accordion.id
+                              ? "rotate-180"
+                              : "rotate-0"
+                          }`}
                         >
-                          <option value="">Select Course</option>
-                          {courses.map((course) => (
-                            <option key={course.id} value={course.id}>
-                              {course.class_name}
-                            </option>
+                          ▼
+                        </span>
+                      </div>
+
+                      {/* Konten Accordion */}
+                      <div
+                        className={`transition-all duration-300 overflow-hidden ${
+                          openAccordionId === accordion.id
+                            ? "max-h-screen"
+                            : "max-h-0"
+                        }`}
+                      >
+                        <div className="w-full p-4 bg-white space-y-4">
+                          {accordion.subMateri.map((item, index) => (
+                            <div
+                              key={index}
+                              className="w-full grid grid-cols-3 gap-4 items-center"
+                            >
+                              <div className="w-full space-y-2  ">
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Sub Materi
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full border rounded-full p-2"
+                                  placeholder="Sub Materi"
+                                  value={item.sub}
+                                  onChange={(e) =>
+                                    handleSubMateriChange(
+                                      accordion.id,
+                                      index,
+                                      "sub",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </div>
+                              <div className="w-full">
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Media
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full border rounded-full p-2"
+                                  placeholder="Link Media"
+                                  value={item.media}
+                                  onChange={(e) =>
+                                    handleSubMateriChange(
+                                      accordion.id,
+                                      index,
+                                      "media",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </div>
+                              <Trash
+                                className="items-center"
+                                color="red"
+                                onClick={() =>
+                                  removeSubMateri(accordion.id, index)
+                                }
+                              />
+                            </div>
                           ))}
-                        </select>
+                          <Button
+                            label={"Tambah Sub Materi"}
+                            variant="secondary"
+                            onClick={() => addSubMateri(accordion.id)}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                <div className="flex justify-between mt-4">
-                  <button
-                    onClick={addChapter}
-                    className="flex items-center text-primary-500"
-                  >
-                    <Add size={20} className="mr-2" />
-                    Add Chapter
-                  </button>
-                  <button
-                    onClick={handleSubmitChapters}
-                    className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
-                  >
-                    Save Chapters
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex justify-between mt-4">
-                <button
-                  onClick={handlePrevStep}
-                  className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
-                >
-                  Previous
-                </button>
-                <div className="flex gap-4">
-                  <button
-                    onClick={addChapter}
-                    className="flex items-center text-primary-500"
-                  >
-                    <Add size={20} className="mr-2" />
-                    Add Chapter
-                  </button>
-                  <button
-                    onClick={handleSubmitChapters}
-                    className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
-                  >
-                    Next
-                  </button>
+                  ))}
+                  <Button
+                    label={"Tambah Materi"}
+                    variant="secondary"
+                    onClick={addAccordion}
+                  />
                 </div>
               </div>
             </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="bg-white rounded-lg p-6">
-              {/* Videos form */}
-              {error && (
-                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                  Videos saved successfully!
-                </div>
-              )}
-
-              {/* Videos form fields */}
-
-              <div className="flex justify-between mt-4">
-                <button
-                  onClick={handlePrevStep}
-                  className="px-6 py-2 rounded border border-gray-300 hover:bg-gray-50"
-                >
-                  Previous
-                </button>
-                <div className="flex gap-4">
-                  <button
-                    onClick={addVideo}
-                    className="flex items-center text-primary-500"
-                  >
-                    <Add size={20} className="mr-2" />
-                    Add Video
-                  </button>
-                  <button
-                    onClick={handleSubmitVideos}
-                    className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          </div>
+          <Button size="small" label={"Simpan"} onClick={handleSubmit} />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
-export default EditKelas;
+export default TambahKelas;
