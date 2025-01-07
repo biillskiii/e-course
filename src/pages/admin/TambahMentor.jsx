@@ -76,7 +76,7 @@ const Pengaturan = () => {
           "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
         );
         setProfileMentor(
-          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+          "https://be-course.serpihantech.com/storage/1.png"
         );
       } catch (error) {
         console.error("Error fetching user data:", error);
