@@ -333,15 +333,6 @@ const Kelas = () => {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
-                          className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
-                          onClick={() =>
-                            handleNavigation(`/admin/kelas/${kelas.id}`)
-                          }
-                        >
-                          <Eye />
-                        </button>
-
-                        <button
                           className="p-2 text-danger-500 hover:bg-danger-50 rounded-lg"
                           onClick={() => handleDelete(kelas)}
                         >
