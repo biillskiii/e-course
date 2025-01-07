@@ -165,7 +165,9 @@ const Kelas = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${selectedKelas.id}`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${
+          selectedKelas.id
+        }`,
         {
           method: "DELETE",
           headers: {
@@ -179,7 +181,9 @@ const Kelas = () => {
       }
 
       setKelasData(kelasData.filter((kelas) => kelas.id !== selectedKelas.id));
-      setFilteredData(filteredData.filter((kelas) => kelas.id !== selectedKelas.id));
+      setFilteredData(
+        filteredData.filter((kelas) => kelas.id !== selectedKelas.id)
+      );
       setShowDeleteModal(false);
     } catch (error) {
       setError(error.message);
@@ -336,14 +340,7 @@ const Kelas = () => {
                         >
                           <Eye />
                         </button>
-                        <button
-                          className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
-                          onClick={() =>
-                            handleNavigation(`/admin/kelas/edit-kelas/${kelas.id}`)
-                          }
-                        >
-                          <Edit2 />
-                        </button>
+
                         <button
                           className="p-2 text-danger-500 hover:bg-danger-50 rounded-lg"
                           onClick={() => handleDelete(kelas)}
@@ -363,14 +360,20 @@ const Kelas = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
               <div className="bg-white p-6 rounded-lg w-96">
                 <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
-                <p>Are you sure you want to delete {selectedKelas.class_name}?</p>
+                <p>
+                  Are you sure you want to delete {selectedKelas.class_name}?
+                </p>
                 <div className="flex justify-end gap-2 mt-4">
                   <Button
                     label="Cancel"
                     variant="secondary"
                     onClick={() => setShowDeleteModal(false)}
                   />
-                  <Button label="Delete" variant="danger" onClick={confirmDelete} />
+                  <Button
+                    label="Delete"
+                    variant="danger"
+                    onClick={confirmDelete}
+                  />
                 </div>
               </div>
             </div>
@@ -390,7 +393,8 @@ const Kelas = () => {
                   onClick={() => handlePageChange(i + 1)}
                   className={`px-3 py-1 border rounded ${
                     currentPage === i + 1
-                      ? "bg-[#20B1A8] text-white" : "bg-gray-200"
+                      ? "bg-[#20B1A8] text-white"
+                      : "bg-gray-200"
                   }`}
                 >
                   {i + 1}
