@@ -18,6 +18,7 @@ import {
 } from "iconsax-react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+
 const Mentor = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [mentorData, setMentorData] = useState([]);
@@ -42,6 +43,7 @@ const Mentor = () => {
   });
 
   const token = Cookies.get("accessToken");
+
   useEffect(() => {
     if (!token) {
       navigate("/masuk");
@@ -51,7 +53,7 @@ const Mentor = () => {
     try {
       const decodedToken = jwtDecode(token);
 
-      if (decodedToken.role_id != 1) {
+      if (decodedToken.role_id !== 1) {
         navigate("/masuk");
         return;
       }
@@ -67,9 +69,10 @@ const Mentor = () => {
       navigate("/masuk");
     }
   }, [navigate]);
+
   useEffect(() => {
     const fetchData = async () => {
-          setIsLoading(true);
+      setIsLoading(true);
       setError(null);
       try {
         const response = await fetch(
@@ -100,6 +103,7 @@ const Mentor = () => {
 
     fetchData();
   }, []);
+
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -117,6 +121,7 @@ const Mentor = () => {
       setFilteredData(filtered);
     }
   };
+
   const handleEdit = (mentor) => {
     setSelectedMentor(mentor);
     setEditFormData({
@@ -133,7 +138,7 @@ const Mentor = () => {
   };
 
   const confirmDelete = async () => {
-      try {
+    try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors/${
           selectedMentor.id
@@ -164,7 +169,7 @@ const Mentor = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-      try {
+    try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors/${
           selectedMentor.id
@@ -195,6 +200,7 @@ const Mentor = () => {
       setError(error.message);
     }
   };
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -204,10 +210,12 @@ const Mentor = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
   const handleLogout = () => {
     Cookies.remove("accessToken");
     navigate("/masuk");
   };
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -297,7 +305,7 @@ const Mentor = () => {
                 }`}
               />
               <SearchNormal1
-                size="20"
+                size={"20"}
                 className="absolute left-2 cursor-pointer text-primary-500"
                 onClick={() => setIsSearchActive(true)}
               />
@@ -305,7 +313,12 @@ const Mentor = () => {
             <button className="p-2 border border-gray-200 rounded-lg">
               <Filter />
             </button>
-            <Button label="Tambah Mentor" size="small" variant="primary" />
+            <Button
+              label="Tambah Mentor"
+              size="small"
+              variant="primary"
+              onClick={() => handleNavigation("/admin/tambah-mentor")}
+            />
           </div>
         </div>
 
@@ -369,6 +382,29 @@ const Mentor = () => {
                 </div>
               </div>
             )}
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg w-96">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Confirm Deletion
+                  </h2>
+                  <p>Are you sure you want to delete {selectedMentor.name}?</p>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button
+                      label="Cancel"
+                      variant="secondary"
+                      onClick={() => setShowDeleteModal(false)}
+                    />
+                    <Button
+                      label="Delete"
+                      variant="danger"
+                      onClick={confirmDelete}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
             <tbody>
               {isLoading ? (
                 <tr>
@@ -404,10 +440,13 @@ const Mentor = () => {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button className="p-2 text-[#20B1A8] hover:bg-gray-100 rounded">
-                          <Edit2 onClick={handleEdit} size={20} />
+                          <Edit2 onClick={() => handleEdit(mentor)} size={20} />
                         </button>
                         <button className="p-2 text-red-500 hover:bg-gray-100 rounded">
-                          <Trash onClick={handleDelete} size={20} />
+                          <Trash
+                            onClick={() => handleDelete(mentor)}
+                            size={20}
+                          />
                         </button>
                       </div>
                     </td>
