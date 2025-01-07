@@ -9,7 +9,6 @@ import {
   Monitor,
   MonitorRecorder,
   Wallet,
-  Setting3,
   LogoutCurve,
   Teacher,
   SearchNormal1,
@@ -35,9 +34,12 @@ const Kelas = () => {
     username: "",
     avatar: "",
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedKelas, setSelectedKelas] = useState(null);
   const navigate = useNavigate();
 
   const token = Cookies.get("accessToken");
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -58,15 +60,12 @@ const Kelas = () => {
 
         const result = await response.json();
 
-        // Updated data validation for the new API structure
         if (!Array.isArray(result.data)) {
           throw new Error("Unexpected data format from API");
         }
 
         setKelasData(result.data);
         setFilteredData(result.data);
-
-        // Update pagination-related state
         setTotalItems(result.total || result.data.length);
         setLastPage(result.last_page || 1);
         setCurrentPage(result.current_page || 1);
@@ -80,7 +79,6 @@ const Kelas = () => {
     fetchData();
   }, []);
 
-  // Authentication and token validation
   useEffect(() => {
     if (!token) {
       navigate("/masuk");
@@ -89,9 +87,7 @@ const Kelas = () => {
 
     try {
       const decodedToken = jwtDecode(token);
-
-      // Check role_id
-      if (decodedToken.role_id != 1) {
+      if (decodedToken.role_id !== 1) {
         navigate("/masuk");
         return;
       }
@@ -108,12 +104,10 @@ const Kelas = () => {
     }
   }, [navigate]);
 
-  // Navigation handler
   const handleNavigation = (path, state = null) => {
     navigate(path, { state });
   };
 
-  // Search handler
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -128,7 +122,6 @@ const Kelas = () => {
     }
   };
 
-  // Pagination handler
   const handlePageChange = async (pageNumber) => {
     setIsLoading(true);
     try {
@@ -158,10 +151,41 @@ const Kelas = () => {
       setIsLoading(false);
     }
   };
+
   const handleLogout = () => {
     Cookies.remove("accessToken");
     navigate("/masuk");
   };
+
+  const handleDelete = (kelas) => {
+    setSelectedKelas(kelas);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${selectedKelas.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete course");
+      }
+
+      setKelasData(kelasData.filter((kelas) => kelas.id !== selectedKelas.id));
+      setFilteredData(filteredData.filter((kelas) => kelas.id !== selectedKelas.id));
+      setShowDeleteModal(false);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -234,7 +258,6 @@ const Kelas = () => {
         <div className="flex justify-between items-center p-6">
           <h1 className="text-2xl font-semibold">Daftar Kelas</h1>
           <div className="flex gap-4 items-center">
-            {/* Animated Search Bar */}
             <div
               className={`relative flex items-center transition-all duration-300 ${
                 isSearchActive ? "w-64" : "w-10"
@@ -257,18 +280,9 @@ const Kelas = () => {
                 onClick={() => setIsSearchActive(true)}
               />
             </div>
-
-            {/* Filter Button */}
             <button className="p-2 border border-gray-200 rounded-lg">
               <Filter />
             </button>
-
-            {/* Mentee Text */}
-            <div className="flex items-center text-primary-500">
-              <span className="mr-2">Mentee</span>
-            </div>
-
-            {/* Add Class Button */}
             <Button
               label="Tambah Kelas"
               size="small"
@@ -293,7 +307,7 @@ const Kelas = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan="4" className="py-10 text-center">
+                  <td colSpan="5" className="py-10 text-center">
                     <div className="flex justify-center items-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
                     </div>
@@ -301,7 +315,7 @@ const Kelas = () => {
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan="4" className="py-10 text-center text-red-500">
+                  <td colSpan="5" className="py-10 text-center text-red-500">
                     {error}
                   </td>
                 </tr>
@@ -325,16 +339,14 @@ const Kelas = () => {
                         <button
                           className="p-2 text-[#20B1A8] hover:bg-primary-50 rounded-lg"
                           onClick={() =>
-                            handleNavigation(`/admin/kelas/edit/${kelas.id}`)
+                            handleNavigation(`/admin/kelas/edit-kelas/${kelas.id}`)
                           }
                         >
                           <Edit2 />
                         </button>
                         <button
                           className="p-2 text-danger-500 hover:bg-danger-50 rounded-lg"
-                          onClick={() => {
-                            /* Tambahkan logika hapus kelas */
-                          }}
+                          onClick={() => handleDelete(kelas)}
                         >
                           <Trash color="red" />
                         </button>
@@ -345,6 +357,24 @@ const Kelas = () => {
               )}
             </tbody>
           </table>
+
+          {/* Delete Confirmation Modal */}
+          {showDeleteModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white p-6 rounded-lg w-96">
+                <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
+                <p>Are you sure you want to delete {selectedKelas.class_name}?</p>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button
+                    label="Cancel"
+                    variant="secondary"
+                    onClick={() => setShowDeleteModal(false)}
+                  />
+                  <Button label="Delete" variant="danger" onClick={confirmDelete} />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Pagination */}
           <div className="flex w-full justify-between items-center py-6 px-6">
@@ -360,8 +390,7 @@ const Kelas = () => {
                   onClick={() => handlePageChange(i + 1)}
                   className={`px-3 py-1 border rounded ${
                     currentPage === i + 1
-                      ? "bg-[#20B1A8] text-white"
-                      : "bg-gray-200"
+                      ? "bg-[#20B1A8] text-white" : "bg-gray-200"
                   }`}
                 >
                   {i + 1}
