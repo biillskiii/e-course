@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar";
 import SearchBar from "../components/SearchBar";
 import Pagination from "../components/Pagination";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -12,9 +14,44 @@ function App() {
   const [classes, setClasses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [profileData, setProfileData] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const itemsPerPage = 4;
   const navigate = useNavigate();
-  // Fetch classes data
+  const token = Cookies.get("accessToken");
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
+          {
+            headers: {
+              application: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await response.json();
+        setProfileData(result.user);
+        setProfileImage(
+          result.user.path_photo ||
+            "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+
+    fetchProfileData();
+  }, [navigate, token]);
+
   const fetchClasses = async () => {
     try {
       const response = await fetch(
@@ -32,15 +69,13 @@ function App() {
     }
   };
 
-  // Fetch data on component mount
   useEffect(() => {
     setIsLoading(true);
     fetchClasses();
   }, []);
 
-  // Filter function to apply search term, category, and level filters
   const applyFilters = (card) => {
-    const className = card.name || "";
+    const className = card.class_name || "";
     const matchesSearch = className
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -56,7 +91,6 @@ function App() {
     return matchesSearch && matchesCategory && matchesLevel;
   };
 
-  // Memoize filtered and paginated classes
   const filteredClasses = useMemo(() => {
     return classes.filter(applyFilters);
   }, [classes, searchTerm, filteredCategories, filteredLevels]);
@@ -68,14 +102,13 @@ function App() {
 
   const totalPages = Math.ceil(filteredClasses.length / itemsPerPage);
 
-  // Handle page changes
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   return (
     <section className="w-full min-h-screen">
-      <Navbar />
+      <Navbar avatar={profileImage} />
       <div className="container px-10 mx-auto">
         <div className="flex items-start px-[120px] gap-x-16 justify-center py-10">
           <FilterSidebarKelas

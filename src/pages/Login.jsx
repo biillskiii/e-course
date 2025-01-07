@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Wave from "../assets/login.png";
 import TextInput from "../components/InputForm";
 import Button from "../components/Button";
-
+import Cookies from "js-cookie";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,25 +67,38 @@ function LoginPage() {
 
         const data = await response.json();
         const { access_token } = data;
-        console.log("login");
+        // console.log("login");
 
         // Save token to session storage
-        sessionStorage.setItem("accessToken", access_token);
+        Cookies.set("accessToken", access_token, {
+          expires: 0.0208333, // 30 menit dalam hari
+          secure: true,
+        });
+        // Periksa cookie
+        console.log(Cookies.get("accessToken")); // Akan menampilkan nilai token jika belum expired
 
+        // Setelah 30 menit
+        setTimeout(() => {
+          console.log(Cookies.get("accessToken")); // Akan menampilkan undefined karena cookie sudah expired
+        }, 30 * 60 * 1000); // 30 menit dalam milidetik
         // Decode token to get user role
-        const decodedToken = jwtDecode(access_token);
-        const userRole = decodedToken.role_id;
+        if (access_token) {
+          const decodedToken = jwtDecode(access_token);
+          console.log("Decoded Token:", decodedToken); // Tambahkan log ini
+          const userRole = decodedToken.role_id;
+          console.log(`User Role: ${userRole}`); // Tambahkan log untuk userRole
 
-        // Route based on user role
-        switch (userRole) {
-          case 1:
-            router("/admin/dashboard");
-            break;
-          case 2:
-            router("/user/dashboard");
-            break;
-          default:
-            toast.error("Akun Anda Diblokir!");
+          // Pastikan userRole di-handle dengan benar
+          switch (userRole) {
+            case 1:
+              router("/admin/dashboard");
+              break;
+            case 2:
+              router("/user/dashboard");
+              break;
+            default:
+              toast.error("Akun Anda Diblokir!");
+          }
         }
 
         toast.success("Login successful");

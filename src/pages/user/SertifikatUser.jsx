@@ -11,53 +11,11 @@ import {
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 import NavbarDashboard from "../../components/NavbarDashboard";
-import CardUser from "../../components/CardUser";
 import Sertif from "../../assets/sertif-empty.png";
-import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 import Certificate from "../../components/Certificate";
-import EmptyClass from "../../assets/empt-class.png";
-import BgUser from "../../assets/BgUser.png";
-const CompleteProfileBanner = () => {
-  const navigate = useNavigate();
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
-  return (
-    <div
-      style={{
-        backgroundImage: `url(${BgUser})`,
-        backgroundSize: "500px",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "right",
-      }}
-      className="bg-[#FFF4DA] z-5 mt-5 rounded-lg p-10 flex items-start justify-between relative"
-    >
-      <div className="space-y-5">
-        <h2 className="text-4xl font-bold text-green-900 mb-2">
-          Lengkapi Profilmu
-        </h2>
-        <p className="text-green-900 text-base">
-          Kamu belum melengkapi profilmu loh. Ayo, segera lengkapi profilmu!
-        </p>
-        <div>
-          <Button
-            label={"Edit Profil"}
-            size="small"
-            onClick={() => handleNavigation("/user/pengaturan")}
-          />
-        </div>
-      </div>
-      <div className="absolute bottom-0 right-0 opacity-20">
-        <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
-          <circle cx="100" cy="100" r="100" fill="#F2E9C8" />
-          <circle cx="100" cy="100" r="70" fill="#D1E2D1" />
-        </svg>
-      </div>
-    </div>
-  );
-};
 
-const Dashboard = () => {
+const Sertifikat = () => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [visibleClasses, setVisibleClasses] = useState([]);
@@ -74,17 +32,16 @@ const Dashboard = () => {
   const handleNavigation = (path) => {
     navigate(path);
   };
+  const token = Cookies.get("accessToken");
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
     }
     const fetchProfileData = async () => {
-      const token = sessionStorage.getItem("accessToken");
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`, // Endpoint API
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
           {
             headers: {
               application: "application/json",
@@ -107,10 +64,10 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_KEY}/api/user`,
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
           {
             headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -144,10 +101,10 @@ const Dashboard = () => {
   const fetchClasses = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/purchased-courses`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/purchased-courses`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -170,10 +127,10 @@ const Dashboard = () => {
   const fetchCertificates = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_KEY}/api/userCertificate`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/userCertificate`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -199,7 +156,7 @@ const Dashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
 
@@ -318,4 +275,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Sertifikat;

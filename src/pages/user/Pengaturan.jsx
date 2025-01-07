@@ -18,78 +18,125 @@ import {
   Cup,
 } from "iconsax-react";
 import { ToastContainer, toast } from "react-toastify";
+import Cookies from "js-cookie";
 const Pengaturan = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("editProfil");
   const [profileData, setProfileData] = useState(null);
-  const [editProfileData, setEditProfileData] = useState({
-    name: "",
-    email: "",
-    phone_number: "",
-    address: "",
-    place_of_birth: "",
-    date_of_birth: "",
-    last_education: "",
-    work: "",
-  });
+  const [editProfileData, setEditProfileData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
+  const [userData, setUserData] = useState([]);
   const [passwordData, setPasswordData] = useState({
     old_password: "",
     new_password: "",
     new_password_confirmation: "",
   });
-
+  const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
   const handleNavigation = (path) => {
     navigate(path);
   };
 
+  const token = Cookies.get("accessToken");
+  const validateForm = () => {
+    const requiredFields = [
+      { key: "name", label: "Nama Lengkap" },
+      { key: "email", label: "Email" },
+      { key: "phone_number", label: "Nomor Telepon" },
+      { key: "address", label: "Kota/Kabupaten Domisili" },
+      { key: "place_of_birth", label: "Tempat Lahir" },
+      { key: "date_of_birth", label: "Tanggal Lahir" },
+      { key: "last_education", label: "Pendidikan Terakhir" },
+      { key: "work", label: "Pekerjaan/Kesibukan" },
+    ];
+
+    for (const field of requiredFields) {
+      if (
+        !editProfileData[field.key] ||
+        editProfileData[field.key].trim() === ""
+      ) {
+        toast.error(`${field.label} tidak boleh kosong!`);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
     }
-    try {
-      const decodedToken = jwtDecode(token);
-      fetchProfileData(decodedToken.id, token); // Pass the token here
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      navigate("/masuk");
-    }
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
+          {
+            headers: {
+              application: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await response.json();
+        setProfileData(result.user);
+        setEditProfileData({
+          name: result.user.name || "",
+          email: result.user.email || "",
+          phone_number: result.user.phone_number || "",
+          address: result.user.address || "",
+          place_of_birth: result.user.place_of_birth || "",
+          date_of_birth: result.user.date_of_birth || "",
+          last_education: result.user.last_education || "",
+          work: result.user.work || "",
+        });
+        setProfileImage(
+          result.user.path_photo ||
+            "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+    // Fetch user data to check if the profile is complete
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setUserData(data.user);
+
+        const requiredFields = [
+          "phone_number",
+          "place_of_birth",
+          "date_of_birth",
+          "address",
+          "last_education",
+          "work",
+        ];
+
+        const incomplete = requiredFields.some(
+          (field) => data.user[field] === null || data.user[field] === ""
+        );
+
+        setIsProfileIncomplete(incomplete);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setIsProfileIncomplete(true);
+      }
+    };
+
+    fetchUserData();
+    fetchProfileData();
   }, [navigate]);
-  const fetchProfileData = async () => {
-    const token = sessionStorage.getItem("accessToken");
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/user/`, // Endpoint API
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const result = await response.json();
-      setProfileData(result.user);
-      setEditProfileData({
-        name: result.user.name || "",
-        email: result.user.email || "",
-        phone_number: result.user.phone_number || "",
-        address: result.user.address || "",
-        place_of_birth: result.user.place_of_birth || "",
-        date_of_birth: result.user.date_of_birth || "",
-        last_education: result.user.last_education || "",
-        work: result.user.work || "",
-      });
-      setProfileImage(
-        result.user.path_photo ||
-          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
-      );
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-    }
-  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -103,18 +150,36 @@ const Pengaturan = () => {
   };
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
+
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
+      const formData = new FormData();
+      Object.keys(editProfileData).forEach((key) => {
+        formData.append(key, editProfileData[key]);
+      });
+
+      const imageInput = document.getElementById("profileImageUpload");
+      if (imageInput && imageInput.files[0]) {
+        formData.append("user_photo", imageInput.files[0]);
+      }
+
+      formData.append("_method", "put");
+
       const response = await fetch(
-        `${import.meta.env.VITE_SERVER_API_KEY}/api/user/`,
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
         {
-          method: "PUT",
+          method: "POST", 
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(editProfileData),
+          body: formData,
         }
       );
+
       if (response.ok) {
         toast.success("Profil berhasil diperbarui!");
         window.location.reload();
@@ -123,6 +188,7 @@ const Pengaturan = () => {
       }
     } catch (error) {
       console.error("Error updating profile:", error);
+      toast.error("Terjadi kesalahan saat memperbarui profil.");
     }
   };
 
@@ -139,7 +205,7 @@ const Pengaturan = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(passwordData),
         }
@@ -168,7 +234,7 @@ const Pengaturan = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
 

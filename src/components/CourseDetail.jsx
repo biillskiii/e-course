@@ -2,23 +2,22 @@ import React, { useState, useEffect } from "react";
 import ClassHeader from "./ClassHeader";
 import Chapter from "./Chapter";
 import Accordion from "./Accordion";
-import NavbarDashboard from "./Navbar";
+import Navbar from "./Navbar";
 import { useParams } from "react-router-dom";
 import useSnap from "../hooks/useSnap";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 const CourseDetail = () => {
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isPurchased, setIsPurchased] = useState(false); // State untuk status pembelian
+  const [isPurchased, setIsPurchased] = useState(false);
   const navigate = useNavigate();
   const { snapEmbed } = useSnap();
-
+  const [profileImage, setProfileImage] = useState(null);
+  const token = Cookies.get("accessToken");
   const handleCheckout = async () => {
-    const token = sessionStorage.getItem("accessToken");
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/purchase-course/${id}`,
@@ -40,19 +39,18 @@ const CourseDetail = () => {
         // Check if Snap is already in view
         const snapContainer = document.getElementById("snap-container");
         if (!snapContainer || snapContainer.childElementCount === 0) {
-          document.body.style.overflow = "hidden"; // Disable background scrolling
-          document.getElementById("snap-overlay").style.display = "flex"; // Show overlay
+          document.body.style.overflow = "hidden";
+          document.getElementById("snap-overlay").style.display = "flex";
           snapEmbed(data.snap_token, "snap-container");
           if (data.snap_token) {
             const snapContainer = document.getElementById("snap-container");
             if (!snapContainer || snapContainer.childElementCount === 0) {
-              document.body.style.overflow = "hidden"; // Disable background scrolling
-              document.getElementById("snap-overlay").style.display = "flex"; // Show overlay
+              document.body.style.overflow = "hidden";
+              document.getElementById("snap-overlay").style.display = "flex";
               snapEmbed(data.snap_token, "snap-container", {
                 onSuccess: function (result) {
                   console.log("Payment success:", result);
-                  // Navigasi ke halaman sukses
-                  navigate(`/user/detail-transaksi/${id}`); // Ganti "/success/${id}" sesuai kebutuhan
+                  navigate(`/user/detail-transaksi/${id}`);
                 },
                 onPending: function (result) {
                   console.log("Payment pending:", result);
@@ -81,7 +79,27 @@ const CourseDetail = () => {
       console.error("Error during checkout:", error);
     }
   };
-
+  const fetchProfileData = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      // setProfileData(result.user);
+      setProfileImage(
+        result.user.path_photo ||
+          "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+      );
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
   const fetchClassDetail = async () => {
     try {
       const response = await fetch(
@@ -104,8 +122,6 @@ const CourseDetail = () => {
 
   const checkPurchaseStatus = async () => {
     try {
-      const token = sessionStorage.getItem("accessToken");
-
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/usertransactions`,
         {
@@ -131,19 +147,20 @@ const CourseDetail = () => {
   };
 
   useEffect(() => {
+    fetchProfileData();
     fetchClassDetail();
     checkPurchaseStatus();
   }, [id]);
 
   const closePopup = () => {
-    document.body.style.overflow = "auto"; // Enable background scrolling
-    document.getElementById("snap-overlay").style.display = "none"; // Hide overlay
+    document.body.style.overflow = "auto";
+    document.getElementById("snap-overlay").style.display = "none";
   };
 
   if (isLoading) {
     return (
       <div>
-        <NavbarDashboard />
+        <Navbar avatar={profileImage} />
         <div className="flex justify-center items-center h-screen">
           Loading...
         </div>
@@ -164,7 +181,7 @@ const CourseDetail = () => {
 
   return (
     <div>
-      <NavbarDashboard />
+      <Navbar avatar={profileImage} />
       <div className="flex justify-between px-32 my-20 gap-x-32">
         {classDetail ? (
           <>
@@ -184,9 +201,11 @@ const CourseDetail = () => {
               <Chapter
                 price={classDetail.price}
                 hasDiscount={classDetail.price_discount}
+                label={isPurchased ? "Kelas Sudah Dibeli" : "Beli Kelas"}
                 onClick={() => handleCheckout()}
                 isDisabled={isPurchased}
-                // Pass status to Chapter
+                variant={isPurchased ? "disable" : "primary"}
+                size={isPurchased ? "big" : "small"}
               />
               {classDetail.chapters && classDetail.chapters.length > 0 ? (
                 <Accordion items={classDetail.chapters} />
@@ -211,7 +230,7 @@ const CourseDetail = () => {
         <div
           id="snap-container"
           className=" h-[70%] bg-white rounded-lg shadow-lg p-4 overflow-hidden"
-          onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+          onClick={(e) => e.stopPropagation()}
         ></div>
       </div>
     </div>

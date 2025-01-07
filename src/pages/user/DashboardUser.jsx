@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import CardUser from "../../components/CardUser";
 import Sertif from "../../assets/sertif-empty.png";
-import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 import Certificate from "../../components/Certificate";
 import EmptyClass from "../../assets/empt-class.png";
 import BgUser from "../../assets/BgUser.png";
@@ -71,17 +71,16 @@ const Dashboard = () => {
   const [hasNoCertificates, setHasNoCertificates] = useState(false);
   const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
 
+  const token = Cookies.get("accessToken");
   const handleNavigation = (path) => {
     navigate(path);
   };
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
     }
     const fetchProfileData = async () => {
-      const token = sessionStorage.getItem("accessToken");
       try {
         const response = await fetch(
           `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
@@ -105,12 +104,13 @@ const Dashboard = () => {
     };
     // Fetch user data to check if the profile is complete
     const fetchUserData = async () => {
+      console.log(token);
       try {
         const response = await fetch(
           `${import.meta.env.VITE_SERVER_API_KEY}/api/user`,
           {
             headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -147,7 +147,7 @@ const Dashboard = () => {
         `${import.meta.env.VITE_SERVER_API_KEY}/api/purchased-courses`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -173,7 +173,7 @@ const Dashboard = () => {
         `${import.meta.env.VITE_SERVER_API_KEY}/api/userCertificate`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -199,7 +199,7 @@ const Dashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
 

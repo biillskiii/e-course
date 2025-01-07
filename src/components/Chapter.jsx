@@ -47,6 +47,9 @@ const Chapter = ({
   onClick,
   hasDiscount,
   courseId,
+  label,
+  variant,
+  size
 }) => {
   return (
     <div>
@@ -57,9 +60,9 @@ const Chapter = ({
           </p>
           <Button
             type="button"
-            size="small"
-            variant="primary"
-            label={"Beli Kelas"}
+            size={size}
+            variant={variant}
+            label={label}
             onClick={onClick}
             isDisabled={isDisabled}
           />

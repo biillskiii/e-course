@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
-import { userData, transactions } from "../../data";
+import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import {
   Home,
@@ -32,8 +32,8 @@ const Mentor = () => {
   });
   const navigate = useNavigate();
 
+  const token = Cookies.get("accessToken");
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
@@ -61,8 +61,7 @@ const Mentor = () => {
   }, [navigate]);
 
   const fetchTransactions = async () => {
-    const token = sessionStorage.getItem("accessToken");
-    try {
+      try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/transactions`,
         {
@@ -111,7 +110,7 @@ const Mentor = () => {
     navigate(path);
   };
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
   return (

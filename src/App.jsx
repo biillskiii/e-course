@@ -11,7 +11,7 @@ import Checkout from "./pages/Checkout";
 import ContactUs from "./pages/ContactUs";
 import Dashboard from "./pages/admin/Dashboard";
 import Kelas from "./pages/admin/Kelas";
-import Webinar from "./pages/admin/Webinar";
+import Webinar from "./pages/Webinar";
 import TambahKelas from "./pages/admin/TambahKelas";
 import Mentee from "./pages/admin/Mentee";
 import Mentor from "./pages/admin/Mentor";
@@ -27,6 +27,7 @@ import SiswaList from "./pages/admin/SiswaList";
 import DetailClassUser from "./pages/user/DetailClass";
 import SertifikatUser from "./pages/user/SertifikatUser";
 import DetailSertifikat from "./pages/user/DetailSertif";
+import TambahMentor from "./pages/admin/TambahMentor";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/admin/mentee" element={<Mentee />} />
 
         <Route path="/admin/mentor" element={<Mentor />} />
+        <Route path="/admin/tambah-mentor" element={<TambahMentor />} />
         <Route path="/admin/daftar-transaksi" element={<Transaksi />} />
         <Route path="/admin/kelas/:id" element={<SiswaList />} />
         <Route path="/user/dashboard" element={<DashboardUser />} />
@@ -63,7 +65,10 @@ function App() {
         <Route path="/user/detail/:id" element={<DetailClass />} />
         <Route path="/user/detail-user/:id" element={<DetailClassUser />} />
         <Route path="user/sertifikat" element={<SertifikatUser />} />
-        <Route path="user/detail-sertifikat/:certificate_code" element={<DetailSertifikat />} />
+        <Route
+          path="user/detail-sertifikat/:certificate_code"
+          element={<DetailSertifikat />}
+        />
       </Routes>
     </Router>
   );

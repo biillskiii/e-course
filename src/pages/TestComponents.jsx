@@ -16,6 +16,7 @@ import { VideoSquare } from "iconsax-react";
 import Rating from "../components/RatingReview";
 import Popup from "../components/PopUp";
 import Certificate from "../components/Certificate";
+import { useNavigate } from "react-router-dom";
 const sampleData = {
   price: 700000,
   buttonText: "Beli Kelas",
@@ -167,7 +168,7 @@ function App() {
   const totalPages = 5; // Example total pages
   const [popupType, setPopupType] = useState(null);
   const handleClose = () => setPopupType(null);
-
+  const navigate = useNavigate();
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -416,6 +417,12 @@ function App() {
       <p>Filter Sidebar</p>
       <FilterSidebar />
       <Certificate />
+
+      <p> Tambah Mentor</p>
+      <Button
+        text="Tambah Mentor"
+        onClick={() => navigate("/admin/tambah-mentor")}
+      />
     </div>
   );
 }

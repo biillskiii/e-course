@@ -5,8 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import NavbarDashboard from "../../components/NavbarDashboard";
 import Button from "../../components/Button";
 import CardDashboard from "../../components/CardDashboard";
-import { popularClasses, statsCards, transactions } from "../../data";
-
+import Cookies from "js-cookie";
 import {
   Home,
   People,
@@ -50,8 +49,8 @@ const Dashboard = () => {
     </div>
   );
 
+  const token = Cookies.get("accessToken");
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
@@ -93,7 +92,6 @@ const Dashboard = () => {
   };
 
   const fetchMentor = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/mentors`,
@@ -114,7 +112,6 @@ const Dashboard = () => {
   };
 
   const fetchMentee = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/purchases`,
@@ -137,7 +134,6 @@ const Dashboard = () => {
   const fetchTopCourse = async () => {
     setIsLoading(true);
     try {
-      const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/course-admin`,
         {
@@ -167,7 +163,6 @@ const Dashboard = () => {
   };
 
   const fetchTransactions = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/transactions`,
@@ -204,7 +199,7 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
 

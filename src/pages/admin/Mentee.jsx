@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Cookies from "js-cookie";
 // Iconsax Icons
 import {
   Home,
@@ -50,11 +50,11 @@ const Mentor = () => {
 
   // Hooks
   const navigate = useNavigate();
+  const token = Cookies.get("accessToken");
   const fetchData = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem("accessToken");
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/purchases`,
         {
@@ -87,8 +87,7 @@ const Mentor = () => {
     const fetchAllData = async () => {
       setIsLoading(true);
       try {
-        const token = sessionStorage.getItem("accessToken");
-        if (!token) {
+              if (!token) {
           navigate("/masuk");
           return;
         }
@@ -165,8 +164,7 @@ const Mentor = () => {
 
     setIsLoading(true);
     try {
-      const token = sessionStorage.getItem("accessToken");
-      const response = await fetch(
+          const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/purchases`,
         {
           method: "POST",
@@ -229,7 +227,7 @@ const Mentor = () => {
     setIsModalOpen(!isModalOpen);
   };
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
   // Render

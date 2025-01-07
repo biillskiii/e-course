@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import NavbarDashboard from "../../components/Navbar";
 import ProgressBar from "../../components/ProgressBar";
 import Button from "../../components/Button";
@@ -8,7 +8,9 @@ import { ArrowDown2 } from "iconsax-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LockCircle } from "iconsax-react";
+import Cookies from "js-cookie";
 const CourseDetail = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,13 +18,45 @@ const CourseDetail = () => {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [openChapter, setOpenChapter] = useState(null);
-
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileData, setProfileData] = useState(null);
   const toggleChapter = (chapterId) => {
     setOpenChapter((prev) => (prev === chapterId ? null : chapterId));
   };
+  const token = Cookies.get("accessToken");
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      return;
+    }
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_API_KEY}/api/user`, // Endpoint API
+          {
+            headers: {
+              // application: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await response.json();
+        setProfileData(result.user.name);
+        console.log(result.user);
+        setProfileImage(
+          result.user.path_photo ||
+            "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+    // Fetch user data to check if the profile is complete
 
+    fetchProfileData();
+  }, [navigate]);
   const fetchClassDetail = async () => {
-    const token = sessionStorage.getItem("accessToken");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/courses/${id}`,
@@ -55,7 +89,7 @@ const CourseDetail = () => {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_API_KEY}/api/watchedVideo`,
         {
-          method: "PUT",
+          method: "PUT",  
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -115,52 +149,69 @@ const CourseDetail = () => {
     const currentChapterIndex = classDetail.chapters.findIndex(
       (chapter) => chapter.id === selectedChapter
     );
-
-    if (!isVideoUnlocked(currentChapterIndex, currentVideoIndex + 1)) {
-      alert("Selesaikan video saat ini terlebih dahulu.");
-      return;
-    }
-
     const currentChapter = classDetail.chapters[currentChapterIndex];
 
     if (currentVideoIndex < currentChapter.videos.length - 1) {
+      // Move to next video in current chapter
       const nextVideoId = currentChapter.videos[currentVideoIndex + 1].id;
-      await markVideoAsWatched(nextVideoId);
-      setCurrentVideoIndex((prev) => prev + 1);
+      try {
+        await markVideoAsWatched(nextVideoId);
+        setCurrentVideoIndex((prev) => prev + 1);
+
+        // Update watched status for current video
+        setClassDetail((prevDetail) => ({
+          ...prevDetail,
+          chapters: prevDetail.chapters.map((chapter) => ({
+            ...chapter,
+            videos: chapter.videos.map((video) => ({
+              ...video,
+              is_watched: video.id === nextVideoId ? true : video.is_watched,
+            })),
+          })),
+        }));
+      } catch (error) {
+        toast.error("Failed to mark video as watched");
+      }
     } else {
+      // Move to next chapter if available
       if (currentChapterIndex < classDetail.chapters.length - 1) {
         const nextChapter = classDetail.chapters[currentChapterIndex + 1];
-        if (!isChapterUnlocked(nextChapter.id)) {
-          alert("Selesaikan semua video dalam chapter ini terlebih dahulu.");
-          return;
-        }
         const firstVideoId = nextChapter.videos[0].id;
-        await markVideoAsWatched(firstVideoId);
-        setSelectedChapter(nextChapter.id);
-        setCurrentVideoIndex(0);
+
+        try {
+          await markVideoAsWatched(firstVideoId);
+
+          // Update watched status and move to next chapter
+          setClassDetail((prevDetail) => ({
+            ...prevDetail,
+            chapters: prevDetail.chapters.map((chapter) => ({
+              ...chapter,
+              videos: chapter.videos.map((video) => ({
+                ...video,
+                is_watched: video.id === firstVideoId ? true : video.is_watched,
+              })),
+            })),
+          }));
+
+          setSelectedChapter(nextChapter.id);
+          setCurrentVideoIndex(0);
+        } catch (error) {
+          toast.error("Failed to mark video as watched");
+        }
       }
     }
   };
-
-  const handlePreviousVideo = async () => {
+  const handlePreviousVideo = () => {
     if (currentVideoIndex > 0) {
-      const prevVideoId = classDetail.chapters.find(
-        (chapter) => chapter.id === selectedChapter
-      ).videos[currentVideoIndex - 1].id;
-      await markVideoAsWatched(prevVideoId);
       setCurrentVideoIndex((prev) => prev - 1);
     } else {
       const currentChapterIndex = classDetail.chapters.findIndex(
         (chapter) => chapter.id === selectedChapter
       );
-
       if (currentChapterIndex > 0) {
         const prevChapter = classDetail.chapters[currentChapterIndex - 1];
-        const lastVideoIndex = prevChapter.videos.length - 1;
-        const lastVideoId = prevChapter.videos[lastVideoIndex].id;
-        await markVideoAsWatched(lastVideoId);
         setSelectedChapter(prevChapter.id);
-        setCurrentVideoIndex(lastVideoIndex);
+        setCurrentVideoIndex(prevChapter.videos.length - 1);
       }
     }
   };
@@ -253,7 +304,7 @@ const CourseDetail = () => {
   if (isLoading)
     return (
       <div>
-        <NavbarDashboard />
+        <NavbarDashboard avatar={profileImage} />
         <div className="flex justify-center items-center h-screen">
           Loading...
         </div>
@@ -263,7 +314,7 @@ const CourseDetail = () => {
   if (error)
     return (
       <div>
-        <NavbarDashboard />
+        <NavbarDashboard username={profileData} avatar={profileImage} />
         <div className="flex justify-center items-center h-screen text-red-500">
           Error: {error}
         </div>
@@ -286,7 +337,7 @@ const CourseDetail = () => {
         theme={"light"}
         transition:Bounce
       />
-      <NavbarDashboard />
+      <NavbarDashboard username={profileData} avatar={profileImage} />
       <div className="mx-auto px-32 py-6 flex items-start md:space-x-6">
         <div className="flex-1">
           <header className="mb-6">

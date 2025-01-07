@@ -1,27 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { courseData, userData } from "../../data";
-import Label from "../../components/Label";
+import Button from "../../components/Button";
+import NavbarDashboard from "../../components/NavbarDashboard";
+import Cookies from "js-cookie";
+import TransactionDetailCard from "../../components/TransactionDetailCard";
+import { jwtDecode } from "jwt-decode";
 import {
-  Copy,
+  Category,
   Home,
+  LogoutCurve,
   Monitor,
   Ticket,
   Wallet,
-  Category,
-  LogoutCurve,
+  Cup,
 } from "iconsax-react";
-import Button from "../../components/Button";
-import NavbarDashboard from "../../components/NavbarDashboard";
-import Mandiri from "../../assets/mandiri.png";
-import Qris from "../../assets/qris.png";
-import QrisQRCode from "../../assets/QRCode.png";
-import TransactionDetailCard from "../../components/TransactionDetailCard";
-import { jwtDecode } from "jwt-decode";
-const copyToClipboard = (text) => {
-  navigator.clipboard.writeText(text);
-  // Optionally add a toast/notification here
-};
 
 const DetailTransaksi = () => {
   const { transactionId } = useParams();
@@ -29,11 +22,11 @@ const DetailTransaksi = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState("");
+  const token = Cookies.get("accessToken");
   const handleNavigation = (path) => {
     navigate(path);
   };
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       navigate("/masuk");
       return;
@@ -53,7 +46,6 @@ const DetailTransaksi = () => {
   }, [navigate]);
 
   const fetchClasses = async () => {
-    const token = sessionStorage.getItem("accessToken");
     if (!token) {
       console.error("No token found.");
       navigate("/masuk");
@@ -90,30 +82,81 @@ const DetailTransaksi = () => {
     fetchClasses();
   }, [transactionId]);
 
-  // Handle single object or array response
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_SERVER_API_KEY
+        }/api/purchase-course/${transactionId}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await response.json();
+      console.log(data); // Log the response to check for error details
+      if (!response.ok) {
+        throw new Error(
+          `Error: ${data.message || "Failed to initiate checkout"}`
+        );
+      }
+
+      if (data.snap_token) {
+        const snapContainer = document.getElementById("snap-container");
+        if (!snapContainer || snapContainer.childElementCount === 0) {
+          document.body.style.overflow = "hidden";
+          document.getElementById("snap-overlay").style.display = "flex";
+          snapEmbed(data.snap_token, "snap-container", {
+            onSuccess: (result) => {
+              console.log("Payment success:", result);
+              navigate(`/user/detail-transaksi/${transactionId}`);
+            },
+            onPending: (result) => {
+              console.log("Payment pending:", result);
+              navigate(`/pending/${transactionId}`);
+            },
+            onError: (result) => {
+              console.error("Payment error:", result);
+              navigate(`/error`);
+            },
+            onClose: () => {
+              console.warn("Payment popup closed");
+              closePopup();
+            },
+          });
+        } else {
+          console.warn("Snap instance is already active.");
+        }
+      } else {
+        console.error("No snap_token found in response:", data);
+      }
+    } catch (error) {
+      console.error("Error during checkout:", error);
+    }
+  };
+
+  const closePopup = () => {
+    document.body.style.overflow = "auto";
+    document.getElementById("snap-overlay").style.display = "none";
+  };
+
   const course = Array.isArray(transaction)
     ? transaction.find((item) => item.transactionId === transactionId)
-    : transaction; // Use directly if it's an object
+    : transaction;
 
   if (!course) {
     return (
-      <tr className="w-full h-screen flex justify-center items-center">
-        <td colSpan="4" className="py-10 text-center">
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
-          </div>
-        </td>
-      </tr>
+      <div className="w-full h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      </div>
     );
   }
-
-  const isPending = course.status === "Menunggu Pembayaran";
-  const isSuccessful = course.status === "Pembayaran Berhasil";
-
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
     navigate("/masuk");
   };
+  const isPending = course.status === "pending";
 
   return (
     <section>
@@ -161,6 +204,13 @@ const DetailTransaksi = () => {
               leftIcon={<Category />}
               size="very-big"
               onClick={() => handleNavigation("/user/pengaturan")}
+            />{" "}
+            <Button
+              label="Sertifikat"
+              variant="side-primary"
+              leftIcon={<Cup />}
+              size="very-big"
+              onClick={() => handleNavigation("/user/sertifikat")}
             />
           </div>
           <div className="mt-20">
@@ -177,11 +227,12 @@ const DetailTransaksi = () => {
           <NavbarDashboard
             avatar={userProfile.avatar}
             username={userProfile.username}
-            isLoading={true}
+            isLoading={isLoading}
           />
           <div className="w-full flex flex-col p-10">
             <div className="flex flex-col gap-8">
               <h1 className="font-bold text-3xl">Detail Transaksi</h1>
+
               <TransactionDetailCard
                 img={course.course.path_photo}
                 transaction_id={course.transaction_id}
@@ -189,15 +240,35 @@ const DetailTransaksi = () => {
                 price={course.course.price}
                 status={course.status}
                 date={course.updated_at}
+                onClick={handleCheckout}
                 payment_method={
                   course.payment_method === "bank_transfer"
                     ? "VA"
                     : course.payment_method
                 }
               />
+              {isPending && (
+                <Button
+                  label="Beli ulang"
+                  variant="primary"
+                  size="small"
+                  onClick={handleCheckout}
+                />
+              )}
             </div>
           </div>
         </div>
+      </div>
+      <div
+        id="snap-overlay"
+        className="fixed inset-0 w-full z-50 bg-white bg-opacity-90 hidden justify-center items-center"
+        onClick={closePopup}
+      >
+        <div
+          id="snap-container"
+          className="h-[70%] bg-white rounded-lg shadow-lg p-4 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        ></div>
       </div>
     </section>
   );
