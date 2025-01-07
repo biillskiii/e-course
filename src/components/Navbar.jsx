@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "./Button";
 import Cookies from "js-cookie";
+
 const DefaultNavbar = ({ avatar }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,12 +24,21 @@ const DefaultNavbar = ({ avatar }) => {
     };
   }, []);
 
+  useEffect(() => {
+    // Periksa apakah pengguna telah login (contoh: periksa cookie atau token)
+    const token = Cookies.get("accessToken");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleLogout = () => {
     Cookies.remove("accessToken");
+    setIsLoggedIn(false);
     navigate("/masuk");
   };
 
@@ -39,7 +49,7 @@ const DefaultNavbar = ({ avatar }) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 px-0 lg:px-32 bg-white shadow-sm ">
+    <header className="sticky top-0 z-50 px-0 lg:px-32 bg-white shadow-sm">
       <div className="flex justify-between items-center w-full h-24 px-4 md:px-8">
         <h1 className="text-5xl mango font-bold uppercase">
           <span className="text-primary-500">pixel</span>
@@ -94,17 +104,19 @@ const DefaultNavbar = ({ avatar }) => {
               Hubungi Kami
             </a>
           </li>
-          <li>
-            <a
-              href="/user/dashboard"
-              className={getNavLinkClass("/user/dashboard")}
-            >
-              Dashboard
-            </a>
-          </li>
+          {isLoggedIn && (
+            <li>
+              <a
+                href="/user/dashboard"
+                className={getNavLinkClass("/user/dashboard")}
+              >
+                Dashboard
+              </a>
+            </li>
+          )}
         </nav>
 
-        {isLoggedIn ? (
+        {!isLoggedIn ? (
           <div className="hidden md:block">
             <Button
               label="Masuk"
