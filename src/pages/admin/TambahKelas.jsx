@@ -86,7 +86,7 @@ const TambahKelas = () => {
           "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png"
         );
         setProfileImage(
-          "https://e0.pxfuel.com/wallpapers/798/660/desktop-wallpaper-plain-gray-stock-dark-gray.jpg"
+          "https://be-course.serpihantech.com/storage/Gambar.png"
         );
       } catch (error) {
         console.error("Error fetching user data:", error);
