@@ -142,9 +142,10 @@ function App() {
             onChange={handleChange}
           />
           <ReCAPTCHA
-            sitekey="6LdZUl4qAAAAAE2BBg5cOr44QUATDbyVPunQppdo"
+            sitekey={import.meta.env.VITE_RECAPTCHA}
             onChange={setCaptchaValue}
           />
+
           <Button
             type="submit"
             label={isLoading ? "Sedang Mendaftar..." : "Daftar Akun"}
