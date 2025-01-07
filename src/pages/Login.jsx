@@ -70,11 +70,17 @@ function LoginPage() {
         // console.log("login");
 
         // Save token to session storage
-        Cookies.set("accessToken",access_token, {
-          expires: 1,
+        Cookies.set("accessToken", access_token, {
+          expires: 0.0208333, // 30 menit dalam hari
           secure: true,
         });
+        // Periksa cookie
+        console.log(Cookies.get("accessToken")); // Akan menampilkan nilai token jika belum expired
 
+        // Setelah 30 menit
+        setTimeout(() => {
+          console.log(Cookies.get("accessToken")); // Akan menampilkan undefined karena cookie sudah expired
+        }, 30 * 60 * 1000); // 30 menit dalam milidetik
         // Decode token to get user role
         if (access_token) {
           const decodedToken = jwtDecode(access_token);
